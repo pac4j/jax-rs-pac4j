@@ -16,6 +16,7 @@ import org.pac4j.core.context.session.SessionStore;
  * {@link WebContext} for this to happen...
  * 
  * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 public class JaxRsContext extends J2EContext {

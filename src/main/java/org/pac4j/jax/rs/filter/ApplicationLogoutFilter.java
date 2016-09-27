@@ -18,6 +18,7 @@ import org.pac4j.core.util.CommonHelper;
  * TODO Support filtering on response in order to do the logout once the method has been executed.
  * 
  * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 @Priority(Priorities.AUTHENTICATION)

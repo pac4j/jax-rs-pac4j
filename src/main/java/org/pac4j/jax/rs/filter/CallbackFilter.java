@@ -17,6 +17,7 @@ import org.pac4j.core.util.CommonHelper;
 /**
  * 
  * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 @Priority(Priorities.AUTHENTICATION)

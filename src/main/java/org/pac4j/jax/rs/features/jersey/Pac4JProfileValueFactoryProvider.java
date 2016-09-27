@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
  * Register a new {@link Binder} in order to enable this.
  * 
  * @author Victor Noel - Linagora
- *
+ * @since 1.0.0
+ * 
  */
 @Singleton
 public class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvider {

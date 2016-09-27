@@ -16,6 +16,7 @@ import org.pac4j.jax.rs.features.jersey.Pac4JProfileValueFactoryProvider;
  * 
  * @see Pac4JProfileValueFactoryProvider.Binder
  * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 @Target({ ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD })

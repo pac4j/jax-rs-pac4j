@@ -13,6 +13,7 @@ import org.pac4j.jax.rs.filter.CallbackFilter;
  * Identify the class or method as being filtered by {@link CallbackFilter}.
  * 
  * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 @Target({ ElementType.METHOD })

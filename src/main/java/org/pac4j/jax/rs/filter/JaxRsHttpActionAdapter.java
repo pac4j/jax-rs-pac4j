@@ -5,6 +5,7 @@ import org.pac4j.core.http.HttpActionAdapter;
 /**
  * 
  * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 public enum JaxRsHttpActionAdapter implements HttpActionAdapter<Object, JaxRsContext> {

@@ -26,6 +26,7 @@ import org.pac4j.jax.rs.filter.SecurityFilter;
  * TODO For now we need to also implement {@link Feature} because of https://java.net/jira/browse/JERSEY-3166. TODO
  * 
  * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 @Provider
