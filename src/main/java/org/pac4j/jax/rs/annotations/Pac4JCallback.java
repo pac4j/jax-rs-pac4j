@@ -25,7 +25,7 @@ public @interface Pac4JCallback {
      * @return value for {@link CallbackFilter#setDefaultUrl(String)} (empty string means no redirect: instead the
      *         annotated method will be executed).
      */
-    String value() default "";
+    String defaultUrl() default "";
 
     /**
      * @return value for {@link CallbackFilter#setRenewSession(boolean)}

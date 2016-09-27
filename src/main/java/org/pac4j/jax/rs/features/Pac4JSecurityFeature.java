@@ -65,8 +65,8 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
             final SecurityFilter filter = new SecurityFilter(request, config);
 
-            if (secAnn.value().length > 0) {
-                filter.setAuthorizers(StringUtils.join(secAnn.value(), ","));
+            if (secAnn.authorizers().length > 0) {
+                filter.setAuthorizers(StringUtils.join(secAnn.authorizers(), ","));
             }
 
             if (secAnn.clients().length > 0) {
@@ -89,7 +89,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
             filter.setMultiProfile(cbAnn.multiProfile());
             filter.setRenewSession(cbAnn.renewSession());
-            filter.setDefaultUrl(cbAnn.value());
+            filter.setDefaultUrl(cbAnn.defaultUrl());
 
             context.register(filter);
         }
@@ -99,7 +99,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
         if (lAnn != null) {
             final ApplicationLogoutFilter filter = new ApplicationLogoutFilter(request, config);
 
-            filter.setDefaultUrl(lAnn.value());
+            filter.setDefaultUrl(lAnn.defaultUrl());
             filter.setLogoutUrlPattern(lAnn.logoutUrlPattern());
 
             context.register(filter);

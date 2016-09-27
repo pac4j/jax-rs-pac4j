@@ -24,7 +24,7 @@ public @interface Pac4JSecurity {
     /**
      * @return value for {@link SecurityFilter#setAuthorizers(String)}
      */
-    String[] value() default {};
+    String[] authorizers() default {};
 
     /**
      * @return value for {@link SecurityFilter#setClients(String)}

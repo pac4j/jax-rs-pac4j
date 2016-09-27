@@ -25,7 +25,7 @@ public @interface Pac4JLogout {
      * @return value for {@link ApplicationLogoutFilter#setDefaultUrl(String)} (empty string means no redirect: instead
      *         the annotated method will be executed).
      */
-    String value() default "";
+    String defaultUrl() default "";
 
     /**
      * @return value for {@link ApplicationLogoutFilter#setLogoutUrlPattern(String)}
