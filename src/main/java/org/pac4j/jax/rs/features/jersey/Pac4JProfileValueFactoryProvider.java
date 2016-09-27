@@ -22,6 +22,8 @@ import org.pac4j.core.context.J2EContext;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link Pac4JProfile &#64;Profile} injection value factory provider.
@@ -92,6 +94,8 @@ public class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvid
 
     static class ProfileValueFactory implements Factory<CommonProfile> {
 
+        private static final Logger LOG = LoggerFactory.getLogger(ProfileValueFactory.class);
+
         @Context
         private HttpServletRequest request;
 
@@ -114,12 +118,15 @@ public class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvid
                 if (parameter.getRawType().isInstance(p)) {
                     return p;
                 } else {
-                    throw new IllegalStateException("Cannot inject a Pac4J profile of type "
-                            + p.getClass().getName() + " into a parameter of type " + parameter.getRawType().getName());
+                    // this is most certainly a programmer error
+                    LOG.warn("Cannot inject a Pac4J profile of type {} into a parameter of type {}",
+                            p.getClass().getName(), parameter.getRawType().getName());
+                    return null;
                 }
             } else {
-                throw new IllegalStateException(
-                        "Cannot inject a Pac4J profile into an unauthenticated request");
+                // there could be reason for that (after a callback for example)
+                LOG.debug("Cannot inject a Pac4J profile into an unauthenticated request");
+                return null;
             }
         }
 
