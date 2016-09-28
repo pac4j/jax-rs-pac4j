@@ -11,7 +11,6 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.lang3.StringUtils;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
@@ -65,17 +64,9 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
             final SecurityFilter filter = new SecurityFilter(request, config);
 
-            if (secAnn.authorizers().length > 0) {
-                filter.setAuthorizers(StringUtils.join(secAnn.authorizers(), ","));
-            }
-
-            if (secAnn.clients().length > 0) {
-                filter.setClients(StringUtils.join(secAnn.clients(), ","));
-            }
-
-            if (secAnn.matchers().length > 0) {
-                filter.setMatchers(StringUtils.join(secAnn.matchers(), ","));
-            }
+            filter.setAuthorizers(String.join(",", secAnn.authorizers()));
+            filter.setClients(String.join(",", secAnn.clients()));
+            filter.setMatchers(String.join(",", secAnn.matchers()));
 
             filter.setMultiProfile(secAnn.multiProfile());
 
