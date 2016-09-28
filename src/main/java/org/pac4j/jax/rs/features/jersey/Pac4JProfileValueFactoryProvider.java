@@ -113,7 +113,8 @@ public class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvid
         public CommonProfile provide() {
             // we don't need the response for this
             final J2EContext context = new J2EContext(request, null, config.getSessionStore());
-            final Optional<CommonProfile> profile = new ProfileManager<>(context).get(true);
+            final Optional<CommonProfile> profile = new ProfileManager<>(context)
+                    .get(parameter.getAnnotation(Pac4JProfile.class).readFromSession());
             if (profile.isPresent()) {
                 final CommonProfile p = profile.get();
                 if (parameter.getRawType().isInstance(p)) {

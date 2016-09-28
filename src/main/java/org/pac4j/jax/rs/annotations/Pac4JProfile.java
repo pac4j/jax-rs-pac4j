@@ -23,4 +23,5 @@ import org.pac4j.jax.rs.features.jersey.Pac4JProfileValueFactoryProvider;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Pac4JProfile {
+    boolean readFromSession() default true;
 }
