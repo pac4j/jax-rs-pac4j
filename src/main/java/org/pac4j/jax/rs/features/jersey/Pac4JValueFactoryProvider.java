@@ -22,6 +22,7 @@ import org.pac4j.core.context.J2EContext;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
+import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,27 +36,62 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @Singleton
-public class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvider {
+public class Pac4JValueFactoryProvider {
 
-    private final Config config;
+    static class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvider {
 
-    @Inject
-    protected Pac4JProfileValueFactoryProvider(MultivaluedParameterExtractorProvider mpep, ServiceLocator locator,
-            ConfigProvider configProvider) {
-        super(mpep, locator, Parameter.Source.UNKNOWN);
-        this.config = configProvider.config;
+        private final Config config;
+
+        @Inject
+        protected Pac4JProfileValueFactoryProvider(MultivaluedParameterExtractorProvider mpep, ServiceLocator locator,
+                ConfigProvider configProvider) {
+            super(mpep, locator, Parameter.Source.UNKNOWN);
+            this.config = configProvider.config;
+        }
+
+        @Override
+        protected Factory<?> createValueFactory(Parameter parameter) {
+            assert parameter != null;
+            if (!parameter.isAnnotationPresent(Pac4JProfile.class)) {
+                return null;
+            } else if (!CommonProfile.class.isAssignableFrom(parameter.getRawType())) {
+                throw new IllegalStateException(
+                        "Cannot inject a Pac4J profile into a parameter of type " + parameter.getRawType().getName());
+            } else {
+                return new ProfileValueFactory(config, parameter);
+            }
+        }
     }
 
-    @Override
-    protected Factory<?> createValueFactory(Parameter parameter) {
-        assert parameter != null;
-        if (!parameter.isAnnotationPresent(Pac4JProfile.class)) {
-            return null;
-        } else if (!CommonProfile.class.isAssignableFrom(parameter.getRawType())) {
-            throw new IllegalStateException(
-                    "Cannot inject a Pac4J profile into a parameter of type " + parameter.getRawType().getName());
-        } else {
-            return new ProfileValueFactory(config, parameter);
+    static class Pac4JProfileManagerValueFactoryProvider extends AbstractValueFactoryProvider {
+
+        private final Config config;
+
+        @Inject
+        protected Pac4JProfileManagerValueFactoryProvider(MultivaluedParameterExtractorProvider mpep,
+                ServiceLocator locator, ConfigProvider configProvider) {
+            super(mpep, locator, Parameter.Source.UNKNOWN);
+            this.config = configProvider.config;
+        }
+
+        @Override
+        protected Factory<?> createValueFactory(Parameter parameter) {
+            assert parameter != null;
+            if (!parameter.isAnnotationPresent(Pac4JProfileManager.class)) {
+                return null;
+            } else if (!ProfileManager.class.isAssignableFrom(parameter.getRawType())) {
+                throw new IllegalStateException("Cannot inject a Pac4J profile manager into a parameter of type "
+                        + parameter.getRawType().getName());
+            } else {
+                return new ProfileManagerValueFactory(config);
+            }
+        }
+    }
+
+    @Singleton
+    static class ProfileManagerInjectionResolver extends ParamInjectionResolver<Pac4JProfileManager> {
+        ProfileManagerInjectionResolver() {
+            super(Pac4JProfileManagerValueFactoryProvider.class);
         }
     }
 
@@ -87,9 +123,42 @@ public class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvid
         @Override
         protected void configure() {
             bind(new ConfigProvider(config)).to(ConfigProvider.class);
+            bind(ProfileManagerValueFactory.class).to(ProfileManagerValueFactory.class);
+            bind(Pac4JProfileManagerValueFactoryProvider.class).to(ValueFactoryProvider.class).in(Singleton.class);
             bind(Pac4JProfileValueFactoryProvider.class).to(ValueFactoryProvider.class).in(Singleton.class);
             bind(ProfileInjectionResolver.class).to(new TypeLiteral<InjectionResolver<Pac4JProfile>>() {
             }).in(Singleton.class);
+            bind(ProfileManagerInjectionResolver.class).to(new TypeLiteral<InjectionResolver<Pac4JProfileManager>>() {
+            }).in(Singleton.class);
+        }
+    }
+
+    static class ProfileManagerValueFactory implements Factory<ProfileManager<CommonProfile>> {
+
+        @Context
+        private HttpServletRequest request;
+
+        private final Config config;
+
+        @Inject
+        public ProfileManagerValueFactory(ConfigProvider config) {
+            this.config = config.config;
+        }
+
+        public ProfileManagerValueFactory(Config config) {
+            this.config = config;
+        }
+
+        @Override
+        public ProfileManager<CommonProfile> provide() {
+            // we don't need the response for this
+            final J2EContext context = new J2EContext(request, null, config.getSessionStore());
+            return new ProfileManager<>(context);
+        }
+
+        @Override
+        public void dispose(ProfileManager<CommonProfile> instance) {
+            // nothing
         }
     }
 
