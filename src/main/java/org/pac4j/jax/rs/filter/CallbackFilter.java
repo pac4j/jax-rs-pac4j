@@ -9,7 +9,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.J2ERenewSessionCallbackLogic;
 import org.pac4j.core.util.CommonHelper;
@@ -31,9 +30,11 @@ public class CallbackFilter implements ContainerRequestFilter {
 
     private String defaultUrl;
 
-    private boolean multiProfile = false;
+    private Boolean multiProfile;
 
-    private boolean renewSession = false;
+    private Boolean renewSession;
+
+    private boolean skipResponse;
 
     public CallbackFilter(HttpServletRequest request, Config config) {
         this.request = request;
@@ -47,17 +48,14 @@ public class CallbackFilter implements ContainerRequestFilter {
 
         final JaxRsContext context = new JaxRsContext(request, config.getSessionStore(), requestContext);
 
-        final String realDefaultUrl;
         final JaxRsHttpActionAdapter adapter;
-        if (CommonHelper.isBlank(defaultUrl)) {
-            realDefaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        if (skipResponse) {
             adapter = JaxRsHttpActionAdapter.SKIP;
         } else {
-            realDefaultUrl = defaultUrl;
             adapter = JaxRsHttpActionAdapter.ADAPT;
         }
 
-        callbackLogic.perform(context, config, adapter, realDefaultUrl, multiProfile, renewSession);
+        callbackLogic.perform(context, config, adapter, defaultUrl, multiProfile, renewSession);
     }
 
     public CallbackLogic<Object, JaxRsContext> getCallbackLogic() {
@@ -80,7 +78,7 @@ public class CallbackFilter implements ContainerRequestFilter {
         return multiProfile;
     }
 
-    public void setMultiProfile(boolean multiProfile) {
+    public void setMultiProfile(Boolean multiProfile) {
         this.multiProfile = multiProfile;
     }
 
@@ -88,7 +86,15 @@ public class CallbackFilter implements ContainerRequestFilter {
         return renewSession;
     }
 
-    public void setRenewSession(boolean renewSession) {
+    public void setRenewSession(Boolean renewSession) {
         this.renewSession = renewSession;
+    }
+
+    public boolean isSkipResponse() {
+        return skipResponse;
+    }
+
+    public void setSkipResponse(boolean skipResponse) {
+        this.skipResponse = skipResponse;
     }
 }

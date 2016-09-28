@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.jax.rs.filter.ApplicationLogoutFilter;
 
 /**
@@ -22,13 +21,30 @@ import org.pac4j.jax.rs.filter.ApplicationLogoutFilter;
 public @interface Pac4JLogout {
 
     /**
-     * @return value for {@link ApplicationLogoutFilter#setDefaultUrl(String)} (empty string means no redirect: instead
-     *         the annotated method will be executed).
+     * Default value is <code>false</code>.
+     * 
+     * If set to <code>true</code>, the pac4j response, such as redirect, will be skipped (the annotated method will be
+     * executed instead).
+     * 
+     * @return value for {@link ApplicationLogoutFilter#setSkipResponse(boolean)}.
      */
-    String defaultUrl() default "";
+    boolean skipResponse() default true;
 
     /**
+     * Note that this parameter only takes one value at most: empty array (default) is used to represent default pac4j
+     * setting, a non-empty string will be used by the filter, and more than one string will fail the resource method
+     * initialisation.
+     * 
+     * @return value for {@link ApplicationLogoutFilter#setDefaultUrl(String)}.
+     */
+    String[] defaultUrl() default {};
+
+    /**
+     * Note that this parameter only takes one value at most: empty array (default) is used to represent default pac4j
+     * setting, a non-empty string will be used by the filter, and more than one string will fail the resource method
+     * initialisation.
+     * 
      * @return value for {@link ApplicationLogoutFilter#setLogoutUrlPattern(String)}
      */
-    String logoutUrlPattern() default Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
+    String[] logoutUrlPattern() default {};
 }

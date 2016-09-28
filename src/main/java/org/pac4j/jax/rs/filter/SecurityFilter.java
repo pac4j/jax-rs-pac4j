@@ -29,13 +29,15 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     private final Config config;
 
-    private String clients = "";
+    private String clients;
 
-    private String authorizers = "";
+    private String authorizers;
 
-    private String matchers = "";
+    private String matchers;
 
-    private boolean multiProfile = false;
+    private Boolean multiProfile;
+
+    private boolean skipResponse;
 
     public SecurityFilter(HttpServletRequest request, Config config) {
         this.request = request;
@@ -50,12 +52,19 @@ public class SecurityFilter implements ContainerRequestFilter {
 
         final JaxRsContext context = new JaxRsContext(request, config.getSessionStore(), requestContext);
 
+        final JaxRsHttpActionAdapter adapter;
+        if (skipResponse) {
+            adapter = JaxRsHttpActionAdapter.SKIP;
+        } else {
+            adapter = JaxRsHttpActionAdapter.ADAPT;
+        }
+
         // Note: basically, there is two possible outcomes:
         // either the access is granted or there was an error or a redirect!
         // For the former, we do nothing (see SecurityGrantedAccessOutcome comments)
         // For the later, we interpret the error and abort the request using jax-rs abstractions
-        securityLogic.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, JaxRsHttpActionAdapter.ADAPT,
-                clients, authorizers, matchers, multiProfile);
+        securityLogic.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter, clients, authorizers,
+                matchers, multiProfile);
     }
 
     public String getClients() {
@@ -86,7 +95,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         return multiProfile;
     }
 
-    public void setMultiProfile(boolean multiProfile) {
+    public void setMultiProfile(Boolean multiProfile) {
         this.multiProfile = multiProfile;
     }
 
@@ -96,6 +105,14 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     public void setSecurityLogic(SecurityLogic<Object, JaxRsContext> securityLogic) {
         this.securityLogic = securityLogic;
+    }
+
+    public boolean isSkipResponse() {
+        return skipResponse;
+    }
+
+    public void setSkipResponse(boolean skipResponse) {
+        this.skipResponse = skipResponse;
     }
 }
 

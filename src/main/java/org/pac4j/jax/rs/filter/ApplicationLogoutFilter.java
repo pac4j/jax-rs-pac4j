@@ -34,6 +34,8 @@ public class ApplicationLogoutFilter implements ContainerRequestFilter {
 
     private String logoutUrlPattern;
 
+    private boolean skipResponse;
+
     public ApplicationLogoutFilter(HttpServletRequest request, Config config) {
         this.request = request;
         this.config = config;
@@ -47,10 +49,8 @@ public class ApplicationLogoutFilter implements ContainerRequestFilter {
 
         final JaxRsContext context = new JaxRsContext(request, config.getSessionStore(), requestContext);
 
-        // we don't support the null value for the defaultUrl, but it's not so important since we are bound to
-        // resources which default implementation is OK.
         final JaxRsHttpActionAdapter adapter;
-        if (CommonHelper.isBlank(defaultUrl)) {
+        if (skipResponse) {
             adapter = JaxRsHttpActionAdapter.SKIP;
         } else {
             adapter = JaxRsHttpActionAdapter.ADAPT;
@@ -81,5 +81,13 @@ public class ApplicationLogoutFilter implements ContainerRequestFilter {
 
     public void setApplicationLogoutLogic(ApplicationLogoutLogic<Object, JaxRsContext> applicationLogoutLogic) {
         this.applicationLogoutLogic = applicationLogoutLogic;
+    }
+
+    public boolean isSkipResponse() {
+        return skipResponse;
+    }
+
+    public void setSkipResponse(boolean skipResponse) {
+        this.skipResponse = skipResponse;
     }
 }

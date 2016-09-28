@@ -22,6 +22,16 @@ import org.pac4j.jax.rs.filter.SecurityFilter;
 public @interface Pac4JSecurity {
 
     /**
+     * Default value is <code>false</code>.
+     * 
+     * If set to <code>true</code>, the pac4j response, such as redirect, will be skipped (the annotated method will be
+     * executed instead).
+     * 
+     * @return value for {@link SecurityFilter#setSkipResponse(boolean)}
+     */
+    boolean skipResponse() default false;
+
+    /**
      * @return value for {@link SecurityFilter#setAuthorizers(String)}
      */
     String[] authorizers() default {};
@@ -37,7 +47,11 @@ public @interface Pac4JSecurity {
     String[] matchers() default {};
 
     /**
-     * @return value for {@link SecurityFilter#setMultiProfile(boolean)}
+     * Note that this parameter only takes one value at most: empty array (default) is used to represent default pac4j
+     * setting, one boolean will be used by the filter, and more than one boolean will fail the resource method
+     * initialisation.
+     * 
+     * @return value for {@link SecurityFilter#setMultiProfile(Boolean)}
      */
-    boolean multiProfile() default false;
+    boolean[] multiProfile() default {};
 }

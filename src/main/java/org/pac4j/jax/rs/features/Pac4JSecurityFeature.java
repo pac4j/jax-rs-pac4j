@@ -62,13 +62,18 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
         if (secAnn != null) {
 
+            if (secAnn.multiProfile().length > 1) {
+                throw new IllegalArgumentException(
+                        "multiProfile parameter in @Pac4JSecurity is not expected to have more than one value");
+            }
+
             final SecurityFilter filter = new SecurityFilter(request, config);
 
             filter.setAuthorizers(String.join(",", secAnn.authorizers()));
             filter.setClients(String.join(",", secAnn.clients()));
             filter.setMatchers(String.join(",", secAnn.matchers()));
-
-            filter.setMultiProfile(secAnn.multiProfile());
+            filter.setMultiProfile(secAnn.multiProfile().length == 0 ? null : secAnn.multiProfile()[0]);
+            filter.setSkipResponse(secAnn.skipResponse());
 
             context.register(filter);
         }
@@ -76,11 +81,28 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
         final Pac4JCallback cbAnn = method.getAnnotation(Pac4JCallback.class);
 
         if (cbAnn != null) {
+
+            if (cbAnn.defaultUrl().length > 1) {
+                throw new IllegalArgumentException(
+                        "defaultUrl parameter in @Pac4JCallback is not expected to have more than one value");
+            }
+
+            if (cbAnn.multiProfile().length > 1) {
+                throw new IllegalArgumentException(
+                        "multiProfile parameter in @Pac4JCallback is not expected to have more than one value");
+            }
+
+            if (cbAnn.renewSession().length > 1) {
+                throw new IllegalArgumentException(
+                        "renewSession parameter in @Pac4JCallback is not expected to have more than one value");
+            }
+
             final CallbackFilter filter = new CallbackFilter(request, config);
 
-            filter.setMultiProfile(cbAnn.multiProfile());
-            filter.setRenewSession(cbAnn.renewSession());
-            filter.setDefaultUrl(cbAnn.defaultUrl());
+            filter.setMultiProfile(cbAnn.multiProfile().length == 0 ? null : cbAnn.multiProfile()[0]);
+            filter.setRenewSession(cbAnn.renewSession().length == 0 ? null : cbAnn.renewSession()[0]);
+            filter.setDefaultUrl(cbAnn.defaultUrl().length == 0 ? null : cbAnn.defaultUrl()[0]);
+            filter.setSkipResponse(cbAnn.skipResponse());
 
             context.register(filter);
         }
@@ -88,10 +110,22 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
         final Pac4JLogout lAnn = method.getAnnotation(Pac4JLogout.class);
 
         if (lAnn != null) {
+
+            if (lAnn.defaultUrl().length > 1) {
+                throw new IllegalArgumentException(
+                        "defaultUrl parameter in @Pac4JLogout is not expected to have more than one value");
+            }
+
+            if (lAnn.logoutUrlPattern().length > 1) {
+                throw new IllegalArgumentException(
+                        "logoutUrlPattern parameter in @Pac4JLogout is not expected to have more than one value");
+            }
+
             final ApplicationLogoutFilter filter = new ApplicationLogoutFilter(request, config);
 
-            filter.setDefaultUrl(lAnn.defaultUrl());
-            filter.setLogoutUrlPattern(lAnn.logoutUrlPattern());
+            filter.setDefaultUrl(lAnn.defaultUrl().length == 0 ? null : lAnn.defaultUrl()[0]);
+            filter.setLogoutUrlPattern(lAnn.logoutUrlPattern().length == 0 ? null : lAnn.logoutUrlPattern()[0]);
+            filter.setSkipResponse(lAnn.skipResponse());
 
             context.register(filter);
         }
