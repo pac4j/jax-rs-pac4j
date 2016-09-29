@@ -34,7 +34,7 @@ public class CallbackFilter implements ContainerRequestFilter {
 
     private Boolean renewSession;
 
-    private boolean skipResponse;
+    private Boolean skipResponse;
 
     public CallbackFilter(HttpServletRequest request, Config config) {
         this.request = request;
@@ -49,7 +49,7 @@ public class CallbackFilter implements ContainerRequestFilter {
         final JaxRsContext context = new JaxRsContext(request, config.getSessionStore(), requestContext);
 
         final JaxRsHttpActionAdapter adapter;
-        if (skipResponse) {
+        if (skipResponse != null && skipResponse) {
             adapter = JaxRsHttpActionAdapter.SKIP;
         } else {
             adapter = JaxRsHttpActionAdapter.ADAPT;
@@ -90,11 +90,16 @@ public class CallbackFilter implements ContainerRequestFilter {
         this.renewSession = renewSession;
     }
 
-    public boolean isSkipResponse() {
+    public Boolean isSkipResponse() {
         return skipResponse;
     }
 
-    public void setSkipResponse(boolean skipResponse) {
+    /**
+     * @param skipResponse
+     *            If set to <code>true</code>, the pac4j response, such as redirect, will be skipped (the annotated
+     *            method will be executed instead).
+     */
+    public void setSkipResponse(Boolean skipResponse) {
         this.skipResponse = skipResponse;
     }
 }

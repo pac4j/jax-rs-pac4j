@@ -22,7 +22,7 @@ import org.pac4j.jax.rs.filter.SecurityFilter;
 
 /**
  * 
- * TODO For now we need to also implement {@link Feature} because of https://java.net/jira/browse/JERSEY-3166. TODO
+ * TODO For now we need to also implement {@link Feature} because of https://java.net/jira/browse/JERSEY-3166.
  * 
  * @author Victor Noel - Linagora
  * @since 1.0.0
@@ -67,13 +67,18 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "multiProfile parameter in @Pac4JSecurity is not expected to have more than one value");
             }
 
+            if (secAnn.skipResponse().length > 1) {
+                throw new IllegalArgumentException(
+                        "skipResponse parameter in @Pac4JSecurity is not expected to have more than one value");
+            }
+
             final SecurityFilter filter = new SecurityFilter(request, config);
 
             filter.setAuthorizers(String.join(",", secAnn.authorizers()));
             filter.setClients(String.join(",", secAnn.clients()));
             filter.setMatchers(String.join(",", secAnn.matchers()));
             filter.setMultiProfile(secAnn.multiProfile().length == 0 ? null : secAnn.multiProfile()[0]);
-            filter.setSkipResponse(secAnn.skipResponse());
+            filter.setSkipResponse(secAnn.skipResponse().length == 0 ? null : secAnn.skipResponse()[0]);
 
             context.register(filter);
         }
@@ -97,12 +102,17 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "renewSession parameter in @Pac4JCallback is not expected to have more than one value");
             }
 
+            if (cbAnn.skipResponse().length > 1) {
+                throw new IllegalArgumentException(
+                        "skipResponse parameter in @Pac4JCallback is not expected to have more than one value");
+            }
+
             final CallbackFilter filter = new CallbackFilter(request, config);
 
             filter.setMultiProfile(cbAnn.multiProfile().length == 0 ? null : cbAnn.multiProfile()[0]);
             filter.setRenewSession(cbAnn.renewSession().length == 0 ? null : cbAnn.renewSession()[0]);
             filter.setDefaultUrl(cbAnn.defaultUrl().length == 0 ? null : cbAnn.defaultUrl()[0]);
-            filter.setSkipResponse(cbAnn.skipResponse());
+            filter.setSkipResponse(cbAnn.skipResponse().length == 0 ? null : cbAnn.skipResponse()[0]);
 
             context.register(filter);
         }
@@ -121,11 +131,16 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "logoutUrlPattern parameter in @Pac4JLogout is not expected to have more than one value");
             }
 
+            if (lAnn.skipResponse().length > 1) {
+                throw new IllegalArgumentException(
+                        "skipResponse parameter in @Pac4JLogout is not expected to have more than one value");
+            }
+
             final ApplicationLogoutFilter filter = new ApplicationLogoutFilter(request, config);
 
             filter.setDefaultUrl(lAnn.defaultUrl().length == 0 ? null : lAnn.defaultUrl()[0]);
             filter.setLogoutUrlPattern(lAnn.logoutUrlPattern().length == 0 ? null : lAnn.logoutUrlPattern()[0]);
-            filter.setSkipResponse(lAnn.skipResponse());
+            filter.setSkipResponse(lAnn.skipResponse().length == 0 ? null : lAnn.skipResponse()[0]);
 
             context.register(filter);
         }

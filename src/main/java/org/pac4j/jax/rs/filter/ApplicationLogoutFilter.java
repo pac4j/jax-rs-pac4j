@@ -34,7 +34,7 @@ public class ApplicationLogoutFilter implements ContainerRequestFilter {
 
     private String logoutUrlPattern;
 
-    private boolean skipResponse;
+    private Boolean skipResponse;
 
     public ApplicationLogoutFilter(HttpServletRequest request, Config config) {
         this.request = request;
@@ -50,7 +50,7 @@ public class ApplicationLogoutFilter implements ContainerRequestFilter {
         final JaxRsContext context = new JaxRsContext(request, config.getSessionStore(), requestContext);
 
         final JaxRsHttpActionAdapter adapter;
-        if (skipResponse) {
+        if (skipResponse != null && skipResponse) {
             adapter = JaxRsHttpActionAdapter.SKIP;
         } else {
             adapter = JaxRsHttpActionAdapter.ADAPT;
@@ -83,11 +83,16 @@ public class ApplicationLogoutFilter implements ContainerRequestFilter {
         this.applicationLogoutLogic = applicationLogoutLogic;
     }
 
-    public boolean isSkipResponse() {
+    public Boolean isSkipResponse() {
         return skipResponse;
     }
 
-    public void setSkipResponse(boolean skipResponse) {
+    /**
+     * @param skipResponse
+     *            If set to <code>true</code>, the pac4j response, such as redirect, will be skipped (the annotated
+     *            method will be executed instead).
+     */
+    public void setSkipResponse(Boolean skipResponse) {
         this.skipResponse = skipResponse;
     }
 }
