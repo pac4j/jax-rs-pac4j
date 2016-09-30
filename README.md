@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://pac4j.github.io/pac4j/img/logo-jaxrs.png" width="300" />
+</p>
+
 The `jax-rs-pac4j` project is an **easy and powerful security library for JAX-RS** web applications which supports authentication and authorization, but also application logout and advanced features like session fixation and CSRF protection.
 It's based on Java 8, servlet 3 (for now), JAX-RS 2 and on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. It's available under the Apache 2 license.
 
