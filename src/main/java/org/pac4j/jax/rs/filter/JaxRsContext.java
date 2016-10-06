@@ -70,4 +70,20 @@ public class JaxRsContext extends J2EContext {
                 cookie.isSecure(), cookie.isHttpOnly()));
     }
 
+    /**
+     * When using JAX-RS over a Servlet container, the path info is what we are interested in.
+     * 
+     * The context path is the base path of the servlet context that contains the servlet for the JAX-RS implementation.
+     * 
+     * The servlet path is the base path of the servlet itself.
+     * 
+     * And the path info is what is left after that.
+     * 
+     * Since we are working only with URIs inside the JAX-RS implementation, we only need the path info!
+     */
+    @Override
+    public String getPath() {
+        return getRequest().getPathInfo();
+    }
+
 }
