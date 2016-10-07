@@ -33,7 +33,7 @@ public class CallbackFilter extends AbstractFilter {
     protected void filter(JaxRsContext context) throws IOException {
         CommonHelper.assertNotNull("callbackLogic", callbackLogic);
 
-        callbackLogic.perform(context, config, adapter(), defaultUrl, multiProfile, renewSession);
+        callbackLogic.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl), multiProfile, renewSession);
     }
 
     public CallbackLogic<Object, JaxRsContext> getCallbackLogic() {

@@ -12,6 +12,9 @@ import org.pac4j.core.util.CommonHelper;
 
 /**
  * 
+ * TODO this is missing a way to influence URL's prefix for the used clients and authorizers (this is a pac4j
+ * limitation)
+ * 
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *

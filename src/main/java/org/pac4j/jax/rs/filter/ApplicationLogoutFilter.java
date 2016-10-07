@@ -31,7 +31,8 @@ public class ApplicationLogoutFilter extends AbstractFilter {
     protected void filter(JaxRsContext context) throws IOException {
         CommonHelper.assertNotNull("applicationLogoutLogic", applicationLogoutLogic);
 
-        applicationLogoutLogic.perform(context, config, adapter(), defaultUrl, logoutUrlPattern);
+        applicationLogoutLogic.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl),
+                context.getAbsolutePath(logoutUrlPattern));
     }
 
     public String getDefaultUrl() {

@@ -12,8 +12,8 @@ import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
 
 /**
- * TODO it would be even better to be completely servlet-agnostic but it could need some redesigning of
- * {@link WebContext} for this to happen...
+ * TODO it would be even better to be completely servlet-agnostic but it could
+ * need some redesigning of {@link WebContext} for this to happen...
  * 
  * @author Victor Noel - Linagora
  * @since 1.0.0
@@ -64,26 +64,31 @@ public class JaxRsContext extends J2EContext {
 
     @Override
     public void addResponseCookie(Cookie cookie) {
-        // Note: expiry is not in servlet and is meant to be superseeded by max-age, so we simply make it null
+        // Note: expiry is not in servlet and is meant to be superseeded by
+        // max-age, so we simply make it null
         getAbortBuilder().cookie(new NewCookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
                 cookie.getDomain(), cookie.getVersion(), cookie.getComment(), cookie.getMaxAge(), null,
                 cookie.isSecure(), cookie.isHttpOnly()));
     }
 
     /**
-     * When using JAX-RS over a Servlet container, the path info is what we are interested in.
-     * 
-     * The context path is the base path of the servlet context that contains the servlet for the JAX-RS implementation.
-     * 
-     * The servlet path is the base path of the servlet itself.
-     * 
-     * And the path info is what is left after that.
-     * 
-     * Since we are working only with URIs inside the JAX-RS implementation, we only need the path info!
+     * This gives us what is after the baseURI, which consists of the servlet
+     * context + the servlet mapping
      */
     @Override
     public String getPath() {
-        return getRequest().getPathInfo();
+        return "/" + requestContext.getUriInfo().getPath();
     }
 
+    public String getAbsolutePath(String relativePath) {
+        String urlPrefix = requestContext.getUriInfo().getBaseUri().getPath();
+        if (relativePath == null) {
+            return null;
+        } else if (relativePath.startsWith("/")) {
+            // urlPrefix already contains the ending /
+            return urlPrefix + relativePath.substring(1);
+        } else {
+            return relativePath;
+        }
+    }
 }
