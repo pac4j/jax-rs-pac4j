@@ -1,13 +1,14 @@
-package org.pac4j.jax.rs.filter;
+package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.ApplicationLogoutLogic;
 import org.pac4j.core.engine.DefaultApplicationLogoutLogic;
 import org.pac4j.core.util.CommonHelper;
+import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
  * 
@@ -23,8 +24,8 @@ public class ApplicationLogoutFilter extends AbstractFilter {
 
     private String logoutUrlPattern;
 
-    public ApplicationLogoutFilter(HttpServletRequest request, Config config) {
-        super(request, config);
+    public ApplicationLogoutFilter(Providers providers, Config config) {
+        super(providers, config);
     }
 
     @Override

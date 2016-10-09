@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.pac4j.jax.rs.filter.SecurityFilter;
+import org.pac4j.jax.rs.filters.SecurityFilter;
 
 /**
  * 

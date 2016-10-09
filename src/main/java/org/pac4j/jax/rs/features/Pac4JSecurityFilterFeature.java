@@ -1,34 +1,31 @@
 package org.pac4j.jax.rs.features;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.jax.rs.filter.SecurityFilter;
+import org.pac4j.jax.rs.filters.SecurityFilter;
 
 /**
  * 
- * TODO Normally we would want to inject the request directly in one of the {@link ContainerRequestFilter}, but
- * https://java.net/jira/browse/JERSEY-3167 prevents this because we can't make them implement {@link Feature}. This is
- * why we need this Feature in order to handle the injection when we want to register a {@link SecurityFilter} as a
- * global {@link Feature}.
+ * Registers a global {@link SecurityFilter} to protect all the URLs served by the JAX-RS runtime.
  * 
- * @author vnoel
+ * TODO Normally we would want to register directly {@link SecurityFilter} but because of
+ * https://java.net/jira/browse/JERSEY-3167, we can't make it implement {@link Feature}. This is why we need this
+ * {@link Feature} in order to handle the injection when we want to register a {@link SecurityFilter} as a global
+ * {@link Feature}.
+ * 
+ * @author Victor Noel - Linagora
  * @since 1.0.0
  *
  */
 public class Pac4JSecurityFilterFeature implements Feature {
 
-    /**
-     * Note: this is a proxy that is injected and it will map to the correct request during filtering
-     * 
-     */
     @Context
-    private HttpServletRequest request;
-
+    private Providers providers;
+    
     private final Config config;
 
     private final Boolean skipResponse;
@@ -57,7 +54,7 @@ public class Pac4JSecurityFilterFeature implements Feature {
 
     @Override
     public boolean configure(FeatureContext context) {
-        final SecurityFilter filter = new SecurityFilter(request, config);
+        final SecurityFilter filter = new SecurityFilter(providers, config);
         filter.setAuthorizers(authorizers);
         filter.setClients(clients);
         filter.setMatchers(matchers);

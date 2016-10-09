@@ -1,14 +1,15 @@
-package org.pac4j.jax.rs.filter;
+package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
 import org.pac4j.core.util.CommonHelper;
+import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
  * 
@@ -31,8 +32,8 @@ public class SecurityFilter extends AbstractFilter {
 
     private Boolean multiProfile;
 
-    public SecurityFilter(HttpServletRequest request, Config config) {
-        super(request, config);
+    public SecurityFilter(Providers providers, Config config) {
+        super(providers, config);
     }
 
     @Override
@@ -93,7 +94,8 @@ enum SecurityGrantedAccessOutcome implements SecurityGrantedAccessAdapter<Object
 
     @Override
     public Object adapt(JaxRsContext context, Object... parameters) throws Throwable {
-        // nothing specific to do, because SecurityGrantedAccessAdapter is meant to be used in a chain of servlet
+        // nothing specific to do, because SecurityGrantedAccessAdapter is meant
+        // to be used in a chain of servlet
         // filters but JAX-RS does not do things like that
         return null;
     }
