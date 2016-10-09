@@ -19,7 +19,7 @@ import io.undertow.server.session.SessionCookieConfig;
 
 public class RestEasyUndertowServletTest extends AbstractTest {
 
-    private static UndertowJaxrsServer server;
+    private UndertowJaxrsServer server;
 
     public class MyApp extends Application {
         @Override
