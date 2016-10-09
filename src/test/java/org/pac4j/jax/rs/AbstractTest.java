@@ -39,7 +39,7 @@ public abstract class AbstractTest {
         public String logged() {
             return "ok";
         }
-        
+
         @GET
         @Path("inject")
         @Pac4JSecurity(authorizers = "isAuthenticated")
@@ -62,8 +62,7 @@ public abstract class AbstractTest {
     }
 
     protected Config getConfig() {
-        FormClient client = new FormClient("notUsedLoginUrl",
-                new SimpleTestUsernamePasswordAuthenticator());
+        FormClient client = new FormClient("notUsedLoginUrl", new SimpleTestUsernamePasswordAuthenticator());
         // in case of invalid credentials, we simply want the error
         client.setAjaxRequestResolver((c) -> true);
 
@@ -78,7 +77,7 @@ public abstract class AbstractTest {
     protected abstract WebTarget getTarget(String url);
 
     protected abstract String cookieName();
-    
+
     @Test
     public void testNoPac4j() {
         final String ok = getTarget("/no").request().get(String.class);
@@ -97,33 +96,29 @@ public abstract class AbstractTest {
         form.param("username", "foo");
         form.param("password", "foo");
         final Response login = getTarget("/login").request()
-                .post(Entity.entity(form,
-                        MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
         final NewCookie cookie = login.getCookies().get(cookieName());
         assertThat(cookie).isNotNull();
 
-        final String ok = getTarget("/logged").request().cookie(cookie)
-                .get(String.class);
+        final String ok = getTarget("/logged").request().cookie(cookie).get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
-    
+
     @Test
     public void testInject() {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
         final Response login = getTarget("/login").request()
-                .post(Entity.entity(form,
-                        MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
         final NewCookie cookie = login.getCookies().get(cookieName());
         assertThat(cookie).isNotNull();
 
-        final String ok = getTarget("/inject").request().cookie(cookie)
-                .get(String.class);
+        final String ok = getTarget("/inject").request().cookie(cookie).get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
@@ -132,8 +127,8 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final Response res = getTarget("/login").request().post(Entity
-                .entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        final Response res = getTarget("/login").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(res.getStatus()).isEqualTo(403);
 
     }

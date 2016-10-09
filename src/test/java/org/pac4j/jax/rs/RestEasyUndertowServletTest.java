@@ -28,7 +28,7 @@ public class RestEasyUndertowServletTest extends AbstractTest {
             classes.add(TestResource.class);
             return classes;
         }
-        
+
         @Override
         public Set<Object> getSingletons() {
             Config config = getConfig();
@@ -54,10 +54,9 @@ public class RestEasyUndertowServletTest extends AbstractTest {
 
     @Override
     protected WebTarget getTarget(String url) {
-        return new ResteasyClientBuilder().build()
-                .target(TestPortProvider.generateURL(url));
+        return new ResteasyClientBuilder().build().target(TestPortProvider.generateURL(url));
     }
-    
+
     @Override
     protected String cookieName() {
         return SessionCookieConfig.DEFAULT_SESSION_ID;

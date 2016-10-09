@@ -36,22 +36,19 @@ public class JerseyGrizzlyServletTest extends AbstractTest {
     public class MyJerseyTest extends JerseyTest {
 
         @Override
-        protected TestContainerFactory getTestContainerFactory()
-                throws TestContainerException {
+        protected TestContainerFactory getTestContainerFactory() throws TestContainerException {
             return new GrizzlyWebTestContainerFactory();
         }
 
         @Override
         protected DeploymentContext configureDeployment() {
             forceSet(TestProperties.CONTAINER_PORT, "0");
-            
+
             Config config = getConfig();
-            ResourceConfig app = new ResourceConfig(TestResource.class)
-                    .register(new Pac4JSecurityFeature(config))
+            ResourceConfig app = new ResourceConfig(TestResource.class).register(new Pac4JSecurityFeature(config))
                     .register(new Pac4JValueFactoryProvider.Binder(config));
 
-            return ServletDeploymentContext
-                    .forServlet(new ServletContainer(app)).build();
+            return ServletDeploymentContext.forServlet(new ServletContainer(app)).build();
         }
 
         @SuppressWarnings("UselessOverridingMethod")
@@ -70,7 +67,7 @@ public class JerseyGrizzlyServletTest extends AbstractTest {
     protected WebTarget getTarget(String url) {
         return jersey.target(url).property(ClientProperties.FOLLOW_REDIRECTS, false);
     }
-    
+
     @Override
     protected String cookieName() {
         return Globals.SESSION_COOKIE_NAME;
