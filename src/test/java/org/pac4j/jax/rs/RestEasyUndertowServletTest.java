@@ -15,7 +15,9 @@ import org.junit.Ignore;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 
-public class RestEasyUndertowServletTest extends AbstractServletTest {
+import io.undertow.server.session.SessionCookieConfig;
+
+public class RestEasyUndertowServletTest extends AbstractTest {
 
     private static UndertowJaxrsServer server;
 
@@ -54,6 +56,11 @@ public class RestEasyUndertowServletTest extends AbstractServletTest {
     protected WebTarget getTarget(String url) {
         return new ResteasyClientBuilder().build()
                 .target(TestPortProvider.generateURL(url));
+    }
+    
+    @Override
+    protected String cookieName() {
+        return SessionCookieConfig.DEFAULT_SESSION_ID;
     }
 
     // TODO we don't have injection yet for something else than Jersey!

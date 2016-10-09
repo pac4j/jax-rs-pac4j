@@ -12,8 +12,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.grizzly.http.server.util.Globals;
-import org.glassfish.jersey.client.ClientProperties;
 import org.junit.Test;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
@@ -24,7 +22,7 @@ import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 
-public abstract class AbstractServletTest {
+public abstract class AbstractTest {
 
     @Path("/")
     public static class TestResource {
@@ -79,6 +77,8 @@ public abstract class AbstractServletTest {
 
     protected abstract WebTarget getTarget(String url);
 
+    protected abstract String cookieName();
+    
     @Test
     public void testNoPac4j() {
         final String ok = getTarget("/no").request().get(String.class);
@@ -97,13 +97,11 @@ public abstract class AbstractServletTest {
         form.param("username", "foo");
         form.param("password", "foo");
         final Response login = getTarget("/login").request()
-                .property(ClientProperties.FOLLOW_REDIRECTS, false)
                 .post(Entity.entity(form,
                         MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
-        final NewCookie cookie = login.getCookies()
-                .get(Globals.SESSION_COOKIE_NAME);
+        final NewCookie cookie = login.getCookies().get(cookieName());
         assertThat(cookie).isNotNull();
 
         final String ok = getTarget("/logged").request().cookie(cookie)
@@ -117,13 +115,11 @@ public abstract class AbstractServletTest {
         form.param("username", "foo");
         form.param("password", "foo");
         final Response login = getTarget("/login").request()
-                .property(ClientProperties.FOLLOW_REDIRECTS, false)
                 .post(Entity.entity(form,
                         MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
-        final NewCookie cookie = login.getCookies()
-                .get(Globals.SESSION_COOKIE_NAME);
+        final NewCookie cookie = login.getCookies().get(cookieName());
         assertThat(cookie).isNotNull();
 
         final String ok = getTarget("/inject").request().cookie(cookie)

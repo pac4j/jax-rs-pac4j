@@ -3,6 +3,8 @@ package org.pac4j.jax.rs;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 
+import org.glassfish.grizzly.http.server.util.Globals;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -19,7 +21,7 @@ import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.features.jersey.Pac4JValueFactoryProvider;
 
-public class JerseyGrizzlyServletTest extends AbstractServletTest {
+public class JerseyGrizzlyServletTest extends AbstractTest {
 
     private MyJerseyTest jersey;
 
@@ -66,6 +68,11 @@ public class JerseyGrizzlyServletTest extends AbstractServletTest {
 
     @Override
     protected WebTarget getTarget(String url) {
-        return jersey.target(url);
+        return jersey.target(url).property(ClientProperties.FOLLOW_REDIRECTS, false);
+    }
+    
+    @Override
+    protected String cookieName() {
+        return Globals.SESSION_COOKIE_NAME;
     }
 }
