@@ -21,6 +21,7 @@ import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordA
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
+import org.pac4j.jax.rs.filter.JaxRsCallbackUrlResolver;
 
 public abstract class AbstractTest {
 
@@ -62,11 +63,15 @@ public abstract class AbstractTest {
     }
 
     protected Config getConfig() {
+        // login not used because the ajax resolver always answer true
         FormClient client = new FormClient("notUsedLoginUrl", new SimpleTestUsernamePasswordAuthenticator());
-        // in case of invalid credentials, we simply want the error
-        client.setAjaxRequestResolver((c) -> true);
 
         Clients clients = new Clients("notUsedCallbackUrl", client);
+        // in case of invalid credentials, we simply want the error, not a redirect to the login url
+        clients.setAjaxRequestResolver((c) -> true);
+        // not really used for now
+        clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
+
         Config config = new Config(clients);
 
         // needed by callback since we don't specify client in the URL parameter

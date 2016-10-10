@@ -72,8 +72,9 @@ public class DemoConfigFactory implements ConfigFactory {
 
     ParameterClient parameterClient = new ParameterClient("token", new JwtAuthenticator("salt"));
 
-    Config config = new Config("http://localhost:8080/callback", oidcClient, saml2Client, facebookClient,
+    Config config = new Config("/callback", oidcClient, saml2Client, facebookClient,
                                   twitterClient, formClient, basicAuthClient, casClient, parameterClient);
+    config.getClients().setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
 
     config.addAuthorizer("admin", new RequireAnyRoleAuthorizer("ROLE_ADMIN"));
     config.addAuthorizer("custom", new CustomAuthorizer());
@@ -83,7 +84,7 @@ public class DemoConfigFactory implements ConfigFactory {
 }
 ```
 
-`http://localhost:8080/callback` is the url of the callback endpoint, which is only necessary for indirect clients.
+`/callback` is the url of the callback endpoint, which is only necessary for indirect clients, and `JaxRsCallbackUrlResolver` ensures that in practice, the calback url passed to external authentication system corresponds to the real URL of the callback endpoint.
 
 Notice that you can define:
 

@@ -1,5 +1,7 @@
 package org.pac4j.jax.rs.filter;
 
+import java.net.URI;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.NewCookie;
@@ -80,11 +82,17 @@ public class JaxRsContext extends J2EContext {
         return "/" + requestContext.getUriInfo().getPath();
     }
 
-    public String getAbsolutePath(String relativePath) {
-        String urlPrefix = requestContext.getUriInfo().getBaseUri().getPath();
+    public String getAbsolutePath(String relativePath, boolean full) {
         if (relativePath == null) {
             return null;
         } else if (relativePath.startsWith("/")) {
+            URI baseUri = requestContext.getUriInfo().getBaseUri();
+            String urlPrefix;
+            if (full) {
+                urlPrefix = baseUri.toString();
+            } else {
+                urlPrefix = baseUri.getPath();
+            }
             // urlPrefix already contains the ending /
             return urlPrefix + relativePath.substring(1);
         } else {
