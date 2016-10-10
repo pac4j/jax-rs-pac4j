@@ -2,11 +2,7 @@ package org.pac4j.jax.rs.filter;
 
 import java.io.IOException;
 
-import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
@@ -16,18 +12,16 @@ import org.pac4j.core.util.CommonHelper;
 
 /**
  * 
+ * TODO this is missing a way to influence URL's prefix for the used clients and authorizers (this is a pac4j
+ * limitation)
+ * 
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
  */
-@Priority(Priorities.AUTHENTICATION)
-public class SecurityFilter implements ContainerRequestFilter {
+public class SecurityFilter extends AbstractFilter {
 
     private SecurityLogic<Object, JaxRsContext> securityLogic = new DefaultSecurityLogic<>();
-
-    private final HttpServletRequest request;
-
-    private final Config config;
 
     private String clients;
 
@@ -37,33 +31,19 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     private Boolean multiProfile;
 
-    private Boolean skipResponse;
-
     public SecurityFilter(HttpServletRequest request, Config config) {
-        this.request = request;
-        this.config = config;
+        super(request, config);
     }
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    protected void filter(JaxRsContext context) throws IOException {
         CommonHelper.assertNotNull("securityLogic", securityLogic);
-        CommonHelper.assertNotNull("config", config);
-        CommonHelper.assertNotNull("request", request);
-
-        final JaxRsContext context = new JaxRsContext(request, config.getSessionStore(), requestContext);
-
-        final JaxRsHttpActionAdapter adapter;
-        if (skipResponse != null && skipResponse) {
-            adapter = JaxRsHttpActionAdapter.SKIP;
-        } else {
-            adapter = JaxRsHttpActionAdapter.ADAPT;
-        }
 
         // Note: basically, there is two possible outcomes:
         // either the access is granted or there was an error or a redirect!
         // For the former, we do nothing (see SecurityGrantedAccessOutcome comments)
         // For the later, we interpret the error and abort the request using jax-rs abstractions
-        securityLogic.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter, clients, authorizers,
+        securityLogic.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter(), clients, authorizers,
                 matchers, multiProfile);
     }
 
@@ -105,19 +85,6 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     public void setSecurityLogic(SecurityLogic<Object, JaxRsContext> securityLogic) {
         this.securityLogic = securityLogic;
-    }
-
-    public Boolean isSkipResponse() {
-        return skipResponse;
-    }
-
-    /**
-     * @param skipResponse
-     *            If set to <code>true</code>, the pac4j response, such as redirect, will be skipped (the annotated
-     *            method will be executed instead).
-     */
-    public void setSkipResponse(Boolean skipResponse) {
-        this.skipResponse = skipResponse;
     }
 }
 
