@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.pac4j.core.context.Cookie;
+import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.context.J2EContext;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
@@ -56,7 +57,8 @@ public class JaxRsContext extends J2EContext {
 
     @Override
     public void setResponseHeader(String name, String value) {
-        getAbortBuilder().header(name, value);
+        getAbortBuilder().header(name,
+                HttpConstants.LOCATION_HEADER.equals(name) ? getAbsolutePath(value, false) : value);
     }
 
     @Override
