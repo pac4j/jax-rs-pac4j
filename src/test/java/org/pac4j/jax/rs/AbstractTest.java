@@ -22,8 +22,14 @@ import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import org.pac4j.jax.rs.filter.JaxRsCallbackUrlResolver;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public abstract class AbstractTest {
+
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
 
     @Path("/")
     public static class TestResource {
