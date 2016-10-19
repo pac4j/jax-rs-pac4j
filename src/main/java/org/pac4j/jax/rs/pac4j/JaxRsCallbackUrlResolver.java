@@ -1,11 +1,11 @@
-package org.pac4j.jax.rs.filter;
+package org.pac4j.jax.rs.pac4j;
 
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.http.CallbackUrlResolver;
 
 /**
  * 
- * This can be used by applications to ensure the callback url is properly prefixed by the context where the JAX-RS
+ * This can be used by applications to ensure the callback URL is properly prefixed by the context where the JAX-RS
  * implementation is deployed.
  * 
  * @author Victor Noel - Linagora

@@ -3,7 +3,7 @@
 </p>
 
 The `jax-rs-pac4j` project is an **easy and powerful security library for JAX-RS** web applications which supports authentication and authorization, but also application logout and advanced features like session fixation and CSRF protection.
-It's based on Java 8, servlet 3 (for now), JAX-RS 2 and on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. It's available under the Apache 2 license.
+It's based on Java 8, servlet 3 (when present), JAX-RS 2 and on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. It's available under the Apache 2 license.
 
 [**Main concepts and components:**](http://www.pac4j.org/docs/main-concepts-and-components.html)
 
@@ -15,15 +15,25 @@ It's based on Java 8, servlet 3 (for now), JAX-RS 2 and on the **[pac4j security
 
 &#9656; Roles / permissions - Anonymous / remember-me / (fully) authenticated - Profile type, attribute -  CORS - CSRF - Security headers - IP address, HTTP method
 
-3) The `SecurityFilter` protects a resource by checking that the user is authenticated and that the authorizations are valid, according to the clients and authorizers configuration. If the user is not authenticated, it performs authentication for direct clients or starts the login process for indirect clients
+3) Filters protect resources and map some of them to login processes.
 
-4) The `CallbackFilter` finishes the login process for an indirect client
+- The `SecurityFilter` protects a resource by checking that the user is authenticated and that the authorizations are valid, according to the clients and authorizers configuration. If the user is not authenticated, it performs authentication for direct clients or starts the login process for indirect clients
+- The `CallbackFilter` finishes the login process for an indirect client
+- The `ApplicationLogoutFilter` logs out the user from the application.
 
-5) The `ApplicationLogoutFilter` logs out the user from the application
+These filters can be directly registered by hand, or instead, the following features can be used.
 
-5) The `Pac4JSecurityFeature` enables annotation-based activation of the filters at the resource method level
+4) Generic JAX-RS Providers and Features activate the use of some of the filters on the JAX-RS implementation based on various conditions
 
-6) The `Pac4JProfileValueFactoryProvider` enables injection of the security profile in resource method (currently, only for Apache Jersey) 
+- The `JaxRsContextFactoryProvider` enables generic JAX-RS based pac4j functionning, without session handling (i.e., it will only work with direct clients)
+- The `Pac4JSecurityFeature` enables annotation-based activation of the filters at the resource method level
+- The `Pac4JSecurityFilterFeature` activates a global filter that will be applied to every resources.
+
+5) Container/Implementation-specific Providers and Features extend the basic functionality provided by the generic ones
+
+- The `Pac4JProfileValueFactoryProvider` enables injection of the security profile in resource method (for Apache Jersey)
+- The `ServletJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow).
+- The `GrizzlyJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Grizzly2 without Servlet support).
 
 ---
 
@@ -44,55 +54,92 @@ All released artifacts are available in the [Maven central repository](http://se
 
 The configuration (`org.pac4j.core.config.Config`) contains all the clients and authorizers required by the application to handle security.
 
-It must be built via a configuration factory (`org.pac4j.core.config.ConfigFactory`):
 
 ```java
-public class DemoConfigFactory implements ConfigFactory {
+GoogleOidcClient oidcClient = new GoogleOidcClient();
+oidcClient.setClientID("id");
+oidcClient.setSecret("secret");
+oidcClient.addCustomParam("prompt", "consent");
 
-  public Config build() {
-    GoogleOidcClient oidcClient = new GoogleOidcClient();
-    oidcClient.setClientID("id");
-    oidcClient.setSecret("secret");
-    oidcClient.addCustomParam("prompt", "consent");
+SAML2ClientConfiguration cfg = new SAML2ClientConfiguration("resource:samlKeystore.jks",
+    "pac4j-demo-passwd", "pac4j-demo-passwd", "resource:testshib-providers.xml");
+cfg.setMaximumAuthenticationLifetime(3600);
+cfg.setServiceProviderEntityId("urn:mace:saml:pac4j.org");
+cfg.setServiceProviderMetadataPath("sp-metadata.xml");
+SAML2Client saml2Client = new SAML2Client(cfg);
 
-    SAML2ClientConfiguration cfg = new SAML2ClientConfiguration("resource:samlKeystore.jks",
-                "pac4j-demo-passwd", "pac4j-demo-passwd", "resource:testshib-providers.xml");
-    cfg.setMaximumAuthenticationLifetime(3600);
-    cfg.setServiceProviderEntityId("urn:mace:saml:pac4j.org");
-    cfg.setServiceProviderMetadataPath("sp-metadata.xml");
-    SAML2Client saml2Client = new SAML2Client(cfg);
+FacebookClient facebookClient = new FacebookClient("fbId", "fbSecret");
+TwitterClient twitterClient = new TwitterClient("twId", "twSecret");
 
-    FacebookClient facebookClient = new FacebookClient("fbId", "fbSecret");
-    TwitterClient twitterClient = new TwitterClient("twId", "twSecret");
+FormClient formClient = new FormClient("http://localhost:8080/loginForm.jsp",
+    new SimpleTestUsernamePasswordAuthenticator());
+IndirectBasicAuthClient basicAuthClient = new IndirectBasicAuthClient(
+    new SimpleTestUsernamePasswordAuthenticator());
 
-    FormClient formClient = new FormClient("http://localhost:8080/loginForm.jsp", new SimpleTestUsernamePasswordAuthenticator());
-    IndirectBasicAuthClient basicAuthClient = new IndirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator());
+CasClient casClient = new CasClient("http://mycasserver/login");
 
-    CasClient casClient = new CasClient("http://mycasserver/login");
+ParameterClient parameterClient = new ParameterClient("token", new JwtAuthenticator("salt"));
 
-    ParameterClient parameterClient = new ParameterClient("token", new JwtAuthenticator("salt"));
+Config config = new Config("/callback", oidcClient, saml2Client, facebookClient,
+	                  twitterClient, formClient, basicAuthClient, casClient, parameterClient);
+config.getClients().setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
 
-    Config config = new Config("/callback", oidcClient, saml2Client, facebookClient,
-                                  twitterClient, formClient, basicAuthClient, casClient, parameterClient);
-    config.getClients().setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
-
-    config.addAuthorizer("admin", new RequireAnyRoleAuthorizer("ROLE_ADMIN"));
-    config.addAuthorizer("custom", new CustomAuthorizer());
-
-    return config;
-  }
+config.addAuthorizer("admin", new RequireAnyRoleAuthorizer("ROLE_ADMIN"));
+config.addAuthorizer("custom", new CustomAuthorizer());
 }
 ```
 
-`/callback` is the url of the callback endpoint, which is only necessary for indirect clients, and `JaxRsCallbackUrlResolver` ensures that in practice, the calback url passed to external authentication system corresponds to the real URL of the callback endpoint.
+#### Customization
 
-Notice that you can define:
+1) **RECOMMENDED** the `JaxRsCallbackUrlResolver` as the default callback url resolver, it will ensure that in practice, the calback url passed to external authentication system corresponds to the real URL of the callback endpoint
 
-1) a specific [`SessionStore`](http://www.pac4j.org/docs/session-store.html) using the `setSessionStore(sessionStore)` method (by default, it uses the `J2ESessionStore` which relies on the underlying Servlet Container HTTP session)
+2) a specific [`SessionStore`](http://www.pac4j.org/docs/session-store.html) using the `setSessionStore(sessionStore)` method (by default, with `JaxRsContextFactoryProvider`, session handling is not supported; with `ServletJaxRsContextFactoryProvider`, it uses the `ServletJaxRsSessionStore` which relies on the underlying Servlet Container HTTP session; and with `GrizzlyJaxRsContextFactoryProvider`, it uses the `GrizzlySessionStore` which relies on the underlying HTTP session managed by Grizzly).
 
-2) specific [matchers](http://www.pac4j.org/docs/matchers.html) via the `addMatcher(name, Matcher)` method.
+3) specific [matchers](http://www.pac4j.org/docs/matchers.html) via the `addMatcher(name, Matcher)` method.
 
-If your application is configured via dependency injection, no factory is required to build the configuration, you can directly inject the `Config` via the appropriate setter.
+
+#### JAX-RS Configuration
+
+The configuration is then passed to the various Providers and Features presented previously.
+
+For a bare JAX-RS implementation without session management and annotation-support (here with Jersey, to be adapted):
+```java
+resourceConfig
+    .register(new JaxRsContextFactoryProvider(config))
+    .register(new Pac4JSecurityFeature(config));
+```
+
+For a Jersey-based and Servlet-based (e.g., Jetty or Grizzly Servlet) environment with session management, annotation support and method parameters injection:
+```java
+resourceConfig
+    .register(new ServletJaxRsContextFactoryProvider(config))
+    .register(new Pac4JSecurityFeature(config))
+    .register(new Pac4JValueFactoryProvider.Binder());
+```
+
+For a Jersey-based and Grizzly-based environment without Servlet but session management and annotation support and method parameters injection:
+```
+resourceConfig
+    .register(new GrizzlyJaxRsContextFactoryProvider(config))
+    .register(new Pac4JSecurityFeature(config))
+    .register(new Pac4JValueFactoryProvider.Binder());
+```
+
+For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session management and annotation support:
+```java
+    public class MyApp extends Application {
+        ...
+
+        @Override
+        public Set<Object> getSingletons() {
+            Config config = getConfig();
+            Set<Object> singletons = new HashSet<>();
+            singletons.add(new ServletJaxRsContextFactoryProvider(config));
+            singletons.add(new Pac4JSecurityFeature(config));
+            return singletons;
+        }
+    }
+```
 
 ---
 
@@ -128,8 +175,8 @@ For example:
 
 Another option is to register the filter into Jersey as a global filter like so:
 ```java
-        resourceConfig.register(
-            new Pac4JSecurityFilterFeature(pac4jConfig, null, "isAuthenticated", null, "excludeUserSession", null));
+resourceConfig.register(
+    new Pac4JSecurityFilterFeature(pac4jConfig, null, "isAuthenticated", null, "excludeUserSession", null));
 ```
 
 `null` values are used to denote defaults, see next section.
@@ -207,7 +254,7 @@ You can get the profile of the authenticated user using the annotation `@Pac4JPr
     }
 ```
 
-It has one parameter name `readFromSession` (default is `true`: use `false` not to use the session, but only the current HTTP request).
+It has one parameter name `readFromSession` (default is `true`: use `false` not to use the session, but only the current HTTP request, useful in particular with the session-less `JaxRsContextFactoryProvider`).
 
 You can also get the profile manager (which gives access to more advanced information about the profile) using the annotation `@Pac4JProfileManager` like so:
 

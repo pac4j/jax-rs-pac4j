@@ -14,10 +14,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
+import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 
 import io.undertow.server.session.SessionCookieConfig;
 
-public class RestEasyUndertowServletTest extends AbstractTest {
+public class RestEasyUndertowServletTest extends AbstractSessionTest {
 
     private UndertowJaxrsServer server;
 
@@ -25,7 +26,7 @@ public class RestEasyUndertowServletTest extends AbstractTest {
         @Override
         public Set<Class<?>> getClasses() {
             Set<Class<?>> classes = new HashSet<>();
-            classes.add(TestResource.class);
+            classes.add(getResource());
             return classes;
         }
 
@@ -33,6 +34,7 @@ public class RestEasyUndertowServletTest extends AbstractTest {
         public Set<Object> getSingletons() {
             Config config = getConfig();
             Set<Object> singletons = new HashSet<>();
+            singletons.add(new ServletJaxRsContextFactoryProvider(config));
             singletons.add(new Pac4JSecurityFeature(config));
             return singletons;
         }
@@ -66,6 +68,27 @@ public class RestEasyUndertowServletTest extends AbstractTest {
     @Ignore
     @Override
     public void testInject() {
+        // do nothing
+    }
+
+    // TODO we don't have injection yet for something else than Jersey!
+    @Ignore
+    @Override
+    public void directInject() {
+        // do nothing
+    }
+
+    // TODO we don't have injection yet for something else than Jersey!
+    @Ignore
+    @Override
+    public void directInjectSkipFail() {
+        // do nothing
+    }
+
+    // TODO we don't have injection yet for something else than Jersey!
+    @Ignore
+    @Override
+    public void directInjectSkipOk() {
         // do nothing
     }
 }

@@ -2,74 +2,67 @@ package org.pac4j.jax.rs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import java.io.InputStream;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.credentials.UsernamePasswordCredentials;
+import org.pac4j.core.credentials.authenticator.Authenticator;
+import org.pac4j.http.client.direct.DirectFormClient;
 import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
-import org.pac4j.jax.rs.annotations.Pac4JCallback;
-import org.pac4j.jax.rs.annotations.Pac4JProfile;
-import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import org.pac4j.jax.rs.filter.JaxRsCallbackUrlResolver;
+import org.pac4j.jax.rs.pac4j.JaxRsCallbackUrlResolver;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public abstract class AbstractTest {
 
-    @Path("/")
-    public static class TestResource {
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
 
-        @GET
-        @Path("no")
-        public String get() {
-            return "ok";
-        }
+        // Logger.getLogger("org.glassfish").setLevel(Level.FINEST);
+    }
 
-        @GET
-        @Path("logged")
-        @Pac4JSecurity(authorizers = "isAuthenticated")
-        public String logged() {
-            return "ok";
-        }
-
-        @GET
-        @Path("inject")
-        @Pac4JSecurity(authorizers = "isAuthenticated")
-        public String inject(@Pac4JProfile CommonProfile profile) {
-            if (profile != null) {
-                return "ok";
-            } else {
-                return "error";
+    protected void setUpClientClassloader(Class<? extends ClientBuilder> clazz) {
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            @Override
+            public Void run() {
+                Thread.currentThread().setContextClassLoader(new ClassLoader() {
+                    @Override
+                    public InputStream getResourceAsStream(String name) {
+                        if (("META-INF/services/" + ClientBuilder.JAXRS_DEFAULT_CLIENT_BUILDER_PROPERTY).equals(name)) {
+                            return IOUtils.toInputStream(clazz.getName());
+                        } else {
+                            return super.getResourceAsStream(name);
+                        }
+                    }
+                });
+                return null;
             }
-        }
-
-        @POST
-        @Path("login")
-        // TODO apparently we need to disable session renewal because grizzly
-        // send 2 JSESSIONID if not...
-        @Pac4JCallback(defaultUrl = "/logged", renewSession = false)
-        public void login() {
-
-        }
+        });
     }
 
     protected Config getConfig() {
         // login not used because the ajax resolver always answer true
-        FormClient client = new FormClient("notUsedLoginUrl", new SimpleTestUsernamePasswordAuthenticator());
+        Authenticator<UsernamePasswordCredentials> auth = new SimpleTestUsernamePasswordAuthenticator();
+        FormClient client = new FormClient("notUsedLoginUrl", auth);
+        DirectFormClient client2 = new DirectFormClient(auth);
 
-        Clients clients = new Clients("notUsedCallbackUrl", client);
+        Clients clients = new Clients("notUsedCallbackUrl", client, client2);
         // in case of invalid credentials, we simply want the error, not a redirect to the login url
         clients.setAjaxRequestResolver((c) -> true);
-        // not really used for now
+        // so that callback url have the correct prefix w.r.t. the container's context
         clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
 
         Config config = new Config(clients);
@@ -79,9 +72,11 @@ public abstract class AbstractTest {
         return config;
     }
 
-    protected abstract WebTarget getTarget(String url);
+    protected Class<?> getResource() {
+        return TestResource.class;
+    }
 
-    protected abstract String cookieName();
+    protected abstract WebTarget getTarget(String url);
 
     @Test
     public void testNoPac4j() {
@@ -90,51 +85,53 @@ public abstract class AbstractTest {
     }
 
     @Test
-    public void testNotLogged() {
-        final Response res = getTarget("/logged").request().get();
-        assertThat(res.getStatus()).isEqualTo(401);
-    }
-
-    @Test
-    public void testLogin() {
+    public void directOk() {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final Response login = getTarget("/login").request()
-                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-        assertThat(login.getStatus()).isEqualTo(302);
-
-        final NewCookie cookie = login.getCookies().get(cookieName());
-        assertThat(cookie).isNotNull();
-
-        final String ok = getTarget("/logged").request().cookie(cookie).get(String.class);
+        final String ok = getTarget("/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
     @Test
-    public void testInject() {
-        Form form = new Form();
-        form.param("username", "foo");
-        form.param("password", "foo");
-        final Response login = getTarget("/login").request()
-                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-        assertThat(login.getStatus()).isEqualTo(302);
-
-        final NewCookie cookie = login.getCookies().get(cookieName());
-        assertThat(cookie).isNotNull();
-
-        final String ok = getTarget("/inject").request().cookie(cookie).get(String.class);
-        assertThat(ok).isEqualTo("ok");
-    }
-
-    @Test
-    public void testLoginFail() {
+    public void directFail() {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final Response res = getTarget("/login").request()
+        final Response direct = getTarget("/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-        assertThat(res.getStatus()).isEqualTo(403);
-
+        assertThat(direct.getStatus()).isEqualTo(401);
     }
+
+    @Test
+    public void directInject() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = getTarget("/directInject").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
+    public void directInjectSkipOk() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = getTarget("/directInjectSkip").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
+    public void directInjectSkipFail() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "bar");
+        final String ok = getTarget("/directInjectSkip").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("fail");
+    }
+
 }

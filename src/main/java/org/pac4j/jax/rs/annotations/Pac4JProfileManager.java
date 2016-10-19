@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.pac4j.core.profile.ProfileManager;
-import org.pac4j.jax.rs.features.jersey.Pac4JValueFactoryProvider;
+import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 
 /**
  * 

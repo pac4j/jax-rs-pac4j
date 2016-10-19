@@ -2,7 +2,6 @@ package org.pac4j.jax.rs.features;
 
 import java.lang.reflect.Method;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
@@ -10,19 +9,21 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.core.util.CommonHelper;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JLogout;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import org.pac4j.jax.rs.filter.ApplicationLogoutFilter;
-import org.pac4j.jax.rs.filter.CallbackFilter;
-import org.pac4j.jax.rs.filter.SecurityFilter;
+import org.pac4j.jax.rs.filters.ApplicationLogoutFilter;
+import org.pac4j.jax.rs.filters.CallbackFilter;
+import org.pac4j.jax.rs.filters.SecurityFilter;
 
 /**
  * 
- * TODO For now we need to also implement {@link Feature} because of https://java.net/jira/browse/JERSEY-3166.
+ * Injects {@link SecurityFilter}s, {@link CallbackFilter}s and {@link ApplicationLogoutFilter}s on JAX-RS resources
+ * methods annotated with {@link Pac4JSecurity &#64;Pac4JSecurity}, {@link Pac4JCallback &#64;Pac4JCallback} and
+ * {@link Pac4JLogout &#64;Pac4JLogout}.
  * 
  * @author Victor Noel - Linagora
  * @since 1.0.0
@@ -32,14 +33,12 @@ import org.pac4j.jax.rs.filter.SecurityFilter;
 public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
     /**
-     * Note: this is a proxy that is injected and it will map to the correct request during filtering
-     * 
-     * TODO Normally we would want to inject that directly in one of the {@link ContainerRequestFilter}, but
+     * TODO Normally we would want to inject this directly in one of the {@link ContainerRequestFilter}, but
      * https://java.net/jira/browse/JERSEY-3167 prevents this because we can't make them implement {@link Feature}.
      */
     @Context
-    private HttpServletRequest request;
-    
+    private Providers providers;
+
     private final Config config;
 
     public Pac4JSecurityFeature(Config config) {
@@ -53,8 +52,6 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
         assert resourceInfo != null;
         assert context != null;
-
-        CommonHelper.assertNotNull("request", request);
 
         final Method method = resourceInfo.getResourceMethod();
 
@@ -72,7 +69,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JSecurity is not expected to have more than one value");
             }
 
-            final SecurityFilter filter = new SecurityFilter(request, config);
+            final SecurityFilter filter = new SecurityFilter(providers, config);
 
             filter.setAuthorizers(String.join(",", secAnn.authorizers()));
             filter.setClients(String.join(",", secAnn.clients()));
@@ -107,7 +104,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JCallback is not expected to have more than one value");
             }
 
-            final CallbackFilter filter = new CallbackFilter(request, config);
+            final CallbackFilter filter = new CallbackFilter(providers, config);
 
             filter.setMultiProfile(cbAnn.multiProfile().length == 0 ? null : cbAnn.multiProfile()[0]);
             filter.setRenewSession(cbAnn.renewSession().length == 0 ? null : cbAnn.renewSession()[0]);
@@ -136,7 +133,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JLogout is not expected to have more than one value");
             }
 
-            final ApplicationLogoutFilter filter = new ApplicationLogoutFilter(request, config);
+            final ApplicationLogoutFilter filter = new ApplicationLogoutFilter(providers, config);
 
             filter.setDefaultUrl(lAnn.defaultUrl().length == 0 ? null : lAnn.defaultUrl()[0]);
             filter.setLogoutUrlPattern(lAnn.logoutUrlPattern().length == 0 ? null : lAnn.logoutUrlPattern()[0]);

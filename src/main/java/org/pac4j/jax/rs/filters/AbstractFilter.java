@@ -1,16 +1,20 @@
-package org.pac4j.jax.rs.filter;
+package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
 
 import javax.annotation.Priority;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.http.HttpActionAdapter;
 import org.pac4j.core.util.CommonHelper;
+import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
+import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
  * 
@@ -21,14 +25,14 @@ import org.pac4j.core.util.CommonHelper;
 @Priority(Priorities.AUTHENTICATION)
 public abstract class AbstractFilter implements ContainerRequestFilter {
 
-    protected final HttpServletRequest request;
+    protected Boolean skipResponse;
 
     protected final Config config;
 
-    protected Boolean skipResponse;
+    private final Providers providers;
 
-    public AbstractFilter(HttpServletRequest request, Config config) {
-        this.request = request;
+    public AbstractFilter(Providers providers, Config config) {
+        this.providers = providers;
         this.config = config;
     }
 
@@ -36,10 +40,12 @@ public abstract class AbstractFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        CommonHelper.assertNotNull("config", config);
-        CommonHelper.assertNotNull("request", request);
+        ContextResolver<JaxRsContextFactory> contextResolver = providers.getContextResolver(JaxRsContextFactory.class,
+                MediaType.WILDCARD_TYPE);
+        JaxRsContextFactory contextFactory = contextResolver.getContext(JaxRsContextFactory.class);
+        JaxRsContext context = contextFactory.provides(requestContext);
 
-        final JaxRsContext context = new JaxRsContext(request, config.getSessionStore(), requestContext);
+        CommonHelper.assertNotNull("contextProvider", context);
 
         filter(context);
     }
