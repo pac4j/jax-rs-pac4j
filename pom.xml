@@ -22,12 +22,15 @@
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>sonatype-nexus</id>
+            <name>Sonatype Nexus</name>
+            <url>https://oss.sonatype.org/content/repositories/releases</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
         </repository>
     </repositories>
 
@@ -58,7 +61,7 @@
         <jax.rs.version>2.0.1</jax.rs.version>
         <jersey.version>2.23.1</jersey.version>
         <resteasy.version>3.0.19.Final</resteasy.version>
-        <pac4j.version>1.9.3</pac4j.version>
+        <pac4j.version>1.9.4</pac4j.version>
         <java.version>1.8</java.version>
     </properties>
 
