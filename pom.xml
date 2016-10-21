@@ -42,19 +42,31 @@
         </license>
     </licenses>
 
-    <scm>
-        <url>https://github.com/pac4j/jax-rs-pac4j.git</url>
-        <connection>scm:git:git@github.com:pac4j/jax-rs-pac4j.git</connection>
-        <developerConnection>scm:git:git@github.com:pac4j/jax-rs-pac4j.git</developerConnection>
-    </scm>
+    <organization>
+        <name>pac4j</name>
+        <url>http://www.pac4j.org/</url>
+    </organization>
 
     <developers>
         <developer>
             <id>victornoel</id>
             <name>Victor NOEL</name>
             <email>victor.noel@linagora.com</email>
+            <organization>Linagora</organization>
+            <organizationUrl>https://www.linagora.com</organizationUrl>
         </developer>
     </developers>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/pac4j/jax-rs-pac4j/issues</url>
+    </issueManagement>
+
+    <scm>
+        <url>https://github.com/pac4j/jax-rs-pac4j.git</url>
+        <connection>https://github.com/pac4j/jax-rs-pac4j.git</connection>
+        <developerConnection>scm:git:git@github.com:pac4j/jax-rs-pac4j.git</developerConnection>
+    </scm>
 
     <properties>
         <servlet.version>3.1.0</servlet.version>
