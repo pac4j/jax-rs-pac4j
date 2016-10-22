@@ -9,6 +9,7 @@ import org.pac4j.core.engine.ApplicationLogoutLogic;
 import org.pac4j.core.engine.DefaultApplicationLogoutLogic;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
+import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
  * 
@@ -26,6 +27,8 @@ public class ApplicationLogoutFilter extends AbstractFilter {
 
     public ApplicationLogoutFilter(Providers providers, Config config) {
         super(providers, config);
+        ((DefaultApplicationLogoutLogic<Object, JaxRsContext>) applicationLogoutLogic)
+                .setProfileManagerFactory(c -> new JaxRsProfileManager(c));
     }
 
     @Override
