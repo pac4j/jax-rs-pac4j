@@ -110,15 +110,11 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    static class ProfileManagerValueFactory
-            extends AbstractContainerRequestValueFactory<ProfileManager<CommonProfile>> {
-
-        @Context
-        private JaxRsContext context;
+    static class ProfileManagerValueFactory extends AbstractJaxRsContextValueFactory<ProfileManager<CommonProfile>> {
 
         @Override
         public ProfileManager<CommonProfile> provide() {
-            return new ProfileManager<>(context);
+            return new ProfileManager<>(getJaxRsContext());
         }
 
         @Override
@@ -127,7 +123,7 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    static class ProfileValueFactory extends AbstractContainerRequestValueFactory<CommonProfile> {
+    static class ProfileValueFactory extends AbstractJaxRsContextValueFactory<CommonProfile> {
 
         private static final Logger LOG = LoggerFactory.getLogger(ProfileValueFactory.class);
 
@@ -142,14 +138,8 @@ public class Pac4JValueFactoryProvider {
 
         @Override
         public CommonProfile provide() {
-            ContextResolver<JaxRsContextFactory> contextResolver = providers
-                    .getContextResolver(JaxRsContextFactory.class, MediaType.WILDCARD_TYPE);
-            JaxRsContextFactory contextFactory = contextResolver.getContext(JaxRsContextFactory.class);
-            JaxRsContext context = contextFactory.provides(getContainerRequest());
-            assert context != null;
-
             final boolean readFromSession = parameter.getAnnotation(Pac4JProfile.class).readFromSession();
-            final Optional<CommonProfile> profile = new ProfileManager<>(context).get(readFromSession);
+            final Optional<CommonProfile> profile = new ProfileManager<>(getJaxRsContext()).get(readFromSession);
             if (profile.isPresent()) {
                 final CommonProfile p = profile.get();
                 if (parameter.getRawType().isInstance(p)) {
@@ -170,6 +160,21 @@ public class Pac4JValueFactoryProvider {
         @Override
         public void dispose(CommonProfile instance) {
             // nothing
+        }
+    }
+    
+    static abstract class AbstractJaxRsContextValueFactory<T> extends AbstractContainerRequestValueFactory<T> {
+
+        @Context
+        private Providers providers;
+
+        protected JaxRsContext getJaxRsContext() {
+            ContextResolver<JaxRsContextFactory> contextResolver = providers
+                    .getContextResolver(JaxRsContextFactory.class, MediaType.WILDCARD_TYPE);
+            JaxRsContextFactory contextFactory = contextResolver.getContext(JaxRsContextFactory.class);
+            JaxRsContext context = contextFactory.provides(getContainerRequest());
+            assert context != null;
+            return context;
         }
     }
 }

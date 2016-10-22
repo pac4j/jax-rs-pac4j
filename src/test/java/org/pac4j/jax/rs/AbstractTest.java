@@ -115,6 +115,26 @@ public abstract class AbstractTest {
     }
 
     @Test
+    public void directInjectManagerAuth() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = getTarget("/directInjectManager").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+    
+    @Test
+    public void directInjectManagerNoAuth() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "bar");
+        final String ok = getTarget("/directInjectManager").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("fail");
+    }
+
+    @Test
     public void directInjectSkipOk() {
         Form form = new Form();
         form.param("username", "foo");

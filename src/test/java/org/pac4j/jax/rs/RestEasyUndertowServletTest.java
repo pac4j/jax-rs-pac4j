@@ -91,4 +91,18 @@ public class RestEasyUndertowServletTest extends AbstractSessionTest {
     public void directInjectSkipOk() {
         // do nothing
     }
+
+    // TODO we don't have injection yet for something else than Jersey!
+    @Ignore
+    @Override
+    public void directInjectManagerAuth() {
+        // do nothing
+    }
+
+    // TODO we don't have injection yet for something else than Jersey!
+    @Ignore
+    @Override
+    public void directInjectManagerNoAuth() {
+        // do nothing
+    }
 }
