@@ -208,7 +208,8 @@ public class JaxRsContext implements WebContext {
 
     @Override
     public String getRemoteAddr() {
-        throw new UnsupportedOperationException("Unavailable in JAX-RS 2.0.1: https://java.net/jira/browse/JERSEY-473");
+        // TODO Unavailable in JAX-RS 2.0.1. See https://java.net/jira/browse/JERSEY-473
+        return null;
     }
 
     @Override
