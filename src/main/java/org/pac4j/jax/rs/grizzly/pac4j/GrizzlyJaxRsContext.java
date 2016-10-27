@@ -1,20 +1,18 @@
 package org.pac4j.jax.rs.grizzly.pac4j;
 
-import java.io.InputStream;
-
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.ext.Providers;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
-import org.pac4j.jax.rs.servlet.pac4j.ServletJaxRsContext;
 
 /**
  * 
- * Note that even though {@link Request} gives access to the parameters including Form ones as we do in
- * {@link ServletJaxRsContext}, the fact that Jersey read the {@link InputStream} prevents to access them, so we must
- * rely on {@link JaxRsContext} code to access them!
+ * Notice: there is often chances that the JAX-RS implementation will read the input stream of the request when it
+ * arrives, and after that, it becomes impossible for Grizzly to read it. In particular this means that
+ * {@link Request#getParameter(String)} won't be able to return FORM parameters. This is why we don't override
+ * {@link JaxRsContext#getRequestParameter(String)} to use the Grizzly implementation.
  * 
  * @author Victor Noel - Linagora
  * @since 1.0.0
