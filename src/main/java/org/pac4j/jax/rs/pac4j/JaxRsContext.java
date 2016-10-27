@@ -11,6 +11,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -144,14 +145,15 @@ public class JaxRsContext implements WebContext {
             // efficient
             multivaluedHashMap.putAll(requestContext.getUriInfo().getQueryParameters());
             parameters = multivaluedHashMap;
-            if (MediaType.APPLICATION_FORM_URLENCODED.equalsIgnoreCase(requestContext.getMediaType().toString())) {
+            if (MediaType.APPLICATION_FORM_URLENCODED
+                    .equalsIgnoreCase(Objects.toString(requestContext.getMediaType()))) {
                 readAndResetEntityStream(stream -> {
                     try {
                         Form form = providers.getMessageBodyReader(Form.class, Form.class, new Annotation[0],
                                 MediaType.APPLICATION_FORM_URLENCODED_TYPE).readFrom(Form.class, Form.class,
                                         new Annotation[0], MediaType.APPLICATION_FORM_URLENCODED_TYPE,
                                         requestContext.getHeaders(), stream);
-                        form.asMap().forEach((k, v) -> parameters.addAll(k, v));
+                        form.asMap().forEach(parameters::addAll);
                         return null;
                     } catch (IOException e) {
                         throw new TechnicalException(e);
