@@ -39,9 +39,14 @@ public class GrizzlySessionStore implements JaxRsSessionStore {
     public void renewSession(JaxRsContext context) {
         final Session session = getSession(context);
         final Map<String, Object> attributes = new HashMap<>();
-        session.attributes().forEach((k, v) -> attributes.put(k, v));
+        attributes.putAll(session.attributes());
+
         session.setValid(false);
-        attributes.forEach(session::setAttribute);
+
+        // let's recreate the session from zero
+        // (Grizzly reuse the same object, but that could change in the future...)
+        final Session newSession = getSession(context);
+        attributes.forEach(newSession::setAttribute);
     }
 
 }

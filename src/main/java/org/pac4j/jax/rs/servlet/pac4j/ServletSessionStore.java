@@ -47,7 +47,12 @@ public class ServletSessionStore implements JaxRsSessionStore {
         final HttpSession session = getHttpSession(context);
         final Map<String, Object> attributes = new HashMap<>();
         Collections.list(session.getAttributeNames()).forEach(k -> attributes.put(k, session.getAttribute(k)));
+
         session.invalidate();
-        attributes.forEach(session::setAttribute);
+
+        // let's recreate the session from zero, the previous becomes
+        // generally unusable depending on the servlet implementation
+        final HttpSession newSession = getHttpSession(context);
+        attributes.forEach(newSession::setAttribute);
     }
 }
