@@ -10,6 +10,7 @@ import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
+import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
  * 
@@ -34,6 +35,8 @@ public class SecurityFilter extends AbstractFilter {
 
     public SecurityFilter(Providers providers, Config config) {
         super(providers, config);
+        ((DefaultSecurityLogic<Object, JaxRsContext>) securityLogic)
+                .setProfileManagerFactory(c -> new JaxRsProfileManager(c));
     }
 
     @Override
