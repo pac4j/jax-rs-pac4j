@@ -4,3 +4,5 @@
 target/
 .idea
 jax-rs-pac4j.iml
+.pmd
+.pmdruleset.xml
