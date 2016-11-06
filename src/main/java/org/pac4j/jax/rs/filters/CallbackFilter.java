@@ -2,6 +2,8 @@ package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
@@ -17,6 +19,7 @@ import org.pac4j.jax.rs.pac4j.JaxRsRenewSessionCallbackLogic;
  * @since 1.0.0
  *
  */
+@Priority(Priorities.AUTHORIZATION)
 public class CallbackFilter extends AbstractFilter {
 
     private CallbackLogic<Object, JaxRsContext> callbackLogic = new JaxRsRenewSessionCallbackLogic<>();

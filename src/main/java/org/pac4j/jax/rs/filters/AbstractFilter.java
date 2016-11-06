@@ -22,7 +22,6 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
  * @since 1.0.0
  *
  */
-@Priority(Priorities.AUTHENTICATION)
 public abstract class AbstractFilter implements ContainerRequestFilter {
 
     protected Boolean skipResponse;

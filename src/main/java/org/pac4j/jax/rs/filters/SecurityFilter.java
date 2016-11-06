@@ -2,6 +2,8 @@ package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
@@ -21,6 +23,7 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
  * @since 1.0.0
  *
  */
+@Priority(Priorities.AUTHENTICATION)
 public class SecurityFilter extends AbstractFilter {
 
     private SecurityLogic<Object, JaxRsContext> securityLogic = new DefaultSecurityLogic<>();
