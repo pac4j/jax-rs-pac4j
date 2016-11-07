@@ -1,6 +1,5 @@
 package org.pac4j.jax.rs;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 
 import org.glassfish.jersey.client.ClientProperties;
@@ -54,12 +53,6 @@ public class JerseyInMemoryTest extends AbstractTest {
                     .register(new Pac4JValueFactoryProvider.Binder());
 
             return DeploymentContext.builder(app).build();
-        }
-
-        @SuppressWarnings("UselessOverridingMethod")
-        @Override
-        protected Client setClient(Client client) {
-            return super.setClient(client);
         }
     }
 
