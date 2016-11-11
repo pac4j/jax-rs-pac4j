@@ -37,7 +37,8 @@ These filters can be directly registered by hand, or instead, the following feat
 
 ---
 
-Just follow these easy steps to secure your JAX-RS web application:
+Just follow these easy steps to secure your JAX-RS web application.
+See also [dropwizard-pac4j](https://github.com/pac4j/dropwizard-pac4j) for even easier configuration when using [dropwizard](http://www.dropwizard.io)!
 
 ### 1) Add the required dependencies (`jax-rs-pac4j` + `pac4j-*` libraries)
 
@@ -242,6 +243,11 @@ For example:
 
 ### 5) Get the user profile (`CommonProfile` and `ProfileManager`)
 
+When using Jersey as the JAX-RS runtime, it is possible to directly inject a pac4j profile or profile manager using method parameters injection.
+When using another JAX-RS runtime, see below for workarounds.
+
+#### Using method parameters injection
+
 You can get the profile of the authenticated user using the annotation `@Pac4JProfile` like so:
 
 ```java
@@ -291,6 +297,19 @@ or even:
     }
 ```
 
+#### Without method parameters injection
+
+**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey, help will be appreciated (for Resteasy [for example](https://github.com/pac4j/jax-rs-pac4j/issues/6)).
+
+If using a JAX-RS runtime running on top of a Servlet container, it is always possible to simply exploit the `HttpServletRequest` as explained [there](https://github.com/pac4j/j2e-pac4j#5-get-the-user-profile-profilemanager):
+```java
+    @GET
+    public void get(@Context HttpServletRequest request) {
+        ProfileManager manager = new ProfileManager(new J2EContext(request, null));
+        Optional<CommonProfile> profile = manager.get(true);
+    }
+```
+
 ---
 
 ### 6) Logout (`ApplicationLogoutFilter`)
@@ -329,7 +348,7 @@ For example:
 
 ## Release notes
 
-See the [release notes](https://github.com/pac4j/jax-rs-pac4j/wiki/Release-Notes). Learn more by browsing the [jax-rs-pac4j Javadoc](http://www.javadoc.io/doc/org.pac4j/jax-rs-pac4j/1.0.0) and the [pac4j Javadoc](http://www.pac4j.org/apidocs/pac4j/1.9.2/index.html).
+See the [release notes](https://github.com/pac4j/jax-rs-pac4j/wiki/Release-Notes). Learn more by browsing the [jax-rs-pac4j Javadoc](http://www.javadoc.io/doc/org.pac4j/jax-rs-pac4j/1.0.0) and the [pac4j Javadoc](http://www.pac4j.org/apidocs/pac4j/1.9.4/index.html).
 
 
 ## Need help?
