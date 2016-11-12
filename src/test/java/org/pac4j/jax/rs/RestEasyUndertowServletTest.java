@@ -18,6 +18,12 @@ import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 
 import io.undertow.server.session.SessionCookieConfig;
 
+/**
+ *
+ * @author Victor Noel - Linagora
+ * @since 1.0.0
+ *
+ */
 public class RestEasyUndertowServletTest extends AbstractSessionTest {
 
     private UndertowJaxrsServer server;

@@ -20,6 +20,12 @@ import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.grizzly.features.GrizzlyJaxRsContextFactoryProvider;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 
+/**
+ *
+ * @author Victor Noel - Linagora
+ * @since 1.0.0
+ *
+ */
 public class JerseyGrizzlyTest extends AbstractSessionTest {
 
     private MyJerseyTest jersey;

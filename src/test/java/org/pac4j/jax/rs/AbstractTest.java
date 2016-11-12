@@ -25,6 +25,12 @@ import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordA
 import org.pac4j.jax.rs.pac4j.JaxRsCallbackUrlResolver;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+/**
+ *
+ * @author Victor Noel - Linagora
+ * @since 1.0.0
+ *
+ */
 public abstract class AbstractTest {
 
     static {

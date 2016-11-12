@@ -15,8 +15,9 @@ import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 
 /**
  * This contains only session-less interactions
- * 
- * @author vnoel
+ *
+ * @author Victor Noel - Linagora
+ * @since 1.0.0
  *
  */
 @Path("/")

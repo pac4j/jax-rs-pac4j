@@ -10,6 +10,12 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 
+/**
+ *
+ * @author Victor Noel - Linagora
+ * @since 1.0.0
+ *
+ */
 public abstract class AbstractSessionTest extends AbstractTest {
 
     @Override
