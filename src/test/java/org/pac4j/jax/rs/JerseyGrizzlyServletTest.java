@@ -21,6 +21,12 @@ import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 
+/**
+ *
+ * @author Victor Noel - Linagora
+ * @since 1.0.0
+ *
+ */
 public class JerseyGrizzlyServletTest extends AbstractSessionTest {
 
     private MyJerseyTest jersey;
@@ -45,7 +51,7 @@ public class JerseyGrizzlyServletTest extends AbstractSessionTest {
             forceSet(TestProperties.CONTAINER_PORT, "0");
 
             Config config = getConfig();
-            ResourceConfig app = new ResourceConfig(getResource())
+            ResourceConfig app = new ResourceConfig(getResources())
                     .register(new ServletJaxRsContextFactoryProvider(config))
                     .register(new Pac4JSecurityFeature(config))
                     .register(new Pac4JValueFactoryProvider.Binder());

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.InputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Set;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.util.Sets;
 import org.junit.Test;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
@@ -25,6 +27,12 @@ import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordA
 import org.pac4j.jax.rs.pac4j.JaxRsCallbackUrlResolver;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+/**
+ *
+ * @author Victor Noel - Linagora
+ * @since 1.0.0
+ *
+ */
 public abstract class AbstractTest {
 
     static {
@@ -72,15 +80,21 @@ public abstract class AbstractTest {
         return config;
     }
 
-    protected Class<?> getResource() {
-        return TestResource.class;
+    protected Set<Class<?>> getResources() {
+        return Sets.newLinkedHashSet(TestResource.class, TestClassLevelResource.class);
     }
 
     protected abstract WebTarget getTarget(String url);
 
     @Test
-    public void testNoPac4j() {
+    public void noPac4j() {
         final String ok = getTarget("/no").request().get(String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
+    public void classLevelNoPac4j() {
+        final String ok = getTarget("/class/no").request().get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
@@ -95,11 +109,31 @@ public abstract class AbstractTest {
     }
 
     @Test
+    public void classLevelDirectOk() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = getTarget("/class/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
     public void directFail() {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
         final Response direct = getTarget("/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        assertThat(direct.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void classLevelDirectFail() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "bar");
+        final Response direct = getTarget("/class/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(direct.getStatus()).isEqualTo(401);
     }
@@ -123,7 +157,7 @@ public abstract class AbstractTest {
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
-    
+
     @Test
     public void directInjectManagerNoAuth() {
         Form form = new Form();

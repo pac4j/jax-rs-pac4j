@@ -16,7 +16,7 @@ import org.pac4j.jax.rs.filters.SecurityFilter;
  * @since 1.0.0
  *
  */
-@Target({ ElementType.METHOD })
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Pac4JSecurity {
@@ -53,4 +53,11 @@ public @interface Pac4JSecurity {
      * @return value for {@link SecurityFilter#setMultiProfile(Boolean)}
      */
     boolean[] multiProfile() default {};
+    
+    /**
+     * Set to <code>true</code> to ignore a class-level {@link Pac4JSecurity} annotation.
+     * 
+     * @return <code>true</code> if no security filter should be set on this method
+     */
+    boolean ignore() default false;
 }
