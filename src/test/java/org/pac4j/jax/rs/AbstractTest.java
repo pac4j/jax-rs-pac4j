@@ -81,7 +81,7 @@ public abstract class AbstractTest {
     }
 
     protected Set<Class<?>> getResources() {
-        return Sets.newLinkedHashSet(TestResource.class);
+        return Sets.newLinkedHashSet(TestResource.class, TestClassLevelResource.class);
     }
 
     protected abstract WebTarget getTarget(String url);
@@ -89,6 +89,12 @@ public abstract class AbstractTest {
     @Test
     public void noPac4j() {
         final String ok = getTarget("/no").request().get(String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
+    public void classLevelNoPac4j() {
+        final String ok = getTarget("/class/no").request().get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
@@ -103,11 +109,31 @@ public abstract class AbstractTest {
     }
 
     @Test
+    public void classLevelDirectOk() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = getTarget("/class/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
     public void directFail() {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
         final Response direct = getTarget("/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        assertThat(direct.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void classLevelDirectFail() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "bar");
+        final Response direct = getTarget("/class/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(direct.getStatus()).isEqualTo(401);
     }

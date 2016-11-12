@@ -172,6 +172,31 @@ For example:
     }
 ```
 
+It is also possible to put `@Pac4JSecurity` directly on a class resource: the
+security filter will thus apply to every method of the resource and can be
+overriden with a method-level `@Pac4JSecurity` annotation (always takes
+precedence) or disabled by exploiting the `ignore` property of the annotation:
+```java
+@Path("/class")
+@Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated")
+public class TestClassLevelResource {
+
+    @GET
+    @Path("no")
+    @Pac4JSecurity(ignore = true)
+    public String get() {
+        return "ok";
+    }
+
+    @POST
+    @Path("direct")
+    public String direct() {
+        return "ok";
+    }
+}
+```
+
+
 #### Setup with register
 
 Another option is to register the filter into Jersey as a global filter like so:

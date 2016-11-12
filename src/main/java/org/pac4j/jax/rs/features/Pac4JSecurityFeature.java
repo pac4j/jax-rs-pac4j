@@ -45,19 +45,27 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
         this.config = config;
     }
 
-    /**
-     * TODO support class-level annotations and overrides
-     */
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
         assert resourceInfo != null;
         assert context != null;
 
+        final Class<?> clazz = resourceInfo.getResourceClass();
+        final Pac4JSecurity classSecAnn = clazz == null ? null : clazz.getAnnotation(Pac4JSecurity.class);
+
         final Method method = resourceInfo.getResourceMethod();
 
-        final Pac4JSecurity secAnn = method.getAnnotation(Pac4JSecurity.class);
+        final Pac4JSecurity methSecAnn = method == null ? null : method.getAnnotation(Pac4JSecurity.class);
 
-        if (secAnn != null) {
+        final Pac4JSecurity secAnn;
+        // method annotation simply overrides classes
+        if (methSecAnn != null) {
+            secAnn = methSecAnn;
+        } else {
+            secAnn = classSecAnn;
+        }
+
+        if (secAnn != null && !secAnn.ignore()) {
 
             if (secAnn.multiProfile().length > 1) {
                 throw new IllegalArgumentException(
@@ -80,7 +88,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
             context.register(filter);
         }
 
-        final Pac4JCallback cbAnn = method.getAnnotation(Pac4JCallback.class);
+        final Pac4JCallback cbAnn = method == null ? null : method.getAnnotation(Pac4JCallback.class);
 
         if (cbAnn != null) {
 
@@ -114,7 +122,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
             context.register(filter);
         }
 
-        final Pac4JLogout lAnn = method.getAnnotation(Pac4JLogout.class);
+        final Pac4JLogout lAnn = method == null ? null : method.getAnnotation(Pac4JLogout.class);
 
         if (lAnn != null) {
 
@@ -145,7 +153,8 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
     @Override
     public boolean configure(FeatureContext context) {
-        // nothing to do, it is here only to trigger injection of the @Context fields.
+        // nothing to do, it is here only to trigger injection of the @Context
+        // fields.
         return true;
     }
 }
