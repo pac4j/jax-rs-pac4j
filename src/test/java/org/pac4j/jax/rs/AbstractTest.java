@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.InputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Set;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.util.Sets;
 import org.junit.Test;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
@@ -78,14 +80,14 @@ public abstract class AbstractTest {
         return config;
     }
 
-    protected Class<?> getResource() {
-        return TestResource.class;
+    protected Set<Class<?>> getResources() {
+        return Sets.newLinkedHashSet(TestResource.class);
     }
 
     protected abstract WebTarget getTarget(String url);
 
     @Test
-    public void testNoPac4j() {
+    public void noPac4j() {
         final String ok = getTarget("/no").request().get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -129,7 +131,7 @@ public abstract class AbstractTest {
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
-    
+
     @Test
     public void directInjectManagerNoAuth() {
         Form form = new Form();

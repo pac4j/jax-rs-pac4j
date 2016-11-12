@@ -52,7 +52,7 @@ public class JerseyGrizzlyTest extends AbstractSessionTest {
 
             Config config = getConfig();
 
-            ResourceConfig app = new ResourceConfig(getResource())
+            ResourceConfig app = new ResourceConfig(getResources())
                     .register(new GrizzlyJaxRsContextFactoryProvider(config))
                     .register(new Pac4JSecurityFeature(config))
                     .register(new Pac4JValueFactoryProvider.Binder());

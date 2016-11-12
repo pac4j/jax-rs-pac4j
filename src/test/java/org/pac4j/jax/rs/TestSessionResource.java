@@ -16,18 +16,18 @@ import org.pac4j.jax.rs.annotations.Pac4JSecurity;
  * @since 1.0.0
  *
  */
-@Path("/")
+@Path("/session")
 public class TestSessionResource extends TestResource {
 
     @GET
-    @Path("logged")
+    @Path("/logged")
     @Pac4JSecurity(authorizers = "isAuthenticated")
     public String logged() {
         return "ok";
     }
 
     @GET
-    @Path("inject")
+    @Path("/inject")
     @Pac4JSecurity(authorizers = "isAuthenticated")
     public String inject(@Pac4JProfile CommonProfile profile) {
         if (profile != null) {
@@ -38,7 +38,7 @@ public class TestSessionResource extends TestResource {
     }
 
     @POST
-    @Path("login")
+    @Path("/login")
     // TODO apparently we need to disable session renewal because grizzly
     // send 2 JSESSIONID if not...
     @Pac4JCallback(defaultUrl = "/logged", renewSession = false)

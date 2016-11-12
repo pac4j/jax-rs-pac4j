@@ -1,11 +1,11 @@
 package org.pac4j.jax.rs;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
 
+import org.assertj.core.util.Sets;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
@@ -31,18 +31,14 @@ public class RestEasyUndertowServletTest extends AbstractSessionTest {
     public class MyApp extends Application {
         @Override
         public Set<Class<?>> getClasses() {
-            Set<Class<?>> classes = new HashSet<>();
-            classes.add(getResource());
-            return classes;
+            return getResources();
         }
 
         @Override
         public Set<Object> getSingletons() {
-            Config config = getConfig();
-            Set<Object> singletons = new HashSet<>();
-            singletons.add(new ServletJaxRsContextFactoryProvider(config));
-            singletons.add(new Pac4JSecurityFeature(config));
-            return singletons;
+            final Config config = getConfig();
+            return Sets.newLinkedHashSet(new ServletJaxRsContextFactoryProvider(config),
+                    new Pac4JSecurityFeature(config));
         }
     }
 
