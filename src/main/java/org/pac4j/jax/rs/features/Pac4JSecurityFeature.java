@@ -51,11 +51,12 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
         assert context != null;
 
         final Class<?> clazz = resourceInfo.getResourceClass();
-        final Pac4JSecurity classSecAnn = clazz == null ? null : clazz.getAnnotation(Pac4JSecurity.class);
+        final Pac4JSecurity classSecAnn = clazz == null ? null
+                : AnnotationsHelper.getClassLevelAnnotation(clazz, Pac4JSecurity.class);
 
         final Method method = resourceInfo.getResourceMethod();
-
-        final Pac4JSecurity methSecAnn = method == null ? null : method.getAnnotation(Pac4JSecurity.class);
+        final Pac4JSecurity methSecAnn = method == null ? null
+                : AnnotationsHelper.getMethodLevelAnnotation(method, Pac4JSecurity.class);
 
         final Pac4JSecurity secAnn;
         // method annotation simply overrides classes
@@ -88,7 +89,8 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
             context.register(filter);
         }
 
-        final Pac4JCallback cbAnn = method == null ? null : method.getAnnotation(Pac4JCallback.class);
+        final Pac4JCallback cbAnn = method == null ? null
+                : AnnotationsHelper.getMethodLevelAnnotation(method, Pac4JCallback.class);
 
         if (cbAnn != null) {
 
@@ -122,7 +124,8 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
             context.register(filter);
         }
 
-        final Pac4JLogout lAnn = method == null ? null : method.getAnnotation(Pac4JLogout.class);
+        final Pac4JLogout lAnn = method == null ? null
+                : AnnotationsHelper.getMethodLevelAnnotation(method, Pac4JLogout.class);
 
         if (lAnn != null) {
 

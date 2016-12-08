@@ -81,7 +81,7 @@ public abstract class AbstractTest {
     }
 
     protected Set<Class<?>> getResources() {
-        return Sets.newLinkedHashSet(TestResource.class, TestClassLevelResource.class);
+        return Sets.newLinkedHashSet(TestResource.class, TestClassLevelResource.class, TestProxyResource.class);
     }
 
     protected abstract WebTarget getTarget(String url);
@@ -95,6 +95,12 @@ public abstract class AbstractTest {
     @Test
     public void classLevelNoPac4j() {
         final String ok = getTarget("/class/no").request().get(String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
+    public void proxiedClassLevelNoPac4j() {
+        final String ok = getTarget("/proxied/class/no").request().get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
@@ -119,6 +125,16 @@ public abstract class AbstractTest {
     }
 
     @Test
+    public void proxiedClassLevelDirectOk() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = getTarget("/proxied/class/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
     public void directFail() {
         Form form = new Form();
         form.param("username", "foo");
@@ -134,6 +150,16 @@ public abstract class AbstractTest {
         form.param("username", "foo");
         form.param("password", "bar");
         final Response direct = getTarget("/class/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        assertThat(direct.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void proxiedClassLevelDirectFail() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "bar");
+        final Response direct = getTarget("/proxied/class/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(direct.getStatus()).isEqualTo(401);
     }
