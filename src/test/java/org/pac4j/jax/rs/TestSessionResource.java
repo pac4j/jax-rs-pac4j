@@ -21,14 +21,14 @@ public class TestSessionResource extends TestResource {
 
     @GET
     @Path("/logged")
-    @Pac4JSecurity(authorizers = "isAuthenticated")
+    @Pac4JSecurity(clients = "FormClient", authorizers = "isAuthenticated")
     public String logged() {
         return "ok";
     }
 
     @GET
     @Path("/inject")
-    @Pac4JSecurity(authorizers = "isAuthenticated")
+    @Pac4JSecurity(clients = "FormClient", authorizers = "isAuthenticated")
     public String inject(@Pac4JProfile CommonProfile profile) {
         if (profile != null) {
             return "ok";

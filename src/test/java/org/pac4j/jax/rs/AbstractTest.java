@@ -75,8 +75,6 @@ public abstract class AbstractTest {
 
         Config config = new Config(clients);
 
-        // needed by callback since we don't specify client in the URL parameter
-        clients.setDefaultClient(client);
         return config;
     }
 

@@ -11,6 +11,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
+import org.pac4j.core.client.Clients;
 
 /**
  *
@@ -40,7 +41,8 @@ public abstract class AbstractSessionTest extends AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final Response login = getTarget("/session/login").request()
+        final Response login = getTarget("/session/login")
+                .queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
@@ -56,7 +58,8 @@ public abstract class AbstractSessionTest extends AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final Response login = getTarget("session/login").request()
+        final Response login = getTarget("session/login")
+                .queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
@@ -72,8 +75,8 @@ public abstract class AbstractSessionTest extends AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final Response res = getTarget("/session/login").request()
-                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        final Response res = getTarget("/session/login").queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient")
+                .request().post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         // TODO this should be a 401, see https://github.com/pac4j/pac4j/issues/704
         assertThat(res.getStatus()).isEqualTo(403);
 
