@@ -38,7 +38,7 @@ public class RestEasyUndertowServletTest extends AbstractSessionTest {
         public Set<Object> getSingletons() {
             final Config config = getConfig();
             return Sets.newLinkedHashSet(new ServletJaxRsContextFactoryProvider(config),
-                    new Pac4JSecurityFeature(config));
+                    new Pac4JSecurityFeature(config, DEFAULT_CLIENT));
         }
     }
 

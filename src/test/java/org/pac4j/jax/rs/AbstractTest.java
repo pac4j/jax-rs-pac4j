@@ -35,6 +35,8 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
  */
 public abstract class AbstractTest {
 
+    public static final String DEFAULT_CLIENT = "default-form";
+
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
@@ -66,8 +68,10 @@ public abstract class AbstractTest {
         Authenticator<UsernamePasswordCredentials> auth = new SimpleTestUsernamePasswordAuthenticator();
         FormClient client = new FormClient("notUsedLoginUrl", auth);
         DirectFormClient client2 = new DirectFormClient(auth);
+        DirectFormClient client3 = new DirectFormClient(auth);
+        client3.setName(DEFAULT_CLIENT);
 
-        Clients clients = new Clients("notUsedCallbackUrl", client, client2);
+        Clients clients = new Clients("notUsedCallbackUrl", client, client2, client3);
         // in case of invalid credentials, we simply want the error, not a redirect to the login url
         clients.setAjaxRequestResolver((c) -> true);
         // so that callback url have the correct prefix w.r.t. the container's context
@@ -108,6 +112,16 @@ public abstract class AbstractTest {
         form.param("username", "foo");
         form.param("password", "foo");
         final String ok = getTarget("/direct").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
+    public void defaultDirectOk() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = getTarget("/defaultDirect").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }

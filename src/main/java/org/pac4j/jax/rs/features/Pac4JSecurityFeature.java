@@ -41,8 +41,15 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
     private final Config config;
 
+    private String defaultClients = null;
+
     public Pac4JSecurityFeature(Config config) {
         this.config = config;
+    }
+
+    public Pac4JSecurityFeature(Config config, String defaultClients) {
+        this.config = config;
+        this.defaultClients = defaultClients;
     }
 
     @Override
@@ -80,8 +87,15 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
             final SecurityFilter filter = new SecurityFilter(providers, config);
 
+            String clients;
+            if (defaultClients != null && secAnn.clients().length == 0) {
+                clients = defaultClients;
+            } else {
+                clients = String.join(",", secAnn.clients());
+            }
+
             filter.setAuthorizers(String.join(",", secAnn.authorizers()));
-            filter.setClients(String.join(",", secAnn.clients()));
+            filter.setClients(clients);
             filter.setMatchers(String.join(",", secAnn.matchers()));
             filter.setMultiProfile(secAnn.multiProfile().length == 0 ? null : secAnn.multiProfile()[0]);
             filter.setSkipResponse(secAnn.skipResponse().length == 0 ? null : secAnn.skipResponse()[0]);

@@ -49,7 +49,7 @@ public class JerseyInMemoryTest extends AbstractTest {
 
             ResourceConfig app = new ResourceConfig(getResources())
                     .register(new JaxRsContextFactoryProvider(config))
-                    .register(new Pac4JSecurityFeature(config))
+                    .register(new Pac4JSecurityFeature(config, DEFAULT_CLIENT))
                     .register(new Pac4JValueFactoryProvider.Binder());
 
             return DeploymentContext.builder(app).build();

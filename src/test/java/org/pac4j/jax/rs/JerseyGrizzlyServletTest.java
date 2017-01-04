@@ -53,7 +53,7 @@ public class JerseyGrizzlyServletTest extends AbstractSessionTest {
             Config config = getConfig();
             ResourceConfig app = new ResourceConfig(getResources())
                     .register(new ServletJaxRsContextFactoryProvider(config))
-                    .register(new Pac4JSecurityFeature(config))
+                    .register(new Pac4JSecurityFeature(config, DEFAULT_CLIENT))
                     .register(new Pac4JValueFactoryProvider.Binder());
 
             return ServletDeploymentContext.forServlet(new ServletContainer(app)).build();

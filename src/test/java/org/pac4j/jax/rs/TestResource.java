@@ -39,6 +39,13 @@ public class TestResource {
     }
 
     @POST
+    @Path("defaultDirect")
+    @Pac4JSecurity(authorizers = "isAuthenticated")
+    public String defaultDirect() {
+        return "ok";
+    }
+
+    @POST
     @Path("directInject")
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated")
     public String directInject(@Pac4JProfile(readFromSession = false) CommonProfile profile) {

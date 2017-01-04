@@ -92,7 +92,7 @@ config.addAuthorizer("custom", new CustomAuthorizer());
 
 #### Customization
 
-1) **RECOMMENDED** the `JaxRsCallbackUrlResolver` as the default callback url resolver, it will ensure that in practice, the calback url passed to external authentication system corresponds to the real URL of the callback endpoint
+1) **RECOMMENDED** the `JaxRsCallbackUrlResolver` as the default callback url resolver, it will ensure that in practice, the callback url passed to external authentication system corresponds to the real URL of the callback endpoint
 
 2) a specific [`SessionStore`](http://www.pac4j.org/docs/session-store.html) using the `setSessionStore(sessionStore)` method (by default, with `JaxRsContextFactoryProvider`, session handling is not supported; with `ServletJaxRsContextFactoryProvider`, it uses the `ServletJaxRsSessionStore` which relies on the underlying Servlet Container HTTP session; and with `GrizzlyJaxRsContextFactoryProvider`, it uses the `GrizzlySessionStore` which relies on the underlying HTTP session managed by Grizzly).
 
@@ -142,6 +142,9 @@ For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session
     }
 ```
 
+Note that a default value for the `clients` parameter of the `@Pac4JSecurity`
+annotation can be passed to the constructor of `Pac4JSecurityFeature`.
+
 ---
 
 ### 3) Protect urls (`SecurityFilter`)
@@ -174,7 +177,7 @@ For example:
 
 It is also possible to put `@Pac4JSecurity` directly on a class resource: the
 security filter will thus apply to every method of the resource and can be
-overriden with a method-level `@Pac4JSecurity` annotation (always takes
+overridden with a method-level `@Pac4JSecurity` annotation (always takes
 precedence) or disabled by exploiting the `ignore` property of the annotation:
 ```java
 @Path("/class")
