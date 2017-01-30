@@ -47,10 +47,23 @@ public abstract class AbstractFilter implements ContainerRequestFilter {
         filter(context);
     }
 
+    /**
+     * Prefer to set a specific {@link HttpActionAdapter} on the {@link Config} instead of overriding this method.
+     * 
+     * @return an {@link HttpActionAdapter}
+     */
     protected HttpActionAdapter<Object, JaxRsContext> adapter() {
+
+        final HttpActionAdapter adapter;
+        if (this.config.getHttpActionAdapter() != null) {
+            adapter = this.config.getHttpActionAdapter();
+        } else {
+            adapter = JaxRsHttpActionAdapter.INSTANCE;
+        }
+
         return (code, context) -> {
             if (skipResponse == null || !skipResponse) {
-                context.getRequestContext().abortWith(context.getAbortBuilder().build());
+                adapter.adapt(code, context);
             }
             return null;
         };
