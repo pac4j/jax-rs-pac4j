@@ -8,9 +8,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.CallbackLogic;
-import org.pac4j.core.util.CommonHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 import org.pac4j.jax.rs.pac4j.JaxRsRenewSessionCallbackLogic;
 
 /**
@@ -22,7 +20,9 @@ import org.pac4j.jax.rs.pac4j.JaxRsRenewSessionCallbackLogic;
 @Priority(Priorities.AUTHORIZATION)
 public class CallbackFilter extends AbstractFilter {
 
-    private CallbackLogic<Object, JaxRsContext> callbackLogic = new JaxRsRenewSessionCallbackLogic<>();
+    private static final JaxRsRenewSessionCallbackLogic<JaxRsContext> DEFAULT_LOGIC = new JaxRsRenewSessionCallbackLogic<>();
+
+    private CallbackLogic<Object, JaxRsContext> callbackLogic;
 
     private String defaultUrl;
 
@@ -32,16 +32,22 @@ public class CallbackFilter extends AbstractFilter {
 
     public CallbackFilter(Providers providers, Config config) {
         super(providers, config);
-        ((JaxRsRenewSessionCallbackLogic<JaxRsContext>) callbackLogic)
-                .setProfileManagerFactory(c -> new JaxRsProfileManager(c));
     }
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
-        CommonHelper.assertNotNull("callbackLogic", callbackLogic);
 
-        callbackLogic.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl, false), multiProfile,
-                renewSession);
+        CallbackLogic<Object, JaxRsContext> cl;
+
+        if (callbackLogic != null) {
+            cl = callbackLogic;
+        } else if (config.getCallbackLogic() != null) {
+            cl = config.getCallbackLogic();
+        } else {
+            cl = DEFAULT_LOGIC;
+        }
+
+        cl.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl, false), multiProfile, renewSession);
     }
 
     public CallbackLogic<Object, JaxRsContext> getCallbackLogic() {

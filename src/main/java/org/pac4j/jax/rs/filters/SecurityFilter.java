@@ -7,12 +7,10 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
-import org.pac4j.core.util.CommonHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
+import org.pac4j.jax.rs.pac4j.JaxRsSecurityLogic;
 
 /**
  * 
@@ -26,7 +24,9 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 @Priority(Priorities.AUTHENTICATION)
 public class SecurityFilter extends AbstractFilter {
 
-    private SecurityLogic<Object, JaxRsContext> securityLogic = new DefaultSecurityLogic<>();
+    private static final JaxRsSecurityLogic<JaxRsContext> DEFAULT_LOGIC = new JaxRsSecurityLogic<>();
+
+    private SecurityLogic<Object, JaxRsContext> securityLogic;
 
     private String clients;
 
@@ -38,20 +38,26 @@ public class SecurityFilter extends AbstractFilter {
 
     public SecurityFilter(Providers providers, Config config) {
         super(providers, config);
-        ((DefaultSecurityLogic<Object, JaxRsContext>) securityLogic)
-                .setProfileManagerFactory(c -> new JaxRsProfileManager(c));
     }
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
-        CommonHelper.assertNotNull("securityLogic", securityLogic);
+        SecurityLogic<Object, JaxRsContext> sl;
+
+        if (securityLogic != null) {
+            sl = securityLogic;
+        } else if (config.getSecurityLogic() != null) {
+            sl = config.getSecurityLogic();
+        } else {
+            sl = DEFAULT_LOGIC;
+        }
 
         // Note: basically, there is two possible outcomes:
         // either the access is granted or there was an error or a redirect!
         // For the former, we do nothing (see SecurityGrantedAccessOutcome comments)
         // For the later, we interpret the error and abort the request using jax-rs abstractions
-        securityLogic.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter(), clients, authorizers,
-                matchers, multiProfile);
+        sl.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter(), clients, authorizers, matchers,
+                multiProfile);
     }
 
     public String getClients() {
@@ -101,8 +107,7 @@ enum SecurityGrantedAccessOutcome implements SecurityGrantedAccessAdapter<Object
     @Override
     public Object adapt(JaxRsContext context, Object... parameters) throws Throwable {
         // nothing specific to do, because SecurityGrantedAccessAdapter is meant
-        // to be used in a chain of servlet
-        // filters but JAX-RS does not do things like that
+        // to be used in a chain of servlet filters but JAX-RS does not do things like that
         return null;
     }
 

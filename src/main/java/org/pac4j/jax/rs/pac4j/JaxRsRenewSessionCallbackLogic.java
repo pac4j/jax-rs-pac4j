@@ -14,6 +14,10 @@ import org.pac4j.core.engine.DefaultCallbackLogic;
  */
 public class JaxRsRenewSessionCallbackLogic<C extends JaxRsContext> extends DefaultCallbackLogic<Object, C> {
 
+    public JaxRsRenewSessionCallbackLogic() {
+        setProfileManagerFactory(JaxRsProfileManager::new);
+    }
+
     @Override
     protected void renewSession(final JaxRsContext context) {
         final JaxRsSessionStore sessionStore = context.getSessionStore();
