@@ -53,6 +53,10 @@ public class JaxRsContext implements WebContext {
         this.sessionStore = sessionStore;
     }
 
+    public Providers getProviders() {
+        return providers;
+    }
+
     public ContainerRequestContext getRequestContext() {
         return requestContext;
     }
