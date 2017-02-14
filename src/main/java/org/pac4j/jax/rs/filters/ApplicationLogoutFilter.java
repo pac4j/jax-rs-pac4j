@@ -8,10 +8,8 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.ApplicationLogoutLogic;
-import org.pac4j.core.engine.DefaultApplicationLogoutLogic;
-import org.pac4j.core.util.CommonHelper;
+import org.pac4j.jax.rs.pac4j.JaxRsApplicationLogoutLogic;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
  * 
@@ -22,7 +20,9 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 @Priority(Priorities.AUTHORIZATION)
 public class ApplicationLogoutFilter extends AbstractFilter {
 
-    private ApplicationLogoutLogic<Object, JaxRsContext> applicationLogoutLogic = new DefaultApplicationLogoutLogic<>();
+    private static final JaxRsApplicationLogoutLogic<JaxRsContext> DEFAULT_LOGIC = new JaxRsApplicationLogoutLogic<>();
+
+    private ApplicationLogoutLogic<Object, JaxRsContext> applicationLogoutLogic;
 
     private String defaultUrl;
 
@@ -30,15 +30,22 @@ public class ApplicationLogoutFilter extends AbstractFilter {
 
     public ApplicationLogoutFilter(Providers providers, Config config) {
         super(providers, config);
-        ((DefaultApplicationLogoutLogic<Object, JaxRsContext>) applicationLogoutLogic)
-                .setProfileManagerFactory(c -> new JaxRsProfileManager(c));
     }
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
-        CommonHelper.assertNotNull("applicationLogoutLogic", applicationLogoutLogic);
 
-        applicationLogoutLogic.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl, false),
+        ApplicationLogoutLogic<Object, JaxRsContext> apl;
+
+        if (applicationLogoutLogic != null) {
+            apl = applicationLogoutLogic;
+        } else if (config.getApplicationLogoutLogic() != null) {
+            apl = config.getApplicationLogoutLogic();
+        } else {
+            apl = DEFAULT_LOGIC;
+        }
+
+        apl.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl, false),
                 context.getAbsolutePath(logoutUrlPattern, false));
     }
 
