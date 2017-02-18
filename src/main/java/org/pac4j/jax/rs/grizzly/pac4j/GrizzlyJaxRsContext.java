@@ -27,6 +27,15 @@ public class GrizzlyJaxRsContext extends JaxRsContext {
         super(providers, requestContext, sessionStore != null ? null : new GrizzlySessionStore());
         this.request = request;
     }
+    
+    @Override
+    public void setSessionStore(SessionStore sessionStore) {
+        if (sessionStore == null) {
+            super.setSessionStore(new GrizzlySessionStore());
+        } else {
+            super.setSessionStore(sessionStore);
+        }
+    }
 
     public Request getRequest() {
         return request;

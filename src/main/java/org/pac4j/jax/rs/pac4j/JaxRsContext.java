@@ -29,6 +29,7 @@ import org.pac4j.core.context.Cookie;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.TechnicalException;
+import org.pac4j.core.util.CommonHelper;
 
 /**
  * 
@@ -40,7 +41,7 @@ public class JaxRsContext implements WebContext {
 
     private final ContainerRequestContext requestContext;
 
-    private final SessionStore sessionStore;
+    private SessionStore sessionStore;
 
     private final Providers providers;
 
@@ -65,6 +66,12 @@ public class JaxRsContext implements WebContext {
     @Override
     public SessionStore getSessionStore() {
         return sessionStore;
+    }
+    
+    @Override
+    public void setSessionStore(SessionStore sessionStore) {
+        CommonHelper.assertNotNull("sessionStore", sessionStore);
+        this.sessionStore = sessionStore;
     }
 
     public ResponseBuilder getAbortBuilder() {
@@ -183,21 +190,6 @@ public class JaxRsContext implements WebContext {
     @Override
     public String getRequestHeader(String name) {
         return requestContext.getHeaderString(name);
-    }
-
-    @Override
-    public void setSessionAttribute(String name, Object value) {
-        sessionStore.set(this, name, value);
-    }
-
-    @Override
-    public Object getSessionAttribute(String name) {
-        return sessionStore.get(this, name);
-    }
-
-    @Override
-    public Object getSessionIdentifier() {
-        return sessionStore.getOrCreateSessionId(this);
     }
 
     @Override

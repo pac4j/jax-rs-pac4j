@@ -36,6 +36,20 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
     public void set(JaxRsContext context, String key, Object value) {
         getHttpSession(context).setAttribute(key, value);
     }
+    
+    @Override
+    public boolean destroySession(JaxRsContext context) {
+        final HttpSession session = getHttpSession(context);
+        
+        session.invalidate();
+        
+        return true;
+    }
+    
+    @Override
+    public Object getTrackableSession(JaxRsContext context) {
+        return getHttpSession(context);
+    }
 
     @Override
     public boolean renewSession(JaxRsContext context) {
@@ -51,5 +65,15 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
         attributes.forEach(newSession::setAttribute);
         
         return true;
+    }
+    
+    @Override
+    public SessionStore<JaxRsContext> buildFromTrackableSession(JaxRsContext context, Object trackableSession) {
+        return new ServletSessionStore() {
+            @Override
+            public HttpSession getHttpSession(JaxRsContext context) {
+                return (HttpSession) trackableSession;
+            }
+        };
     }
 }

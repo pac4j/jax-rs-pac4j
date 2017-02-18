@@ -34,6 +34,20 @@ public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
     public void set(JaxRsContext context, String key, Object value) {
         getSession(context).setAttribute(key, value);
     }
+    
+    @Override
+    public boolean destroySession(JaxRsContext context) {
+        final Session session = getSession(context);
+        
+        session.setValid(false);
+        
+        return true;
+    }
+    
+    @Override
+    public Object getTrackableSession(JaxRsContext context) {
+        return getSession(context);
+    }
 
     @Override
     public boolean renewSession(JaxRsContext context) {
@@ -50,5 +64,16 @@ public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
         
         return true;
     }
+    
 
+    
+    @Override
+    public SessionStore<JaxRsContext> buildFromTrackableSession(JaxRsContext context, Object trackableSession) {
+        return new GrizzlySessionStore() {
+            @Override
+            public Session getSession(JaxRsContext context) {
+                return (Session) trackableSession;
+            }
+        };
+    }
 }
