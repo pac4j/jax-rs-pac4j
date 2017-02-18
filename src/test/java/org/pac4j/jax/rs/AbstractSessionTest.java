@@ -77,8 +77,7 @@ public abstract class AbstractSessionTest extends AbstractTest {
         form.param("password", "bar");
         final Response res = getTarget("/session/login").queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient")
                 .request().post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-        // TODO this should be a 401, see https://github.com/pac4j/pac4j/issues/704
-        assertThat(res.getStatus()).isEqualTo(403);
+        assertThat(res.getStatus()).isEqualTo(401);
 
     }
 }

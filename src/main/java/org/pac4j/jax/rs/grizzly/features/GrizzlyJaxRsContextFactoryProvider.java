@@ -7,7 +7,6 @@ import org.glassfish.grizzly.http.server.Request;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
 import org.pac4j.jax.rs.grizzly.pac4j.GrizzlyJaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
 
 /**
  * 
@@ -33,7 +32,6 @@ public class GrizzlyJaxRsContextFactoryProvider extends JaxRsContextFactoryProvi
     public JaxRsContextFactory getContext(Class<?> type) {
         Request request = requestProvider.get();
         assert request != null;
-        return context -> new GrizzlyJaxRsContext(providers, context, (JaxRsSessionStore) config.getSessionStore(),
-                request);
+        return context -> new GrizzlyJaxRsContext(providers, context, config.getSessionStore(), request);
     }
 }

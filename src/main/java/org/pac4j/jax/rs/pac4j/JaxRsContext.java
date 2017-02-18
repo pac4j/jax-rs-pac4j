@@ -27,6 +27,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.context.Cookie;
 import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.TechnicalException;
 
 /**
@@ -39,7 +40,7 @@ public class JaxRsContext implements WebContext {
 
     private final ContainerRequestContext requestContext;
 
-    private final JaxRsSessionStore sessionStore;
+    private final SessionStore sessionStore;
 
     private final Providers providers;
 
@@ -47,7 +48,7 @@ public class JaxRsContext implements WebContext {
 
     private MultivaluedMap<String, String> parameters = null;
 
-    public JaxRsContext(Providers providers, ContainerRequestContext requestContext, JaxRsSessionStore sessionStore) {
+    public JaxRsContext(Providers providers, ContainerRequestContext requestContext, SessionStore sessionStore) {
         this.providers = providers;
         this.requestContext = requestContext;
         this.sessionStore = sessionStore;
@@ -61,7 +62,8 @@ public class JaxRsContext implements WebContext {
         return requestContext;
     }
 
-    public JaxRsSessionStore getSessionStore() {
+    @Override
+    public SessionStore getSessionStore() {
         return sessionStore;
     }
 
@@ -196,15 +198,6 @@ public class JaxRsContext implements WebContext {
     @Override
     public Object getSessionIdentifier() {
         return sessionStore.getOrCreateSessionId(this);
-    }
-
-    @Override
-    public void invalidationSession() {
-        sessionStore.invalidateSession(this);
-    }
-
-    public void renewSession() {
-        sessionStore.renewSession(this);
     }
 
     @Override

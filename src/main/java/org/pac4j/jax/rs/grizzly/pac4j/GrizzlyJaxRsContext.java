@@ -4,8 +4,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.ext.Providers;
 
 import org.glassfish.grizzly.http.server.Request;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class GrizzlyJaxRsContext extends JaxRsContext {
     private final Request request;
 
     public GrizzlyJaxRsContext(Providers providers, ContainerRequestContext requestContext,
-            JaxRsSessionStore sessionStore, Request request) {
+            SessionStore sessionStore, Request request) {
         super(providers, requestContext, sessionStore != null ? null : new GrizzlySessionStore());
         this.request = request;
     }

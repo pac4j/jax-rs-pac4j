@@ -8,8 +8,9 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.CallbackLogic;
+import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsRenewSessionCallbackLogic;
+import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
  * 
@@ -20,7 +21,11 @@ import org.pac4j.jax.rs.pac4j.JaxRsRenewSessionCallbackLogic;
 @Priority(Priorities.AUTHORIZATION)
 public class CallbackFilter extends AbstractFilter {
 
-    private static final JaxRsRenewSessionCallbackLogic<JaxRsContext> DEFAULT_LOGIC = new JaxRsRenewSessionCallbackLogic<>();
+    private static final DefaultCallbackLogic<Object, JaxRsContext> DEFAULT_LOGIC = new DefaultCallbackLogic<>();
+
+    static {
+        DEFAULT_LOGIC.setProfileManagerFactory(JaxRsProfileManager::new);
+    }
 
     private CallbackLogic<Object, JaxRsContext> callbackLogic;
 

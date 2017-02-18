@@ -8,7 +8,6 @@ import javax.ws.rs.ext.Providers;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
 
 /**
  * 
@@ -38,7 +37,7 @@ public class JaxRsContextFactoryProvider implements ContextResolver<JaxRsContext
     @Override
     public JaxRsContextFactory getContext(Class<?> type) {
         assert providers != null;
-        return context -> new JaxRsContext(providers, context, (JaxRsSessionStore) config.getSessionStore());
+        return context -> new JaxRsContext(providers, context, config.getSessionStore());
     }
 
     @FunctionalInterface

@@ -15,13 +15,13 @@ import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JLogout;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import org.pac4j.jax.rs.filters.ApplicationLogoutFilter;
+import org.pac4j.jax.rs.filters.LogoutFilter;
 import org.pac4j.jax.rs.filters.CallbackFilter;
 import org.pac4j.jax.rs.filters.SecurityFilter;
 
 /**
  * 
- * Injects {@link SecurityFilter}s, {@link CallbackFilter}s and {@link ApplicationLogoutFilter}s on JAX-RS resources
+ * Injects {@link SecurityFilter}s, {@link CallbackFilter}s and {@link LogoutFilter}s on JAX-RS resources
  * methods annotated with {@link Pac4JSecurity &#64;Pac4JSecurity}, {@link Pac4JCallback &#64;Pac4JCallback} and
  * {@link Pac4JLogout &#64;Pac4JLogout}.
  * 
@@ -158,11 +158,14 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JLogout is not expected to have more than one value");
             }
 
-            final ApplicationLogoutFilter filter = new ApplicationLogoutFilter(providers, config);
+            final LogoutFilter filter = new LogoutFilter(providers, config);
 
             filter.setDefaultUrl(lAnn.defaultUrl().length == 0 ? null : lAnn.defaultUrl()[0]);
             filter.setLogoutUrlPattern(lAnn.logoutUrlPattern().length == 0 ? null : lAnn.logoutUrlPattern()[0]);
             filter.setSkipResponse(lAnn.skipResponse().length == 0 ? null : lAnn.skipResponse()[0]);
+            filter.setLocalLogout(lAnn.localLogout().length == 0 ? null : lAnn.localLogout()[0]);
+            filter.setDestroySession(lAnn.destroySession().length == 0 ? null : lAnn.destroySession()[0]);
+            filter.setCentralLogout(lAnn.centralLogout().length == 0 ? null : lAnn.centralLogout()[0]);
 
             context.register(filter);
         }

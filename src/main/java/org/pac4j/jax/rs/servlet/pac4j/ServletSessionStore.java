@@ -6,8 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
 
 /**
  * 
@@ -15,7 +15,7 @@ import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
  * @since 1.0.0
  *
  */
-public class ServletSessionStore implements JaxRsSessionStore {
+public class ServletSessionStore implements SessionStore<JaxRsContext> {
 
     public HttpSession getHttpSession(JaxRsContext context) {
         assert context instanceof ServletJaxRsContext;
@@ -38,12 +38,7 @@ public class ServletSessionStore implements JaxRsSessionStore {
     }
 
     @Override
-    public void invalidateSession(JaxRsContext context) {
-        getHttpSession(context).invalidate();
-    }
-
-    @Override
-    public void renewSession(JaxRsContext context) {
+    public boolean renewSession(JaxRsContext context) {
         final HttpSession session = getHttpSession(context);
         final Map<String, Object> attributes = new HashMap<>();
         Collections.list(session.getAttributeNames()).forEach(k -> attributes.put(k, session.getAttribute(k)));
@@ -54,5 +49,7 @@ public class ServletSessionStore implements JaxRsSessionStore {
         // generally unusable depending on the servlet implementation
         final HttpSession newSession = getHttpSession(context);
         attributes.forEach(newSession::setAttribute);
+        
+        return true;
     }
 }

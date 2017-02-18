@@ -7,10 +7,11 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
+import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsSecurityLogic;
+import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
  * 
@@ -24,7 +25,11 @@ import org.pac4j.jax.rs.pac4j.JaxRsSecurityLogic;
 @Priority(Priorities.AUTHENTICATION)
 public class SecurityFilter extends AbstractFilter {
 
-    private static final JaxRsSecurityLogic<JaxRsContext> DEFAULT_LOGIC = new JaxRsSecurityLogic<>();
+    private static final DefaultSecurityLogic<Object, JaxRsContext> DEFAULT_LOGIC = new DefaultSecurityLogic<>();
+
+    static {
+        DEFAULT_LOGIC.setProfileManagerFactory(JaxRsProfileManager::new);
+    }
 
     private SecurityLogic<Object, JaxRsContext> securityLogic;
 

@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.glassfish.grizzly.http.server.Session;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
 
 /**
  * 
@@ -13,7 +13,7 @@ import org.pac4j.jax.rs.pac4j.JaxRsSessionStore;
  * @since 1.0.0
  *
  */
-public class GrizzlySessionStore implements JaxRsSessionStore {
+public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
 
     public Session getSession(final JaxRsContext context) {
         assert context instanceof GrizzlyJaxRsContext;
@@ -36,7 +36,7 @@ public class GrizzlySessionStore implements JaxRsSessionStore {
     }
 
     @Override
-    public void renewSession(JaxRsContext context) {
+    public boolean renewSession(JaxRsContext context) {
         final Session session = getSession(context);
         final Map<String, Object> attributes = new HashMap<>();
         attributes.putAll(session.attributes());
@@ -47,6 +47,8 @@ public class GrizzlySessionStore implements JaxRsSessionStore {
         // (Grizzly reuse the same object, but that could change in the future...)
         final Session newSession = getSession(context);
         attributes.forEach(newSession::setAttribute);
+        
+        return true;
     }
 
 }
