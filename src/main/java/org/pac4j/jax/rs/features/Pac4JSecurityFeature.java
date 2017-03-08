@@ -8,7 +8,6 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
@@ -20,16 +19,15 @@ import org.pac4j.jax.rs.filters.CallbackFilter;
 import org.pac4j.jax.rs.filters.SecurityFilter;
 
 /**
- * 
+ *
  * Injects {@link SecurityFilter}s, {@link CallbackFilter}s and {@link ApplicationLogoutFilter}s on JAX-RS resources
  * methods annotated with {@link Pac4JSecurity &#64;Pac4JSecurity}, {@link Pac4JCallback &#64;Pac4JCallback} and
  * {@link Pac4JLogout &#64;Pac4JLogout}.
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
  */
-@Provider
 public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
     /**
