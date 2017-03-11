@@ -26,25 +26,27 @@ public class LogoutFilter extends AbstractFilter {
     static {
         DEFAULT_LOGIC.setProfileManagerFactory(JaxRsProfileManager::new);
     }
-    
+
     private LogoutLogic<Object, JaxRsContext> logoutLogic;
 
     private String defaultUrl;
 
     private String logoutUrlPattern;
-    
+
     private Boolean localLogout;
-    
+
     private Boolean destroySession;
-    
+
     private Boolean centralLogout;
 
-    public LogoutFilter(Providers providers, Config config) {
-        super(providers, config);
+    public LogoutFilter(Providers providers) {
+        super(providers);
     }
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
+
+        Config config = getConfig();
 
         LogoutLogic<Object, JaxRsContext> ll;
 
@@ -56,7 +58,7 @@ public class LogoutFilter extends AbstractFilter {
             ll = DEFAULT_LOGIC;
         }
 
-        ll.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl, false),
+        ll.perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false),
                 context.getAbsolutePath(logoutUrlPattern, false), localLogout, destroySession, centralLogout);
     }
 
@@ -75,27 +77,27 @@ public class LogoutFilter extends AbstractFilter {
     public void setLogoutUrlPattern(String logoutUrlPattern) {
         this.logoutUrlPattern = logoutUrlPattern;
     }
-    
+
     public Boolean getLocalLogout() {
         return localLogout;
     }
-    
+
     public void setLocalLogout(Boolean localLogout) {
         this.localLogout = localLogout;
     }
-    
+
     public Boolean getDestroySession() {
         return destroySession;
     }
-    
+
     public void setDestroySession(Boolean destroySession) {
         this.destroySession = destroySession;
     }
-    
+
     public Boolean getCentralLogout() {
         return centralLogout;
     }
-    
+
     public void setCentralLogout(Boolean centralLogout) {
         this.centralLogout = centralLogout;
     }

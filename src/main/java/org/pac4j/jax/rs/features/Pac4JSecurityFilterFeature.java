@@ -5,7 +5,6 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Providers;
 
-import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.filters.SecurityFilter;
 
 /**
@@ -25,8 +24,6 @@ public class Pac4JSecurityFilterFeature implements Feature {
 
     @Context
     private Providers providers;
-    
-    private final Config config;
 
     private final Boolean skipResponse;
 
@@ -38,13 +35,12 @@ public class Pac4JSecurityFilterFeature implements Feature {
 
     private final Boolean multiProfile;
 
-    public Pac4JSecurityFilterFeature(Config config) {
-        this(config, null, null, null, null, null);
+    public Pac4JSecurityFilterFeature() {
+        this(null, null, null, null, null);
     }
 
-    public Pac4JSecurityFilterFeature(Config config, Boolean skipResponse, String authorizers, String clients,
-            String matchers, Boolean multiProfile) {
-        this.config = config;
+    public Pac4JSecurityFilterFeature(Boolean skipResponse, String authorizers, String clients, String matchers,
+            Boolean multiProfile) {
         this.skipResponse = skipResponse;
         this.authorizers = authorizers;
         this.clients = clients;
@@ -54,7 +50,7 @@ public class Pac4JSecurityFilterFeature implements Feature {
 
     @Override
     public boolean configure(FeatureContext context) {
-        final SecurityFilter filter = new SecurityFilter(providers, config);
+        final SecurityFilter filter = new SecurityFilter(providers);
         filter.setAuthorizers(authorizers);
         filter.setClients(clients);
         filter.setMatchers(matchers);

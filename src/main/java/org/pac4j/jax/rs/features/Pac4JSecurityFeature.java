@@ -10,18 +10,18 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Providers;
 
-import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JLogout;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import org.pac4j.jax.rs.filters.LogoutFilter;
 import org.pac4j.jax.rs.filters.CallbackFilter;
+import org.pac4j.jax.rs.filters.LogoutFilter;
 import org.pac4j.jax.rs.filters.SecurityFilter;
+import org.pac4j.jax.rs.helpers.AnnotationsHelper;
 
 /**
  * 
- * Injects {@link SecurityFilter}s, {@link CallbackFilter}s and {@link LogoutFilter}s on JAX-RS resources
- * methods annotated with {@link Pac4JSecurity &#64;Pac4JSecurity}, {@link Pac4JCallback &#64;Pac4JCallback} and
+ * Injects {@link SecurityFilter}s, {@link CallbackFilter}s and {@link LogoutFilter}s on JAX-RS resources methods
+ * annotated with {@link Pac4JSecurity &#64;Pac4JSecurity}, {@link Pac4JCallback &#64;Pac4JCallback} and
  * {@link Pac4JLogout &#64;Pac4JLogout}.
  * 
  * @author Victor Noel - Linagora
@@ -36,19 +36,6 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
      */
     @Context
     private Providers providers;
-
-    private final Config config;
-
-    private String defaultClients = null;
-
-    public Pac4JSecurityFeature(Config config) {
-        this.config = config;
-    }
-
-    public Pac4JSecurityFeature(Config config, String defaultClients) {
-        this.config = config;
-        this.defaultClients = defaultClients;
-    }
 
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
@@ -83,11 +70,13 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JSecurity is not expected to have more than one value");
             }
 
-            final SecurityFilter filter = new SecurityFilter(providers, config);
+            final SecurityFilter filter = new SecurityFilter(providers);
 
+            // if there is no clients specified, it is not the same as ""
+            // no clients will exploit JaxRsConfig.getDefaultClients()
             String clients;
-            if (defaultClients != null && secAnn.clients().length == 0) {
-                clients = defaultClients;
+            if (secAnn.clients().length == 0) {
+                clients = null;
             } else {
                 clients = String.join(",", secAnn.clients());
             }
@@ -126,7 +115,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JCallback is not expected to have more than one value");
             }
 
-            final CallbackFilter filter = new CallbackFilter(providers, config);
+            final CallbackFilter filter = new CallbackFilter(providers);
 
             filter.setMultiProfile(cbAnn.multiProfile().length == 0 ? null : cbAnn.multiProfile()[0]);
             filter.setRenewSession(cbAnn.renewSession().length == 0 ? null : cbAnn.renewSession()[0]);
@@ -156,7 +145,7 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JLogout is not expected to have more than one value");
             }
 
-            final LogoutFilter filter = new LogoutFilter(providers, config);
+            final LogoutFilter filter = new LogoutFilter(providers);
 
             filter.setDefaultUrl(lAnn.defaultUrl().length == 0 ? null : lAnn.defaultUrl()[0]);
             filter.setLogoutUrlPattern(lAnn.logoutUrlPattern().length == 0 ? null : lAnn.logoutUrlPattern()[0]);

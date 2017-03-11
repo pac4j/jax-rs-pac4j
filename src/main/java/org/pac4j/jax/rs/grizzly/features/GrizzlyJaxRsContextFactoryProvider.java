@@ -4,7 +4,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.glassfish.grizzly.http.server.Request;
-import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
 import org.pac4j.jax.rs.grizzly.pac4j.GrizzlyJaxRsContext;
 
@@ -24,14 +23,10 @@ public class GrizzlyJaxRsContextFactoryProvider extends JaxRsContextFactoryProvi
     @Inject
     protected Provider<Request> requestProvider;
 
-    public GrizzlyJaxRsContextFactoryProvider(Config config) {
-        super(config);
-    }
-
     @Override
     public JaxRsContextFactory getContext(Class<?> type) {
         Request request = requestProvider.get();
         assert request != null;
-        return context -> new GrizzlyJaxRsContext(providers, context, config.getSessionStore(), request);
+        return context -> new GrizzlyJaxRsContext(getProviders(), context, getConfig().getSessionStore(), request);
     }
 }

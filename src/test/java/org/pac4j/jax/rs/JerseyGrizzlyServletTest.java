@@ -16,7 +16,7 @@ import org.glassfish.jersey.test.spi.TestContainerException;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.pac4j.core.config.Config;
+import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
@@ -50,10 +50,10 @@ public class JerseyGrizzlyServletTest extends AbstractSessionTest {
         protected DeploymentContext configureDeployment() {
             forceSet(TestProperties.CONTAINER_PORT, "0");
 
-            Config config = getConfig();
             ResourceConfig app = new ResourceConfig(getResources())
-                    .register(new ServletJaxRsContextFactoryProvider(config))
-                    .register(new Pac4JSecurityFeature(config, DEFAULT_CLIENT))
+                    .register(new JaxRsConfigProvider(getConfig()))
+                    .register(new ServletJaxRsContextFactoryProvider())
+                    .register(new Pac4JSecurityFeature())
                     .register(new Pac4JValueFactoryProvider.Binder());
 
             return ServletDeploymentContext.forServlet(new ServletContainer(app)).build();

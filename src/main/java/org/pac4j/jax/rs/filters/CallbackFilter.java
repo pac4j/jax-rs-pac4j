@@ -35,12 +35,14 @@ public class CallbackFilter extends AbstractFilter {
 
     private Boolean renewSession;
 
-    public CallbackFilter(Providers providers, Config config) {
-        super(providers, config);
+    public CallbackFilter(Providers providers) {
+        super(providers);
     }
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
+
+        Config config = getConfig();
 
         CallbackLogic<Object, JaxRsContext> cl;
 
@@ -52,7 +54,8 @@ public class CallbackFilter extends AbstractFilter {
             cl = DEFAULT_LOGIC;
         }
 
-        cl.perform(context, config, adapter(), context.getAbsolutePath(defaultUrl, false), multiProfile, renewSession);
+        cl.perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false), multiProfile,
+                renewSession);
     }
 
     public CallbackLogic<Object, JaxRsContext> getCallbackLogic() {

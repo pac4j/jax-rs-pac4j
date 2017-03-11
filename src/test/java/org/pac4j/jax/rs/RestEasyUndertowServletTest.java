@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.pac4j.core.config.Config;
+import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 
@@ -36,9 +36,10 @@ public class RestEasyUndertowServletTest extends AbstractSessionTest {
 
         @Override
         public Set<Object> getSingletons() {
-            final Config config = getConfig();
-            return Sets.newLinkedHashSet(new ServletJaxRsContextFactoryProvider(config),
-                    new Pac4JSecurityFeature(config, DEFAULT_CLIENT));
+            return Sets.newLinkedHashSet(
+                    new JaxRsConfigProvider(getConfig()),
+                    new ServletJaxRsContextFactoryProvider(),
+                    new Pac4JSecurityFeature());
         }
     }
 

@@ -5,8 +5,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 
 import org.glassfish.hk2.api.Factory;
@@ -25,6 +23,7 @@ import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
+import org.pac4j.jax.rs.helpers.ProvidersHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  * 
  */
-@Singleton
 public class Pac4JValueFactoryProvider {
 
     static class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvider {
@@ -84,14 +82,12 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    @Singleton
     static class ProfileManagerInjectionResolver extends ParamInjectionResolver<Pac4JProfileManager> {
         ProfileManagerInjectionResolver() {
             super(Pac4JProfileManagerValueFactoryProvider.class);
         }
     }
 
-    @Singleton
     static class ProfileInjectionResolver extends ParamInjectionResolver<Pac4JProfile> {
         ProfileInjectionResolver() {
             super(Pac4JProfileValueFactoryProvider.class);
@@ -114,7 +110,7 @@ public class Pac4JValueFactoryProvider {
 
         @Override
         public ProfileManager<CommonProfile> provide() {
-            return new ProfileManager<>(getJaxRsContext());
+            return new ProfileManager<>(getContext());
         }
 
         @Override
@@ -139,7 +135,7 @@ public class Pac4JValueFactoryProvider {
         @Override
         public CommonProfile provide() {
             final boolean readFromSession = parameter.getAnnotation(Pac4JProfile.class).readFromSession();
-            final Optional<CommonProfile> profile = new ProfileManager<>(getJaxRsContext()).get(readFromSession);
+            final Optional<CommonProfile> profile = new ProfileManager<>(getContext()).get(readFromSession);
             if (profile.isPresent()) {
                 final CommonProfile p = profile.get();
                 if (parameter.getRawType().isInstance(p)) {
@@ -162,17 +158,15 @@ public class Pac4JValueFactoryProvider {
             // nothing
         }
     }
-    
+
     static abstract class AbstractJaxRsContextValueFactory<T> extends AbstractContainerRequestValueFactory<T> {
 
         @Context
         private Providers providers;
 
-        protected JaxRsContext getJaxRsContext() {
-            ContextResolver<JaxRsContextFactory> contextResolver = providers
-                    .getContextResolver(JaxRsContextFactory.class, MediaType.WILDCARD_TYPE);
-            JaxRsContextFactory contextFactory = contextResolver.getContext(JaxRsContextFactory.class);
-            JaxRsContext context = contextFactory.provides(getContainerRequest());
+        protected JaxRsContext getContext() {
+            JaxRsContext context = ProvidersHelper.getContext(providers, JaxRsContextFactory.class)
+                    .provides(getContainerRequest());
             assert context != null;
             return context;
         }

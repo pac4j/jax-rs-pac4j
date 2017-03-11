@@ -4,14 +4,12 @@ import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.http.HttpActionAdapter;
-import org.pac4j.core.util.CommonHelper;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
+import org.pac4j.jax.rs.helpers.ProvidersHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
@@ -24,25 +22,23 @@ public abstract class AbstractFilter implements ContainerRequestFilter {
 
     protected Boolean skipResponse;
 
-    protected final Config config;
-
     private final Providers providers;
 
-    public AbstractFilter(Providers providers, Config config) {
+    public AbstractFilter(Providers providers) {
         this.providers = providers;
-        this.config = config;
+    }
+    
+    protected Config getConfig() {
+        return ProvidersHelper.getContext(providers, Config.class);
     }
 
     protected abstract void filter(JaxRsContext context) throws IOException;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        ContextResolver<JaxRsContextFactory> contextResolver = providers.getContextResolver(JaxRsContextFactory.class,
-                MediaType.WILDCARD_TYPE);
-        JaxRsContextFactory contextFactory = contextResolver.getContext(JaxRsContextFactory.class);
-        JaxRsContext context = contextFactory.provides(requestContext);
-
-        CommonHelper.assertNotNull("contextProvider", context);
+        JaxRsContext context = ProvidersHelper.getContext(providers, JaxRsContextFactory.class)
+                .provides(requestContext);
+        assert context != null;
 
         filter(context);
     }
@@ -52,11 +48,11 @@ public abstract class AbstractFilter implements ContainerRequestFilter {
      * 
      * @return an {@link HttpActionAdapter}
      */
-    protected HttpActionAdapter<Object, JaxRsContext> adapter() {
+    protected HttpActionAdapter<Object, JaxRsContext> adapter(Config config) {
 
         final HttpActionAdapter adapter;
-        if (this.config.getHttpActionAdapter() != null) {
-            adapter = this.config.getHttpActionAdapter();
+        if (config.getHttpActionAdapter() != null) {
+            adapter = config.getHttpActionAdapter();
         } else {
             adapter = JaxRsHttpActionAdapter.INSTANCE;
         }

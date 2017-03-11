@@ -1,4 +1,4 @@
-package org.pac4j.jax.rs.features;
+package org.pac4j.jax.rs.helpers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -6,10 +6,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 /**
- * 
  * @author Victor Noel - Linagora
  * @since 1.0.1
- *
  */
 public class AnnotationsHelper {
 

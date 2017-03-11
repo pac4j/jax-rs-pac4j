@@ -12,7 +12,7 @@ import org.glassfish.jersey.test.spi.TestContainerException;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.pac4j.core.config.Config;
+import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
@@ -45,11 +45,10 @@ public class JerseyInMemoryTest extends AbstractTest {
 
         @Override
         protected DeploymentContext configureDeployment() {
-            Config config = getConfig();
-
             ResourceConfig app = new ResourceConfig(getResources())
-                    .register(new JaxRsContextFactoryProvider(config))
-                    .register(new Pac4JSecurityFeature(config, DEFAULT_CLIENT))
+                    .register(new JaxRsConfigProvider(getConfig()))
+                    .register(new JaxRsContextFactoryProvider())
+                    .register(new Pac4JSecurityFeature())
                     .register(new Pac4JValueFactoryProvider.Binder());
 
             return DeploymentContext.builder(app).build();

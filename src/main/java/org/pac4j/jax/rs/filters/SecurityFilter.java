@@ -10,6 +10,7 @@ import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
+import org.pac4j.jax.rs.pac4j.JaxRsConfig;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
@@ -41,12 +42,15 @@ public class SecurityFilter extends AbstractFilter {
 
     private Boolean multiProfile;
 
-    public SecurityFilter(Providers providers, Config config) {
-        super(providers, config);
+    public SecurityFilter(Providers providers) {
+        super(providers);
     }
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
+
+        Config config = getConfig();
+
         SecurityLogic<Object, JaxRsContext> sl;
 
         if (securityLogic != null) {
@@ -57,11 +61,24 @@ public class SecurityFilter extends AbstractFilter {
             sl = DEFAULT_LOGIC;
         }
 
+        String cs;
+        // no client was set
+        if (clients == null && config instanceof JaxRsConfig) {
+            cs = ((JaxRsConfig) config).getDefaultClients();
+        } else {
+            cs = clients;
+        }
+
+        if (cs == null) {
+            // SecurityLogic.perform expects a non-null value
+            cs = "";
+        }
+
         // Note: basically, there is two possible outcomes:
         // either the access is granted or there was an error or a redirect!
         // For the former, we do nothing (see SecurityGrantedAccessOutcome comments)
         // For the later, we interpret the error and abort the request using jax-rs abstractions
-        sl.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter(), clients, authorizers, matchers,
+        sl.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter(config), cs, authorizers, matchers,
                 multiProfile);
     }
 

@@ -25,6 +25,7 @@ import org.pac4j.http.client.direct.DirectFormClient;
 import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
 import org.pac4j.jax.rs.pac4j.JaxRsCallbackUrlResolver;
+import org.pac4j.jax.rs.pac4j.JaxRsConfig;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
@@ -77,7 +78,9 @@ public abstract class AbstractTest {
         // so that callback url have the correct prefix w.r.t. the container's context
         clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
 
-        Config config = new Config(clients);
+        JaxRsConfig config = new JaxRsConfig();
+        config.setClients(clients);
+        config.setDefaultClients(DEFAULT_CLIENT);
 
         return config;
     }

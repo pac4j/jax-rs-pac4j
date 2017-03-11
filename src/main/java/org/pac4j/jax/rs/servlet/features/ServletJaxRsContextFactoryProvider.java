@@ -3,7 +3,6 @@ package org.pac4j.jax.rs.servlet.features;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
-import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
 import org.pac4j.jax.rs.servlet.pac4j.ServletJaxRsContext;
 
@@ -21,13 +20,8 @@ public class ServletJaxRsContextFactoryProvider extends JaxRsContextFactoryProvi
     @Context
     private HttpServletRequest request;
 
-    public ServletJaxRsContextFactoryProvider(Config config) {
-        super(config);
-    }
-
     @Override
     public JaxRsContextFactory getContext(Class<?> type) {
-        assert request != null;
-        return context -> new ServletJaxRsContext(providers, context, config.getSessionStore(),  request);
+        return context -> new ServletJaxRsContext(getProviders(), context, getConfig().getSessionStore(), request);
     }
 }
