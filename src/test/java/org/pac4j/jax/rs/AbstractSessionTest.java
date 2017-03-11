@@ -2,8 +2,6 @@ package org.pac4j.jax.rs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Set;
-
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
@@ -12,6 +10,7 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.pac4j.core.client.Clients;
+import org.pac4j.jax.rs.rules.SessionContainerRule;
 
 /**
  *
@@ -20,19 +19,13 @@ import org.pac4j.core.client.Clients;
  *
  */
 public abstract class AbstractSessionTest extends AbstractTest {
-
+    
     @Override
-    protected Set<Class<?>> getResources() {
-        Set<Class<?>> resources = super.getResources();
-        resources.add(TestSessionResource.class);
-        return resources;
-    }
-
-    protected abstract String cookieName();
+    protected abstract SessionContainerRule createContainer();
 
     @Test
     public void testNotLogged() {
-        final Response res = getTarget("/session/logged").request().get();
+        final Response res = container.getTarget("/session/logged").request().get();
         assertThat(res.getStatus()).isEqualTo(401);
     }
 
@@ -41,15 +34,15 @@ public abstract class AbstractSessionTest extends AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final Response login = getTarget("/session/login")
+        final Response login = container.getTarget("/session/login")
                 .queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
-        final NewCookie cookie = login.getCookies().get(cookieName());
+        final NewCookie cookie = login.getCookies().get(container.cookieName());
         assertThat(cookie).isNotNull();
 
-        final String ok = getTarget("/session/logged").request().cookie(cookie).get(String.class);
+        final String ok = container.getTarget("/session/logged").request().cookie(cookie).get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
@@ -58,15 +51,15 @@ public abstract class AbstractSessionTest extends AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final Response login = getTarget("session/login")
+        final Response login = container.getTarget("session/login")
                 .queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(login.getStatus()).isEqualTo(302);
 
-        final NewCookie cookie = login.getCookies().get(cookieName());
+        final NewCookie cookie = login.getCookies().get(container.cookieName());
         assertThat(cookie).isNotNull();
 
-        final String ok = getTarget("session/inject").request().cookie(cookie).get(String.class);
+        final String ok = container.getTarget("session/inject").request().cookie(cookie).get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
@@ -75,7 +68,7 @@ public abstract class AbstractSessionTest extends AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final Response res = getTarget("/session/login").queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient")
+        final Response res = container.getTarget("/session/login").queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient")
                 .request().post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(res.getStatus()).isEqualTo(401);
 

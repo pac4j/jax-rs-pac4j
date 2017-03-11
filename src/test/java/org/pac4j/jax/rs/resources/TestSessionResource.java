@@ -1,4 +1,4 @@
-package org.pac4j.jax.rs;
+package org.pac4j.jax.rs.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

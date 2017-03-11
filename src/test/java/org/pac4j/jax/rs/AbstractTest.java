@@ -2,30 +2,14 @@ package org.pac4j.jax.rs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.InputStream;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Set;
-
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
-import org.assertj.core.util.Sets;
+import org.junit.Rule;
 import org.junit.Test;
-import org.pac4j.core.client.Clients;
-import org.pac4j.core.config.Config;
-import org.pac4j.core.credentials.UsernamePasswordCredentials;
-import org.pac4j.core.credentials.authenticator.Authenticator;
-import org.pac4j.http.client.direct.DirectFormClient;
-import org.pac4j.http.client.indirect.FormClient;
-import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
-import org.pac4j.jax.rs.pac4j.JaxRsConfig;
-import org.pac4j.jax.rs.pac4j.JaxRsUrlResolver;
+import org.pac4j.jax.rs.rules.ContainerRule;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
@@ -36,76 +20,33 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
  */
 public abstract class AbstractTest {
 
-    public static final String DEFAULT_CLIENT = "default-form";
-
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
         // Logger.getLogger("org.glassfish").setLevel(Level.FINEST);
     }
-
-    protected void setUpClientClassloader(Class<? extends ClientBuilder> clazz) {
-        AccessController.doPrivileged(new PrivilegedAction<Void>() {
-            @Override
-            public Void run() {
-                Thread.currentThread().setContextClassLoader(new ClassLoader() {
-                    @Override
-                    public InputStream getResourceAsStream(String name) {
-                        if (("META-INF/services/" + ClientBuilder.JAXRS_DEFAULT_CLIENT_BUILDER_PROPERTY).equals(name)) {
-                            return IOUtils.toInputStream(clazz.getName());
-                        } else {
-                            return super.getResourceAsStream(name);
-                        }
-                    }
-                });
-                return null;
-            }
-        });
-    }
-
-    protected Config getConfig() {
-        // login not used because the ajax resolver always answer true
-        Authenticator<UsernamePasswordCredentials> auth = new SimpleTestUsernamePasswordAuthenticator();
-        FormClient client = new FormClient("notUsedLoginUrl", auth);
-        DirectFormClient client2 = new DirectFormClient(auth);
-        DirectFormClient client3 = new DirectFormClient(auth);
-        client3.setName(DEFAULT_CLIENT);
-
-        Clients clients = new Clients("notUsedCallbackUrl", client, client2, client3);
-        // in case of invalid credentials, we simply want the error, not a redirect to the login url
-        clients.setAjaxRequestResolver((c) -> true);
-        // so that callback url have the correct prefix w.r.t. the container's context
-        clients.setUrlResolver(new JaxRsUrlResolver());
-
-        JaxRsConfig config = new JaxRsConfig();
-        config.setClients(clients);
-        config.setDefaultClients(DEFAULT_CLIENT);
-
-        return config;
-    }
-
-    protected Set<Class<?>> getResources() {
-        return Sets.newLinkedHashSet(TestResource.class, TestClassLevelResource.class, TestProxyResource.class);
-    }
-
-    protected abstract WebTarget getTarget(String url);
+    
+    @Rule
+    public ContainerRule container = createContainer();
+    
+    protected abstract ContainerRule createContainer();
 
     @Test
     public void noPac4j() {
-        final String ok = getTarget("/no").request().get(String.class);
+        final String ok = container.getTarget("/no").request().get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
     @Test
     public void classLevelNoPac4j() {
-        final String ok = getTarget("/class/no").request().get(String.class);
+        final String ok = container.getTarget("/class/no").request().get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
     @Test
     public void proxiedClassLevelNoPac4j() {
-        final String ok = getTarget("/proxied/class/no").request().get(String.class);
+        final String ok = container.getTarget("/proxied/class/no").request().get(String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
@@ -114,7 +55,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final String ok = getTarget("/direct").request()
+        final String ok = container.getTarget("/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -124,7 +65,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final String ok = getTarget("/defaultDirect").request()
+        final String ok = container.getTarget("/defaultDirect").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -134,7 +75,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final String ok = getTarget("/class/direct").request()
+        final String ok = container.getTarget("/class/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -144,7 +85,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final String ok = getTarget("/proxied/class/direct").request()
+        final String ok = container.getTarget("/proxied/class/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -154,7 +95,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final Response direct = getTarget("/direct").request()
+        final Response direct = container.getTarget("/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(direct.getStatus()).isEqualTo(401);
     }
@@ -164,7 +105,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final Response direct = getTarget("/class/direct").request()
+        final Response direct = container.getTarget("/class/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(direct.getStatus()).isEqualTo(401);
     }
@@ -174,7 +115,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final Response direct = getTarget("/proxied/class/direct").request()
+        final Response direct = container.getTarget("/proxied/class/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(direct.getStatus()).isEqualTo(401);
     }
@@ -184,7 +125,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final String ok = getTarget("/directInject").request()
+        final String ok = container.getTarget("/directInject").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -194,7 +135,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final String ok = getTarget("/directInjectManager").request()
+        final String ok = container.getTarget("/directInjectManager").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -204,7 +145,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final String ok = getTarget("/directInjectManager").request()
+        final String ok = container.getTarget("/directInjectManager").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("fail");
     }
@@ -214,7 +155,7 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "foo");
-        final String ok = getTarget("/directInjectSkip").request()
+        final String ok = container.getTarget("/directInjectSkip").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("ok");
     }
@@ -224,9 +165,8 @@ public abstract class AbstractTest {
         Form form = new Form();
         form.param("username", "foo");
         form.param("password", "bar");
-        final String ok = getTarget("/directInjectSkip").request()
+        final String ok = container.getTarget("/directInjectSkip").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("fail");
     }
-
 }
