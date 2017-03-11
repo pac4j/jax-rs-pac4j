@@ -1,7 +1,7 @@
 package org.pac4j.jax.rs.pac4j;
 
 import org.pac4j.core.context.WebContext;
-import org.pac4j.core.http.CallbackUrlResolver;
+import org.pac4j.core.http.UrlResolver;
 
 /**
  * 
@@ -12,12 +12,12 @@ import org.pac4j.core.http.CallbackUrlResolver;
  * @since 1.0.0
  *
  */
-public class JaxRsCallbackUrlResolver implements CallbackUrlResolver {
+public class JaxRsUrlResolver implements UrlResolver {
 
     @Override
-    public String compute(String callbackUrl, WebContext context) {
-        if (context instanceof JaxRsContext && callbackUrl != null) {
-            return ((JaxRsContext) context).getAbsolutePath(callbackUrl, true);
+    public String compute(String url, WebContext context) {
+        if (context instanceof JaxRsContext && url != null) {
+            return ((JaxRsContext) context).getAbsolutePath(url, true);
         }
         return null;
     }

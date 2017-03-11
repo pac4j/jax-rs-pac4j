@@ -43,6 +43,10 @@ public class JaxRsContextFactoryProvider implements ContextResolver<JaxRsContext
         return ProvidersHelper.getContext(providers, Config.class);
     }
 
+    /**
+     * We need to provide a factory because it is not possible to get the {@link ContainerRequestContext} injected
+     * directly here...
+     */
     @FunctionalInterface
     public interface JaxRsContextFactory {
         JaxRsContext provides(ContainerRequestContext context);
