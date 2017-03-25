@@ -41,7 +41,7 @@ public class TestSessionResource extends TestResource {
     @Path("/login")
     // TODO apparently we need to disable session renewal because grizzly
     // send 2 JSESSIONID if not...
-    @Pac4JCallback(defaultUrl = "/logged", renewSession = false)
+    @Pac4JCallback(defaultUrl = "/session/logged", renewSession = false)
     public void login() {
         // nothing
     }

@@ -1,9 +1,11 @@
 package org.pac4j.jax.rs.rules;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+
 import javax.ws.rs.client.WebTarget;
 
 import org.glassfish.grizzly.http.server.util.Globals;
-import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -48,6 +50,9 @@ public abstract class JerseyRule extends ExternalResource implements ContainerRu
 
     @Override
     protected void before() throws Throwable {
+        // Used by Jersey Client to store cookies
+        CookieHandler.setDefault(new CookieManager());
+        
         // let's force use a JerseyClient!
         setUpClientClassloader(JerseyClientBuilder.class);
 
@@ -59,6 +64,7 @@ public abstract class JerseyRule extends ExternalResource implements ContainerRu
     protected void after() {
         try {
             jersey.tearDown();
+            CookieHandler.setDefault(null);
         } catch (Exception e) {
             throw new RuntimeException("can't stop jersey", e);
         }
@@ -66,7 +72,7 @@ public abstract class JerseyRule extends ExternalResource implements ContainerRu
 
     @Override
     public WebTarget getTarget(String url) {
-        return jersey.target(url).property(ClientProperties.FOLLOW_REDIRECTS, false);
+        return jersey.target(url);
     }
 
     @Override
