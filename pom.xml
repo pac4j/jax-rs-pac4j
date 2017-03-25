@@ -70,9 +70,9 @@
   <properties>
     <servlet.version>3.1.0</servlet.version>
     <jax.rs.version>2.0.1</jax.rs.version>
-    <jersey.version>2.25</jersey.version>
+    <jersey.version>2.25.1</jersey.version>
     <resteasy.version>3.0.19.Final</resteasy.version>
-    <pac4j.version>2.0.0-RC2-SNAPSHOT</pac4j.version>
+    <pac4j.version>2.0.0-RC2</pac4j.version>
     <java.version>1.8</java.version>
   </properties>
 
@@ -123,7 +123,8 @@
     <dependency>
       <groupId>org.glassfish.grizzly</groupId>
       <artifactId>grizzly-http-server</artifactId>
-      <version>2.3.23</version>
+      <!-- same version as in jersey -->
+      <version>2.3.28</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.context.Cookie;
-import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.TechnicalException;
@@ -194,8 +193,8 @@ public class JaxRsContext implements WebContext {
     }
 
     @Override
-    public HttpConstants.HTTP_METHOD getRequestMethod() {
-        return HttpConstants.HTTP_METHOD.valueOf(requestContext.getMethod().toUpperCase());
+    public String getRequestMethod() {
+        return requestContext.getMethod();
     }
 
     @Override
