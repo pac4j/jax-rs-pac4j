@@ -12,7 +12,7 @@
   <artifactId>jax-rs-pac4j</artifactId>
   <packaging>jar</packaging>
   <name>pac4j implementation for JAX-RS</name>
-  <version>2.0.0-RC2</version>
+  <version>2.0.0-RC3-SNAPSHOT</version>
   <description>Security library for JAX-RS based on pac4j, optional support for Jersey</description>
   <url>https://github.com/pac4j/jax-rs-pac4j</url>
 
