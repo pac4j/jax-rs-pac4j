@@ -1,5 +1,7 @@
 package org.pac4j.jax.rs.resources;
 
+import java.util.Optional;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -48,7 +50,7 @@ public class TestResource {
     @POST
     @Path("directInject")
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated")
-    public String directInject(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
+    public String directInjectOptional(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
         if (profile != null) {
             return "ok";
         } else {
@@ -75,8 +77,8 @@ public class TestResource {
     @POST
     @Path("directInjectSkip")
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated", skipResponse = true)
-    public String directInjectSkip(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
-        if (profile != null) {
+    public String directInjectSkip(@Pac4JProfile(readFromSession = false) Optional<CommonProfile> profile) {
+        if (profile.isPresent()) {
             return "ok";
         } else {
             return "fail";

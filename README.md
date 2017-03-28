@@ -248,8 +248,8 @@ For example:
 ```java
     @GET
     @Pac4JCallback(skipResponse = true)
-    public UserData loginCB(@Pac4JProfile CommonProfile profile) {
-        if (profile != null) {
+    public UserData loginCB(@Pac4JProfile Optional<CommonProfile> profile) {
+        if (profile.isPresent()) {
             return new UserData(profile.getId(), profile.getDisplayName());
         } else {
             throw new WebApplicationException(401);
@@ -281,7 +281,9 @@ You can get the profile of the authenticated user using the annotation `@Pac4JPr
 ```java
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Pac4JSecurity(authorizers = "isAuthenticated")
     public UserData getUserData(@Pac4JProfile CommonProfile profile) {
+        // profile can't be null
         LOG.debug("Returning infos for {}", profile.getId());
 
         return new UserData(profile.getId(), profile.getDisplayName());
@@ -289,6 +291,22 @@ You can get the profile of the authenticated user using the annotation `@Pac4JPr
 ```
 
 It has one parameter name `readFromSession` (default is `true`: use `false` not to use the session, but only the current HTTP request, useful in particular with the session-less `JaxRsContextFactoryProvider`).
+
+It is also possible to inject a optional `CommonProfile` like so:
+
+```java
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserData getUserData(@Pac4JProfile Optional<CommonProfile> profile) {
+        if (profile.isPresent()) {
+            LOG.debug("Returning infos for {}", profile.getId());
+
+            return new UserData(profile.getId(), profile.getDisplayName());
+        } else {
+            throw new WebApplicationExcpotion(401);
+        }
+    }
+```
 
 You can also get the profile manager (which gives access to more advanced information about the profile) using the annotation `@Pac4JProfileManager` like so:
 

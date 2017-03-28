@@ -1,5 +1,6 @@
 package org.pac4j.jax.rs.jersey.features;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -12,6 +13,8 @@ import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.internal.util.ReflectionHelper;
+import org.glassfish.jersey.internal.util.collection.ClassTypePair;
 import org.glassfish.jersey.server.internal.inject.AbstractContainerRequestValueFactory;
 import org.glassfish.jersey.server.internal.inject.AbstractValueFactoryProvider;
 import org.glassfish.jersey.server.internal.inject.MultivaluedParameterExtractorProvider;
@@ -25,8 +28,6 @@ import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
 import org.pac4j.jax.rs.helpers.ProvidersHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link Pac4JProfile &#64;Pac4JProfile} injection value factory provider.
@@ -49,14 +50,25 @@ public class Pac4JValueFactoryProvider {
         @Override
         protected Factory<?> createValueFactory(Parameter parameter) {
             assert parameter != null;
+            
             if (!parameter.isAnnotationPresent(Pac4JProfile.class)) {
                 return null;
-            } else if (!CommonProfile.class.isAssignableFrom(parameter.getRawType())) {
-                throw new IllegalStateException(
-                        "Cannot inject a Pac4J profile into a parameter of type " + parameter.getRawType().getName());
-            } else {
+            } 
+            
+            if (CommonProfile.class.isAssignableFrom(parameter.getRawType())) {
                 return new ProfileValueFactory(parameter);
+            } 
+            
+            if (Optional.class.isAssignableFrom(parameter.getRawType())) {
+                List<ClassTypePair> ctps = ReflectionHelper.getTypeArgumentAndClass(parameter.getRawType());
+                ClassTypePair ctp = (ctps.size() == 1) ? ctps.get(0) : null;
+                if (ctp == null || CommonProfile.class.isAssignableFrom(ctp.rawClass())) {
+                    return new OptionalProfileValueFactory(parameter);
+                }
             }
+            
+            throw new IllegalStateException(
+                    "Cannot inject a Pac4J profile into a parameter of type " + parameter.getRawType().getName());
         }
     }
 
@@ -121,8 +133,6 @@ public class Pac4JValueFactoryProvider {
 
     static class ProfileValueFactory extends AbstractJaxRsContextValueFactory<CommonProfile> {
 
-        private static final Logger LOG = LoggerFactory.getLogger(ProfileValueFactory.class);
-
         @Context
         private Providers providers;
 
@@ -136,25 +146,41 @@ public class Pac4JValueFactoryProvider {
         public CommonProfile provide() {
             final boolean readFromSession = parameter.getAnnotation(Pac4JProfile.class).readFromSession();
             final Optional<CommonProfile> profile = new ProfileManager<>(getContext()).get(readFromSession);
+            
             if (profile.isPresent()) {
-                final CommonProfile p = profile.get();
-                if (parameter.getRawType().isInstance(p)) {
-                    return p;
-                } else {
-                    // this is most certainly a programmer error
-                    LOG.warn("Cannot inject a Pac4J profile of type {} into a parameter of type {}",
-                            p.getClass().getName(), parameter.getRawType().getName());
-                    return null;
-                }
-            } else {
-                // there could be reason for that (after a callback for example)
-                LOG.debug("Cannot inject a Pac4J profile into an unauthenticated request");
-                return null;
+                return profile.get();
             }
+            
+            throw new RuntimeException("Cannot inject a Pac4J profile into an unauthenticated request");
         }
 
         @Override
         public void dispose(CommonProfile instance) {
+            // nothing
+        }
+    }
+    
+    static class OptionalProfileValueFactory extends AbstractJaxRsContextValueFactory<Optional<CommonProfile>> {
+
+        @Context
+        private Providers providers;
+
+        private final Parameter parameter;
+
+        public OptionalProfileValueFactory(Parameter parameter) {
+            this.parameter = parameter;
+        }
+
+        @Override
+        public Optional<CommonProfile> provide() {
+            final boolean readFromSession = parameter.getAnnotation(Pac4JProfile.class).readFromSession();
+            final Optional<CommonProfile> profile = new ProfileManager<>(getContext()).get(readFromSession);
+
+            return profile;
+        }
+
+        @Override
+        public void dispose(Optional<CommonProfile> instance) {
             // nothing
         }
     }
