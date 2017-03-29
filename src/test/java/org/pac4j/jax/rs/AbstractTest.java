@@ -131,6 +131,12 @@ public abstract class AbstractTest {
     }
 
     @Test
+    public void directInjectNoAuth() {
+        final Response res = container.getTarget("/directInjectNoAuth").request().get();
+        assertThat(res.getStatus()).isEqualTo(401);
+    }
+
+    @Test
     public void directInjectManagerAuth() {
         Form form = new Form();
         form.param("username", "foo");

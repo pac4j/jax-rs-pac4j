@@ -34,6 +34,13 @@ public class RestEasyUndertowServletTest extends AbstractSessionTest {
     // TODO we don't have injection yet for something else than Jersey!
     @Ignore
     @Override
+    public void directInjectNoAuth() {
+        // do nothing
+    }
+
+    // TODO we don't have injection yet for something else than Jersey!
+    @Ignore
+    @Override
     public void directInjectSkipFail() {
         // do nothing
     }

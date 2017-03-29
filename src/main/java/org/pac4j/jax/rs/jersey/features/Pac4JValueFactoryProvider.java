@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Providers;
 
@@ -28,6 +29,8 @@ import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
 import org.pac4j.jax.rs.helpers.ProvidersHelper;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link Pac4JProfile &#64;Pac4JProfile} injection value factory provider.
@@ -133,6 +136,8 @@ public class Pac4JValueFactoryProvider {
 
     static class ProfileValueFactory extends AbstractJaxRsContextValueFactory<CommonProfile> {
 
+        private static Logger LOG = LoggerFactory.getLogger(ProfileValueFactory.class);
+
         @Context
         private Providers providers;
 
@@ -151,7 +156,9 @@ public class Pac4JValueFactoryProvider {
                 return profile.get();
             }
             
-            throw new RuntimeException("Cannot inject a Pac4J profile into an unauthenticated request");
+            LOG.debug("Cannot inject a Pac4j profile into an unauthenticated request, responding with 401");
+
+            throw new WebApplicationException(401);
         }
 
         @Override
