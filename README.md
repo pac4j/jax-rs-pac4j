@@ -2,6 +2,9 @@
   <img src="https://pac4j.github.io/pac4j/img/logo-jaxrs.png" width="300" />
 </p>
 
+[![Build Status](https://travis-ci.org/pac4j/jax-rs-pac4j.png?branch=master)](https://travis-ci.org/pac4j/jax-rs-pac4j)
+[![Maven Central](https://img.shields.io/maven-central/v/org.pac4j/jax-rs-pac4j.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.pac4j%22%20AND%20a%3A%22jax-rs-pac4j%22)
+
 The `jax-rs-pac4j` project is an **easy and powerful security library for JAX-RS** web applications which supports authentication and authorization, but also application logout and advanced features like session fixation and CSRF protection.
 It's based on Java 8, servlet 3 (when present), JAX-RS 2 and on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. It's available under the Apache 2 license.
 
@@ -144,6 +147,31 @@ For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session
 
 Note that a default value for the `clients` parameter of the `@Pac4JSecurity`
 annotation can be passed to the constructor of `Pac4JSecurityFeature`.
+
+#### JAX-RS Autoscanning
+
+When autoscanning is enabled, dropping the jax-rs-pac4j jar in the classpath won't have any effect.
+The developper always need to make some choices on which provider must be used depending on its environment.
+
+A good practice in this context would be to define a JAX-RS `@Provider` to setup it like so:
+```java
+@Provider
+public class Pac4JFeature implements Feature {
+
+    @Override
+    public boolean configure(FeatureContext context) {
+        context
+            .register(new JaxRsConfigProvider(config))
+            .register(new Pac4JSecurityFeature())
+            .register(new Pac4JValueFactoryProvider.Binder())
+            .register(new ServletJaxRsContextFactoryProvider());
+
+        return true;
+    }
+}
+```
+
+The content of this file would vary depending on your environment as explained in the previous section.
 
 ---
 
@@ -407,9 +435,10 @@ If you have any question, please use the following mailing lists:
 
 ## Development
 
+
 The version 2.0.0-SNAPSHOT is under development.
 
-Maven artifacts are built via Travis: [![Build Status](https://travis-ci.org/pac4j/jax-rs-pac4j.png?branch=master)](https://travis-ci.org/pac4j/jax-rs-pac4j) and available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/pac4j). This repository must be added in the Maven `pom.xml` file for example:
+Maven artifacts are built via Travis and available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/pac4j). This repository must be added in the Maven `settings.xml` or `pom.xml` files:
 
 ```xml
 <repositories>
