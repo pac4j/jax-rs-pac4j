@@ -4,6 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.pac4j.core.context.DefaultAuthorizers;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
@@ -21,14 +22,14 @@ public class TestSessionResource extends TestResource {
 
     @GET
     @Path("/logged")
-    @Pac4JSecurity(clients = "FormClient", authorizers = "isAuthenticated")
+    @Pac4JSecurity(clients = "FormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
     public String logged() {
         return "ok";
     }
 
     @GET
     @Path("/inject")
-    @Pac4JSecurity(clients = "FormClient", authorizers = "isAuthenticated")
+    @Pac4JSecurity(clients = "FormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
     public String inject(@Pac4JProfile CommonProfile profile) {
         if (profile != null) {
             return "ok";

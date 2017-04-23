@@ -4,6 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.pac4j.core.context.DefaultAuthorizers;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 
 /**
@@ -13,7 +14,7 @@ import org.pac4j.jax.rs.annotations.Pac4JSecurity;
  *
  */
 @Path("/class")
-@Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated")
+@Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
 public class TestClassLevelResource {
 
     @GET

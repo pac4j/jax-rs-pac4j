@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
+import org.pac4j.core.context.DefaultAuthorizers;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
@@ -35,21 +36,21 @@ public class TestResource {
 
     @POST
     @Path("direct")
-    @Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated")
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
     public String direct() {
         return "ok";
     }
 
     @POST
     @Path("defaultDirect")
-    @Pac4JSecurity(authorizers = "isAuthenticated")
+    @Pac4JSecurity(authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
     public String defaultDirect() {
         return "ok";
     }
 
     @POST
     @Path("directInject")
-    @Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated")
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
     public String directInject(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
         if (profile != null) {
             return "ok";
@@ -57,7 +58,7 @@ public class TestResource {
             return "error";
         }
     }
-    
+
     @GET
     @Path("directInjectNoAuth")
     public String directInjectNoAuth(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
@@ -70,7 +71,7 @@ public class TestResource {
 
     @POST
     @Path("directInjectManager")
-    @Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated", skipResponse = true)
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED, skipResponse = true)
     public String directInjectManager(@Pac4JProfileManager ProfileManager<CommonProfile> pm) throws HttpAction {
         if (pm != null) {
             // pm.isAuthorized is relying on the session...
@@ -86,7 +87,7 @@ public class TestResource {
 
     @POST
     @Path("directInjectSkip")
-    @Pac4JSecurity(clients = "DirectFormClient", authorizers = "isAuthenticated", skipResponse = true)
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED, skipResponse = true)
     public String directInjectSkip(@Pac4JProfile(readFromSession = false) Optional<CommonProfile> profile) {
         if (profile.isPresent()) {
             return "ok";
