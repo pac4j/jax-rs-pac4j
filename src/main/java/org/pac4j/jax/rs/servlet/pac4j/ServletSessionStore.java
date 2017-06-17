@@ -34,7 +34,11 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
 
     @Override
     public void set(JaxRsContext context, String key, Object value) {
-        getHttpSession(context).setAttribute(key, value);
+        if (value == null) {
+            getHttpSession(context).removeAttribute(key);
+        } else {
+            getHttpSession(context).setAttribute(key, value);
+        }
     }
     
     @Override

@@ -32,7 +32,11 @@ public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
 
     @Override
     public void set(JaxRsContext context, String key, Object value) {
-        getSession(context).setAttribute(key, value);
+        if (value == null) {
+            getSession(context).removeAttribute(key);
+        } else {
+            getSession(context).setAttribute(key, value);
+        }
     }
     
     @Override
