@@ -24,7 +24,7 @@ public class GrizzlyJaxRsContext extends JaxRsContext {
 
     public GrizzlyJaxRsContext(Providers providers, ContainerRequestContext requestContext,
             SessionStore sessionStore, Request request) {
-        super(providers, requestContext, sessionStore != null ? null : new GrizzlySessionStore());
+        super(providers, requestContext, sessionStore != null ? sessionStore : new GrizzlySessionStore());
         this.request = request;
     }
     
