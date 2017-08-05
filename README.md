@@ -86,7 +86,7 @@ ParameterClient parameterClient = new ParameterClient("token", new JwtAuthentica
 
 Config config = new Config("/callback", oidcClient, saml2Client, facebookClient,
 	                  twitterClient, formClient, basicAuthClient, casClient, parameterClient);
-config.getClients().setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
+config.getClients().setCallbackUrlResolver(new JaxRsUrlResolver());
 
 config.addAuthorizer("admin", new RequireAnyRoleAuthorizer("ROLE_ADMIN"));
 config.addAuthorizer("custom", new CustomAuthorizer());
@@ -95,7 +95,7 @@ config.addAuthorizer("custom", new CustomAuthorizer());
 
 #### Customization
 
-1) **RECOMMENDED** the `JaxRsCallbackUrlResolver` as the default callback url resolver, it will ensure that in practice, the callback url passed to external authentication system corresponds to the real URL of the callback endpoint
+1) **RECOMMENDED** the `JaxRsUrlResolver` as the default callback url resolver, it will ensure that in practice, the callback url passed to external authentication system corresponds to the real URL of the callback endpoint
 
 2) a specific [`SessionStore`](http://www.pac4j.org/docs/session-store.html) using the `setSessionStore(sessionStore)` method (by default, with `JaxRsContextFactoryProvider`, session handling is not supported; with `ServletJaxRsContextFactoryProvider`, it uses the `ServletJaxRsSessionStore` which relies on the underlying Servlet Container HTTP session; and with `GrizzlyJaxRsContextFactoryProvider`, it uses the `GrizzlySessionStore` which relies on the underlying HTTP session managed by Grizzly).
 
