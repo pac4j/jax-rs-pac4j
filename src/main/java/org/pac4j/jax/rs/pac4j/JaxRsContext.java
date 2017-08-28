@@ -93,6 +93,8 @@ public class JaxRsContext implements WebContext {
 
     @Override
     public void setResponseHeader(String name, String value) {
+        // header() adds headers, so we must remove the previous value first
+        getAbortBuilder().header(name, null);
         getAbortBuilder().header(name, value);
     }
 
