@@ -436,7 +436,7 @@ If you have any question, please use the following mailing lists:
 ## Development
 
 
-The version 2.0.1-SNAPSHOT is under development.
+The version 2.0.2-SNAPSHOT is under development.
 
 Maven artifacts are built via Travis and available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/pac4j). This repository must be added in the Maven `settings.xml` or `pom.xml` files:
 
