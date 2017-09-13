@@ -26,10 +26,10 @@ public abstract class AbstractTest {
 
         // Logger.getLogger("org.glassfish").setLevel(Level.FINEST);
     }
-    
+
     @Rule
     public ContainerRule container = createContainer();
-    
+
     protected abstract ContainerRule createContainer();
 
     @Test
@@ -57,6 +57,16 @@ public abstract class AbstractTest {
         form.param("password", "foo");
         final String ok = container.getTarget("/direct").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
+    public void directOkComplexContentType() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = container.getTarget("/direct").request().post(
+                Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE.withCharset("UTF-8")), String.class);
         assertThat(ok).isEqualTo("ok");
     }
 
