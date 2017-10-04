@@ -95,4 +95,12 @@ public class TestResource {
             return "fail";
         }
     }
+
+    @POST
+    @Path("directResponseHeadersSet")
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = { DefaultAuthorizers.IS_AUTHENTICATED,
+            DefaultAuthorizers.NOSNIFF })
+    public String directResponseHeadersSet() {
+        return "ok";
+    }
 }

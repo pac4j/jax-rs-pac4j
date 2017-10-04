@@ -6,6 +6,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -184,5 +185,17 @@ public abstract class AbstractTest {
         final String ok = container.getTarget("/directInjectSkip").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(ok).isEqualTo("fail");
+    }
+
+    @Test
+    public void directResponseHeadersSet() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final Response ok = container.getTarget("/directResponseHeadersSet").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        assertThat(ok.getStatus()).isEqualTo(Status.OK.getStatusCode());
+        assertThat(ok.readEntity(String.class)).isEqualTo("ok");
+        assertThat(ok.getHeaderString("X-Content-Type-Options")).isEqualTo("nosniff");
     }
 }

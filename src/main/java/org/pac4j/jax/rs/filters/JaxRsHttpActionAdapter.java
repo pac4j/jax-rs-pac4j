@@ -1,5 +1,7 @@
 package org.pac4j.jax.rs.filters;
 
+import javax.ws.rs.core.Response;
+
 import org.pac4j.core.http.HttpActionAdapter;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
@@ -15,7 +17,9 @@ public class JaxRsHttpActionAdapter implements HttpActionAdapter<Object, JaxRsCo
 
     @Override
     public Object adapt(int code, JaxRsContext context) {
-        context.getRequestContext().abortWith(context.getAbortBuilder().build());
+        Response response = context.getAbortBuilder().build();
+        assert response.getStatus() == code;
+        context.getRequestContext().abortWith(response);
         return null;
     }
 
