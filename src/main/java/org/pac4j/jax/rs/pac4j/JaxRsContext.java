@@ -10,12 +10,18 @@ import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.Form;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -37,6 +43,8 @@ import org.pac4j.core.util.CommonHelper;
  *
  */
 public class JaxRsContext implements WebContext {
+
+    public static final String RESPONSE_HOLDER = JaxRsContext.class + ".ResponseHolder";
 
     private final ContainerRequestContext requestContext;
 
@@ -80,35 +88,114 @@ public class JaxRsContext implements WebContext {
         return abortResponse;
     }
 
+    public ResponseHolder getResponseHolder() {
+        ResponseHolder prop = (ResponseHolder) requestContext.getProperty(RESPONSE_HOLDER);
+        if (prop == null) {
+            prop = new ResponseHolder();
+            requestContext.setProperty(RESPONSE_HOLDER, prop);
+        }
+        return prop;
+    }
+
+    public static class ResponseHolder {
+
+        private boolean hasResponseContent = false;
+
+        private String responseContent = null;
+
+        private boolean hasResponseStatus = false;
+
+        private int responseStatus = 0;
+
+        private boolean hasResponseContentType = false;
+
+        private MediaType responseContentType = null;
+
+        private final Map<String, String> responseHeaders = new HashMap<>();
+
+        private final Set<NewCookie> responseCookies = new HashSet<>();
+
+        public void writeResponseContent(String content) {
+            responseContent = content;
+            hasResponseContent = true;
+        }
+
+        public void setResponseStatus(int code) {
+            responseStatus = code;
+            hasResponseStatus = true;
+        }
+
+        public void setResponseHeader(String name, String value) {
+            responseHeaders.put(name, value);
+        }
+
+        public void addResponseCookie(NewCookie cookie) {
+            responseCookies.add(cookie);
+        }
+
+        public void setResponseContentType(MediaType type) {
+            responseContentType = type;
+            hasResponseContentType = true;
+        }
+
+        public void populateResponse(ContainerResponseContext responseContext) {
+            if (hasResponseContent) {
+                responseContext.setEntity(responseContent);
+            }
+            if (hasResponseContentType) {
+                responseContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, responseContentType);
+            }
+            if (hasResponseStatus) {
+                responseContext.setStatus(responseStatus);
+            }
+            for (Entry<String, String> headers : responseHeaders.entrySet()) {
+                responseContext.getHeaders().putSingle(headers.getKey(), headers.getValue());
+            }
+            for (NewCookie cookie : responseCookies) {
+                responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, cookie);
+            }
+        }
+    }
+
     @Override
     public void writeResponseContent(String content) {
         getAbortBuilder().entity(content);
+        getResponseHolder().writeResponseContent(content);
     }
+
 
     @Override
     public void setResponseStatus(int code) {
         getAbortBuilder().status(code);
+        getResponseHolder().setResponseStatus(code);
     }
 
     @Override
     public void setResponseHeader(String name, String value) {
+        CommonHelper.assertNotNull("name", name);
         // header() adds headers, so we must remove the previous value first
         getAbortBuilder().header(name, null);
         getAbortBuilder().header(name, value);
+        getResponseHolder().setResponseHeader(name, value);
     }
 
     @Override
     public void setResponseContentType(String content) {
-        getAbortBuilder().type(content);
+        MediaType type = content == null ? null : MediaType.valueOf(content);
+        getAbortBuilder().type(type);
+        getResponseHolder().setResponseContentType(type);
     }
 
     @Override
     public void addResponseCookie(Cookie cookie) {
+        CommonHelper.assertNotNull("cookie", cookie);
         // Note: expiry is not in servlet and is meant to be superseeded by
         // max-age, so we simply make it null
-        getAbortBuilder().cookie(new NewCookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
+        NewCookie c = new NewCookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
                 cookie.getDomain(), cookie.getVersion(), cookie.getComment(), cookie.getMaxAge(), null,
-                cookie.isSecure(), cookie.isHttpOnly()));
+                cookie.isSecure(), cookie.isHttpOnly());
+        getAbortBuilder().cookie(c);
+        getResponseHolder().addResponseCookie(c);
     }
 
     /**
