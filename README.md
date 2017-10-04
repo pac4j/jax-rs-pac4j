@@ -255,7 +255,7 @@ resourceConfig.register(
 
 4) `multiProfile` (optional): it indicates whether multiple authentications (and thus multiple profiles) must be kept at the same time (`false` by default).
 
-5) `skipResponse` (optional): by default pac4j builds an answer (in case of unauthenticated or unauthorized access), if this is set to `true` then the response will be skipped. There is no good reason to do so with the `SecurityFilter` though.
+5) `skipResponse` (optional): by default pac4j populates an answer (in case of unauthenticated or unauthorized access, but also to add headers to the normal jax-rs response via the authorizers), if this is set to `true` then the handling of the response will be skipped and jax-rs will be free to process the request.
 
 ---
 
