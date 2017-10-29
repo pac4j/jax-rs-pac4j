@@ -72,7 +72,7 @@
     <jax.rs.version>2.0.1</jax.rs.version>
     <jersey.version>2.25.1</jersey.version>
     <resteasy.version>3.0.19.Final</resteasy.version>
-    <pac4j.version>2.1.0</pac4j.version>
+    <pac4j.version>3.0.0-SNAPSHOT</pac4j.version>
     <java.version>1.8</java.version>
   </properties>
 
@@ -234,7 +234,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.3</version>
+        <version>3.0.5</version>
         <configuration>
           <effort>Low</effort>
           <threshold>Max</threshold>
@@ -254,7 +254,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.6</version>
+        <version>3.8</version>
         <configuration>
           <includeTests>true</includeTests>
           <printFailingErrors>true</printFailingErrors>
