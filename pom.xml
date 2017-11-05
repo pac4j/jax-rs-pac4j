@@ -69,6 +69,8 @@
 
   <properties>
     <servlet.version>3.1.0</servlet.version>
+    <!-- careful jersey 2.26 moved to jax-rs 2.1 and even though
+         the versionning does not show it, this is a huge upgrade -->
     <jax.rs.version>2.0.1</jax.rs.version>
     <jersey.version>2.25.1</jersey.version>
     <resteasy.version>3.0.19.Final</resteasy.version>

@@ -28,13 +28,13 @@ These filters can be directly registered by hand, or instead, the following feat
 
 4) Generic JAX-RS Providers and Features activate the use of some of the filters on the JAX-RS implementation based on various conditions
 
-- The `JaxRsContextFactoryProvider` enables generic JAX-RS based pac4j functionning, without session handling (i.e., it will only work with direct clients)
+- The `JaxRsContextFactoryProvider` enables generic JAX-RS based pac4j functioning, without session handling (i.e., it will only work with direct clients)
 - The `Pac4JSecurityFeature` enables annotation-based activation of the filters at the resource method level
 - The `Pac4JSecurityFilterFeature` activates a global filter that will be applied to every resources.
 
 5) Container/Implementation-specific Providers and Features extend the basic functionality provided by the generic ones
 
-- The `Pac4JProfileValueFactoryProvider` enables injection of the security profile in resource method (for Apache Jersey)
+- The `Pac4JValueFactoryProvider` enables injection of the security profile in resource method (for Apache Jersey <2.26, see [#30](https://github.com/pac4j/jax-rs-pac4j/issues/30))
 - The `ServletJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow).
 - The `GrizzlyJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Grizzly2 without Servlet support).
 
@@ -118,7 +118,7 @@ For a Jersey-based and Servlet-based (e.g., Jetty or Grizzly Servlet) environmen
 resourceConfig
     .register(new ServletJaxRsContextFactoryProvider(config))
     .register(new Pac4JSecurityFeature(config))
-    .register(new Pac4JValueFactoryProvider.Binder());
+    .register(new Pac4JValueFactoryProvider.Binder()); // only with Jersey <2.26
 ```
 
 For a Jersey-based and Grizzly-based environment without Servlet but session management and annotation support and method parameters injection:
@@ -126,7 +126,7 @@ For a Jersey-based and Grizzly-based environment without Servlet but session man
 resourceConfig
     .register(new GrizzlyJaxRsContextFactoryProvider(config))
     .register(new Pac4JSecurityFeature(config))
-    .register(new Pac4JValueFactoryProvider.Binder());
+    .register(new Pac4JValueFactoryProvider.Binder()); // only with Jersey <2.26
 ```
 
 For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session management and annotation support:
@@ -163,7 +163,7 @@ public class Pac4JFeature implements Feature {
         context
             .register(new JaxRsConfigProvider(config))
             .register(new Pac4JSecurityFeature())
-            .register(new Pac4JValueFactoryProvider.Binder())
+            .register(new Pac4JValueFactoryProvider.Binder()) // only with Jersey <2.26
             .register(new ServletJaxRsContextFactoryProvider());
 
         return true;
@@ -299,7 +299,7 @@ For example:
 
 ### 5) Get the user profile (`CommonProfile` and `ProfileManager`)
 
-When using Jersey as the JAX-RS runtime, it is possible to directly inject a pac4j profile or profile manager using method parameters injection.
+When using Jersey (<2.26) as the JAX-RS runtime, it is possible to directly inject a pac4j profile or profile manager using method parameters injection.
 When using another JAX-RS runtime, see below for workarounds.
 
 #### Using method parameters injection
@@ -373,7 +373,7 @@ or even:
 
 #### Without method parameters injection
 
-**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey, help will be appreciated (for Resteasy [for example](https://github.com/pac4j/jax-rs-pac4j/issues/6)).
+**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey <2.26, help will be appreciated (for example for [Resteasy](https://github.com/pac4j/jax-rs-pac4j/issues/6) or [Jersey >=2.26](https://github.com/pac4j/jax-rs-pac4j/issues/30)).
 
 If using a JAX-RS runtime running on top of a Servlet container, it is always possible to simply exploit the `HttpServletRequest` as explained [there](https://github.com/pac4j/j2e-pac4j#5-get-the-user-profile-profilemanager):
 ```java
@@ -382,6 +382,27 @@ If using a JAX-RS runtime running on top of a Servlet container, it is always po
         ProfileManager manager = new ProfileManager(new J2EContext(request, null));
         Optional<CommonProfile> profile = manager.get(true);
     }
+```
+
+Or with Jersey >=2.26 using the following:
+```java
+public class MyResource {
+    @Context
+    private Providers providers;
+
+    @Inject
+    private ContainerRequest request;
+
+    private JaxRsContext getContext() {
+        return ProvidersHelper.getContext(providers, JaxRsContextFactory.class).provides(request);
+    }
+    
+    @GET
+    public void get() {
+        ProfileManager manager = new ProfileManager(getContext());
+        Optional<CommonProfile> profile = manager.get(true);
+    }
+}
 ```
 
 ---
