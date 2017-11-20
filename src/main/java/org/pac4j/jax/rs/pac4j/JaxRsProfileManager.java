@@ -131,10 +131,6 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
             this.roles = Collections.unmodifiableSet(rs);
         }
 
-        public CommonProfile getProfile() {
-            return profile;
-        }
-
         @Override
         public String getName() {
             return this.profile.getId();
