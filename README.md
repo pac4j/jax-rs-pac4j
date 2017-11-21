@@ -140,6 +140,7 @@ For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session
             Set<Object> singletons = new HashSet<>();
             singletons.add(new ServletJaxRsContextFactoryProvider(config));
             singletons.add(new Pac4JSecurityFeature(config));
+            singletons.add(new Pac4JProfileInjectorFactory());
             return singletons;
         }
     }
@@ -164,6 +165,7 @@ public class Pac4JFeature implements Feature {
             .register(new JaxRsConfigProvider(config))
             .register(new Pac4JSecurityFeature())
             .register(new Pac4JValueFactoryProvider.Binder()) // only with Jersey <2.26
+            .register(new Pac4JProfileInjectorFactory()) // only with RestEasy
             .register(new ServletJaxRsContextFactoryProvider());
 
         return true;
@@ -373,7 +375,7 @@ or even:
 
 #### Without method parameters injection
 
-**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey <2.26, help will be appreciated (for example for [Resteasy](https://github.com/pac4j/jax-rs-pac4j/issues/6) or [Jersey >=2.26](https://github.com/pac4j/jax-rs-pac4j/issues/30)).
+**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey <2.26, help will be appreciated (for example [Jersey >=2.26](https://github.com/pac4j/jax-rs-pac4j/issues/30)).
 
 If using a JAX-RS runtime running on top of a Servlet container, it is always possible to simply exploit the `HttpServletRequest` as explained [there](https://github.com/pac4j/j2e-pac4j#5-get-the-user-profile-profilemanager):
 ```java
