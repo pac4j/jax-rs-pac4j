@@ -7,14 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 
 /**
  * 
  * Binds the value(s) of the current Pac4J {@link CommonProfile} to a resource method parameter, resource class field,
  * or resource class bean property.
  * 
- * @see Pac4JValueFactoryProvider.Binder
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -23,5 +21,10 @@ import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Pac4JProfile {
+
+    /**
+     * @deprecated will be removed in jax-rs-pac4j 3.0.0
+     */
+    @Deprecated
     boolean readFromSession() default true;
 }

@@ -4,17 +4,21 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.Set;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
 
 import org.assertj.core.util.Sets;
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.rules.ExternalResource;
 import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
+import org.pac4j.jax.rs.resources.RestEasyResource;
 import org.pac4j.jax.rs.resteasy.features.Pac4JProfileInjectorFactory;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 
@@ -44,6 +48,13 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
     }
 
     @Override
+    public Set<Class<?>> getResources() {
+        Set<Class<?>> resources = SessionContainerRule.super.getResources();
+        resources.add(RestEasyResource.class);
+        return resources;
+    }
+
+    @Override
     protected void before() throws Throwable {
         // Used by Jersey Client to store cookies
         CookieHandler.setDefault(new CookieManager());
@@ -61,6 +72,15 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
     @Override
     protected void after() {
         server.stop();
+        // server.stop is not instantaneous
+        Awaitility.await().atMost(Duration.FIVE_SECONDS).until(() -> {
+            try {
+                getTarget("/").request().get();
+            } catch (ProcessingException e) {
+                return true;
+            }
+            return false;
+        });
         client.close();
         CookieHandler.setDefault(null);
     }

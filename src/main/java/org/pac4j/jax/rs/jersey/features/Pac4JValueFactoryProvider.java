@@ -2,7 +2,7 @@ package org.pac4j.jax.rs.jersey.features;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,9 +27,10 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
-import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
-import org.pac4j.jax.rs.helpers.ProvidersHelper;
-import org.pac4j.jax.rs.pac4j.JaxRsContext;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
+import org.pac4j.jax.rs.helpers.RequestCommonProfile;
+import org.pac4j.jax.rs.helpers.RequestProfileManager;
+import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,72 +45,59 @@ import org.slf4j.LoggerFactory;
  */
 public class Pac4JValueFactoryProvider {
 
+    private static Logger LOG = LoggerFactory.getLogger(Pac4JValueFactoryProvider.class);
+
     static class Pac4JProfileValueFactoryProvider extends AbstractValueFactoryProvider {
 
+        private final ProfileManagerFactoryBuilder manager;
         private final OptionalProfileFactoryBuilder optProfile;
         private final ProfileFactoryBuilder profile;
 
         @Inject
-        protected Pac4JProfileValueFactoryProvider(OptionalProfileFactoryBuilder opt, ProfileFactoryBuilder profile,
+        protected Pac4JProfileValueFactoryProvider(ProfileManagerFactoryBuilder manager,
+                OptionalProfileFactoryBuilder opt, ProfileFactoryBuilder profile,
                 MultivaluedParameterExtractorProvider mpep, ServiceLocator locator) {
             super(mpep, locator, Parameter.Source.UNKNOWN);
+            this.manager = manager;
             this.optProfile = opt;
             this.profile = profile;
         }
 
         @Override
         protected Factory<?> createValueFactory(Parameter parameter) {
-            assert parameter != null;
-
-            if (!parameter.isAnnotationPresent(Pac4JProfile.class)) {
-                return null;
-            }
-
-            if (CommonProfile.class.isAssignableFrom(parameter.getRawType())) {
-                return profile.apply(parameter);
-            }
-
-            if (Optional.class.isAssignableFrom(parameter.getRawType())) {
-                List<ClassTypePair> ctps = ReflectionHelper.getTypeArgumentAndClass(parameter.getRawType());
-                ClassTypePair ctp = (ctps.size() == 1) ? ctps.get(0) : null;
-                if (ctp == null || CommonProfile.class.isAssignableFrom(ctp.rawClass())) {
-                    return optProfile.apply(parameter);
+            if (parameter.isAnnotationPresent(Pac4JProfileManager.class)) {
+                if (ProfileManager.class.isAssignableFrom(parameter.getRawType())) {
+                    return manager.get();
                 }
-            }
 
-            throw new IllegalStateException(
-                    "Cannot inject a Pac4J profile into a parameter of type " + parameter.getRawType().getName());
-        }
-    }
-
-    static class Pac4JProfileManagerValueFactoryProvider extends AbstractValueFactoryProvider {
-
-        private final ProfileManagerFactoryBuilder manager;
-
-        @Inject
-        protected Pac4JProfileManagerValueFactoryProvider(ProfileManagerFactoryBuilder manager,
-                MultivaluedParameterExtractorProvider mpep, ServiceLocator locator) {
-            super(mpep, locator, Parameter.Source.UNKNOWN);
-            this.manager = manager;
-        }
-
-        @Override
-        protected Factory<?> createValueFactory(Parameter parameter) {
-            assert parameter != null;
-            if (!parameter.isAnnotationPresent(Pac4JProfileManager.class)) {
-                return null;
-            } else if (!ProfileManager.class.isAssignableFrom(parameter.getRawType())) {
                 throw new IllegalStateException("Cannot inject a Pac4J profile manager into a parameter of type "
                         + parameter.getRawType().getName());
-            } else {
-                return manager.apply(parameter);
             }
+
+            if (parameter.isAnnotationPresent(Pac4JProfile.class)) {
+                if (CommonProfile.class.isAssignableFrom(parameter.getRawType())) {
+                    return profile.get();
+                }
+
+                if (Optional.class.isAssignableFrom(parameter.getRawType())) {
+                    List<ClassTypePair> ctps = ReflectionHelper.getTypeArgumentAndClass(parameter.getRawType());
+                    ClassTypePair ctp = (ctps.size() == 1) ? ctps.get(0) : null;
+                    if (ctp == null || CommonProfile.class.isAssignableFrom(ctp.rawClass())) {
+                        return optProfile.get();
+                    }
+                }
+
+                throw new IllegalStateException(
+                        "Cannot inject a Pac4J profile into a parameter of type " + parameter.getRawType().getName());
+            }
+
+            return null;
         }
     }
 
     static class ProfileManagerInjectionResolver extends ParamInjectionResolver<Pac4JProfileManager> {
         ProfileManagerInjectionResolver() {
-            super(Pac4JProfileManagerValueFactoryProvider.class);
+            super(Pac4JProfileValueFactoryProvider.class);
         }
     }
 
@@ -140,15 +128,15 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    public interface OptionalProfileFactoryBuilder extends Function<Parameter, OptionalProfileFactory> {
+    public interface OptionalProfileFactoryBuilder extends Supplier<OptionalProfileFactory> {
 
     }
 
-    public interface ProfileFactoryBuilder extends Function<Parameter, ProfileFactory> {
+    public interface ProfileFactoryBuilder extends Supplier<ProfileFactory> {
 
     }
 
-    public interface ProfileManagerFactoryBuilder extends Function<Parameter, ProfileManagerFactory> {
+    public interface ProfileManagerFactoryBuilder extends Supplier<ProfileManagerFactory> {
 
     }
 
@@ -180,7 +168,7 @@ public class Pac4JValueFactoryProvider {
                 ProfileManagerFactoryBuilder manager) {
             this.profile = profile == null ? ProfileValueFactory::new : profile;
             this.optProfile = optProfile == null ? OptionalProfileValueFactory::new : optProfile;
-            this.manager = manager == null ? p -> new ProfileManagerValueFactory() : manager;
+            this.manager = manager == null ? ProfileManagerValueFactory::new : manager;
         }
 
         /**
@@ -192,7 +180,7 @@ public class Pac4JValueFactoryProvider {
          *            a profile, can be <code>null</code>.
          */
         public Binder(CommonProfile profile) {
-            this(p -> () -> profile, p -> () -> Optional.ofNullable(profile), null);
+            this(() -> () -> profile, () -> () -> Optional.ofNullable(profile), null);
         }
 
         @Override
@@ -201,7 +189,6 @@ public class Pac4JValueFactoryProvider {
             bind(optProfile).to(OptionalProfileFactoryBuilder.class);
             bind(manager).to(ProfileManagerFactoryBuilder.class);
 
-            bind(Pac4JProfileManagerValueFactoryProvider.class).to(ValueFactoryProvider.class).in(Singleton.class);
             bind(Pac4JProfileValueFactoryProvider.class).to(ValueFactoryProvider.class).in(Singleton.class);
 
             bind(ProfileInjectionResolver.class).to(new TypeLiteral<InjectionResolver<Pac4JProfile>>() {
@@ -211,73 +198,36 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    static class ProfileManagerValueFactory extends AbstractJaxRsContextValueFactory<ProfileManager<CommonProfile>>
+    static class ProfileManagerValueFactory extends AbstractContainerRequestValueFactory<ProfileManager<CommonProfile>>
             implements ProfileManagerFactory {
+
+        @Context
+        Providers providers;
+
         @Override
         public ProfileManager<CommonProfile> provide() {
-            return new ProfileManager<>(getContext());
+            return new RequestProfileManager(new RequestJaxRsContext(providers, getContainerRequest()))
+                    .profileManager();
         }
     }
 
-    static class ProfileValueFactory extends AbstractJaxRsContextValueFactory<CommonProfile> implements ProfileFactory {
-
-        private static Logger LOG = LoggerFactory.getLogger(ProfileValueFactory.class);
-
-        @Context
-        private Providers providers;
-
-        private final Parameter parameter;
-
-        public ProfileValueFactory(Parameter parameter) {
-            this.parameter = parameter;
-        }
-
+    static class ProfileValueFactory extends AbstractContainerRequestValueFactory<CommonProfile>
+            implements ProfileFactory {
         @Override
         public CommonProfile provide() {
-            final boolean readFromSession = parameter.getAnnotation(Pac4JProfile.class).readFromSession();
-            final Optional<CommonProfile> profile = new ProfileManager<>(getContext()).get(readFromSession);
-
-            if (profile.isPresent()) {
-                return profile.get();
-            }
-
-            LOG.debug("Cannot inject a Pac4j profile into an unauthenticated request, responding with 401");
-
-            throw new WebApplicationException(401);
+            return new RequestCommonProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile()
+                    .orElseThrow(() -> {
+                        LOG.debug("Cannot inject a Pac4j profile into an unauthenticated request, responding with 401");
+                        return new WebApplicationException(401);
+                    });
         }
     }
 
-    static class OptionalProfileValueFactory extends AbstractJaxRsContextValueFactory<Optional<CommonProfile>>
+    static class OptionalProfileValueFactory extends AbstractContainerRequestValueFactory<Optional<CommonProfile>>
             implements OptionalProfileFactory {
-
-        @Context
-        private Providers providers;
-
-        private final Parameter parameter;
-
-        public OptionalProfileValueFactory(Parameter parameter) {
-            this.parameter = parameter;
-        }
-
         @Override
         public Optional<CommonProfile> provide() {
-            final boolean readFromSession = parameter.getAnnotation(Pac4JProfile.class).readFromSession();
-            final Optional<CommonProfile> profile = new ProfileManager<>(getContext()).get(readFromSession);
-
-            return profile;
-        }
-    }
-
-    static abstract class AbstractJaxRsContextValueFactory<T> extends AbstractContainerRequestValueFactory<T> {
-
-        @Context
-        private Providers providers;
-
-        protected JaxRsContext getContext() {
-            JaxRsContext context = ProvidersHelper.getContext(providers, JaxRsContextFactory.class)
-                    .provides(getContainerRequest());
-            assert context != null;
-            return context;
+            return new RequestCommonProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile();
         }
     }
 }

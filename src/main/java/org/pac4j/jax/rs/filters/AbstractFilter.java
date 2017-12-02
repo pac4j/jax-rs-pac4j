@@ -11,8 +11,8 @@ import javax.ws.rs.ext.Providers;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.http.HttpActionAdapter;
-import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
-import org.pac4j.jax.rs.helpers.ProvidersHelper;
+import org.pac4j.jax.rs.helpers.ProvidersContext;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
@@ -32,18 +32,14 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
     }
 
     protected Config getConfig() {
-        return ProvidersHelper.getContext(providers, Config.class);
+        return new ProvidersContext(providers).resolveNotNull(Config.class);
     }
 
     protected abstract void filter(JaxRsContext context) throws IOException;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        JaxRsContext context = ProvidersHelper.getContext(providers, JaxRsContextFactory.class)
-                .provides(requestContext);
-        assert context != null;
-
-        filter(context);
+        filter(new RequestJaxRsContext(providers, requestContext).contextOrNew());
     }
 
     @Override
@@ -54,11 +50,8 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
         // unfortunately, if skipResponse is used, we can't do that because pac4j considers
         // its abort response in the same way as the normal response
         if (skipResponse == null || !skipResponse) {
-            JaxRsContext context = ProvidersHelper.getContext(providers, JaxRsContextFactory.class)
-                    .provides(requestContext);
-            assert context != null;
-
-            context.getResponseHolder().populateResponse(responseContext);
+            new RequestJaxRsContext(providers, requestContext).contextOrNew().getResponseHolder()
+                    .populateResponse(responseContext);
         }
     }
 
