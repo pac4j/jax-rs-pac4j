@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -21,15 +22,23 @@
       <id>sonatype-nexus-snapshots</id>
       <name>Sonatype Nexus Snapshots</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases><enabled>false</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
     <repository>
       <id>sonatype-nexus</id>
       <name>Sonatype Nexus</name>
       <url>https://oss.sonatype.org/content/repositories/releases</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
@@ -69,8 +78,8 @@
 
   <properties>
     <servlet.version>3.1.0</servlet.version>
-    <!-- careful jersey 2.26 moved to jax-rs 2.1 and even though
-         the versionning does not show it, this is a huge upgrade -->
+    <!-- careful jersey 2.26 moved to jax-rs 2.1 and even though the versionning 
+      does not show it, this is a huge upgrade -->
     <jax.rs.version>2.0.1</jax.rs.version>
     <jersey.version>2.25.1</jersey.version>
     <resteasy.version>3.1.4.Final</resteasy.version>
