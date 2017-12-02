@@ -8,7 +8,7 @@ import javax.ws.rs.ext.Providers;
 import org.pac4j.core.client.IndirectClient;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
-import org.pac4j.jax.rs.helpers.ProvidersHelper;
+import org.pac4j.jax.rs.helpers.ProvidersContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
@@ -22,7 +22,6 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
  * 
  * @author Victor Noel - Linagora
  * @since 1.0.0
- *
  */
 public class JaxRsContextFactoryProvider implements ContextResolver<JaxRsContextFactory> {
 
@@ -40,7 +39,7 @@ public class JaxRsContextFactoryProvider implements ContextResolver<JaxRsContext
     }
 
     protected Config getConfig() {
-        return ProvidersHelper.getContext(providers, Config.class);
+        return new ProvidersContext(providers).resolveNotNull(Config.class);
     }
 
     /**

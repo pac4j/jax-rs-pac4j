@@ -1,18 +1,29 @@
 package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Providers;
 
+import org.pac4j.core.authorization.authorizer.Authorizer;
+import org.pac4j.core.authorization.checker.AuthorizationChecker;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
+import org.pac4j.core.exception.HttpAction;
+import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.pac4j.JaxRsConfig;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
+import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.Pac4JSecurityContext;
 
 /**
  * 
@@ -25,12 +36,6 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
  */
 @Priority(Priorities.AUTHENTICATION)
 public class SecurityFilter extends AbstractFilter {
-
-    private static final DefaultSecurityLogic<Object, JaxRsContext> DEFAULT_LOGIC = new DefaultSecurityLogic<>();
-
-    static {
-        DEFAULT_LOGIC.setProfileManagerFactory(JaxRsProfileManager::new);
-    }
 
     private SecurityLogic<Object, JaxRsContext> securityLogic;
 
@@ -51,16 +56,6 @@ public class SecurityFilter extends AbstractFilter {
 
         Config config = getConfig();
 
-        SecurityLogic<Object, JaxRsContext> sl;
-
-        if (securityLogic != null) {
-            sl = securityLogic;
-        } else if (config.getSecurityLogic() != null) {
-            sl = config.getSecurityLogic();
-        } else {
-            sl = DEFAULT_LOGIC;
-        }
-
         String cs;
         // no client was set
         if (clients == null && config instanceof JaxRsConfig) {
@@ -69,17 +64,30 @@ public class SecurityFilter extends AbstractFilter {
             cs = clients;
         }
 
-        if (cs == null) {
-            // SecurityLogic.perform expects a non-null value
-            cs = "";
-        }
-
         // Note: basically, there is two possible outcomes:
         // either the access is granted or there was an error or a redirect!
         // For the former, we do nothing (see SecurityGrantedAccessOutcome comments)
         // For the later, we interpret the error and abort the request using jax-rs abstractions
-        sl.perform(context, config, SecurityGrantedAccessOutcome.INSTANCE, adapter(config), cs, authorizers, matchers,
-                multiProfile);
+        SecurityLogic<Object, JaxRsContext> logic = buildLogic(config);
+        AuthorizationCheckerWrapper wrapper = null;
+        if (logic instanceof DefaultSecurityLogic) {
+            wrapper = new AuthorizationCheckerWrapper(((DefaultSecurityLogic) logic).getAuthorizationChecker());
+            ((DefaultSecurityLogic) logic).setAuthorizationChecker(wrapper);
+        }
+        logic.perform(context, config, new SecurityGrantedAccessOutcome(wrapper), adapter(config), cs, authorizers,
+                matchers, multiProfile);
+    }
+
+    protected SecurityLogic<Object, JaxRsContext> buildLogic(Config config) {
+        if (securityLogic != null) {
+            return securityLogic;
+        } else if (config.getSecurityLogic() != null) {
+            return config.getSecurityLogic();
+        } else {
+            DefaultSecurityLogic<Object, JaxRsContext> logic = new DefaultSecurityLogic<>();
+            logic.setProfileManagerFactory(JaxRsProfileManager::new);
+            return logic;
+        }
     }
 
     public String getClients() {
@@ -121,16 +129,47 @@ public class SecurityFilter extends AbstractFilter {
     public void setSecurityLogic(SecurityLogic<Object, JaxRsContext> securityLogic) {
         this.securityLogic = securityLogic;
     }
-}
 
-enum SecurityGrantedAccessOutcome implements SecurityGrantedAccessAdapter<Object, JaxRsContext> {
-    INSTANCE;
+    /**
+     * @deprecated this will be useless with pac4j 3.0.0 since the profiles are passed to the
+     *             {@link SecurityGrantedAccessAdapter}
+     */
+    @Deprecated
+    private static class AuthorizationCheckerWrapper implements AuthorizationChecker {
 
-    @Override
-    public Object adapt(JaxRsContext context, Object... parameters) throws Throwable {
-        // nothing specific to do, because SecurityGrantedAccessAdapter is meant
-        // to be used in a chain of servlet filters but JAX-RS does not do things like that
-        return null;
+        private final AuthorizationChecker wrapped;
+
+        public AuthorizationCheckerWrapper(AuthorizationChecker wrapped) {
+            this.wrapped = wrapped;
+        }
+
+        private List<CommonProfile> profiles = null;
+
+        @Override
+        public boolean isAuthorized(WebContext context, List<CommonProfile> profiles, String authorizerNames,
+                Map<String, Authorizer> authorizersMap) throws HttpAction {
+            this.profiles = profiles;
+            return this.wrapped.isAuthorized(context, profiles, authorizerNames, authorizersMap);
+        }
+
     }
 
+    private static class SecurityGrantedAccessOutcome implements SecurityGrantedAccessAdapter<Object, JaxRsContext> {
+
+        private AuthorizationCheckerWrapper wrapper;
+
+        public SecurityGrantedAccessOutcome(AuthorizationCheckerWrapper wrapper) {
+            this.wrapper = wrapper;
+        }
+
+        @Override
+        public Object adapt(JaxRsContext context, Object... parameters) {
+            SecurityContext original = context.getRequestContext().getSecurityContext();
+
+            Optional<Collection<CommonProfile>> profiles = wrapper != null ? Optional.ofNullable(wrapper.profiles)
+                    : Optional.empty();
+            context.getRequestContext().setSecurityContext(new Pac4JSecurityContext(original, context, profiles));
+            return null;
+        }
+    }
 }

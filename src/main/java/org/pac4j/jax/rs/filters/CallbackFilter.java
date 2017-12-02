@@ -21,12 +21,6 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 @Priority(Priorities.AUTHORIZATION)
 public class CallbackFilter extends AbstractFilter {
 
-    private static final DefaultCallbackLogic<Object, JaxRsContext> DEFAULT_LOGIC = new DefaultCallbackLogic<>();
-
-    static {
-        DEFAULT_LOGIC.setProfileManagerFactory(JaxRsProfileManager::new);
-    }
-
     private CallbackLogic<Object, JaxRsContext> callbackLogic;
 
     private String defaultUrl;
@@ -41,21 +35,22 @@ public class CallbackFilter extends AbstractFilter {
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
-
         Config config = getConfig();
 
-        CallbackLogic<Object, JaxRsContext> cl;
+        buildLogic(config).perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false),
+                multiProfile, renewSession);
+    }
 
+    protected CallbackLogic<Object, JaxRsContext> buildLogic(Config config) {
         if (callbackLogic != null) {
-            cl = callbackLogic;
+            return callbackLogic;
         } else if (config.getCallbackLogic() != null) {
-            cl = config.getCallbackLogic();
+            return config.getCallbackLogic();
         } else {
-            cl = DEFAULT_LOGIC;
+            DefaultCallbackLogic<Object, JaxRsContext> logic = new DefaultCallbackLogic<>();
+            logic.setProfileManagerFactory(JaxRsProfileManager::new);
+            return logic;
         }
-
-        cl.perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false), multiProfile,
-                renewSession);
     }
 
     public CallbackLogic<Object, JaxRsContext> getCallbackLogic() {

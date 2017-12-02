@@ -1,21 +1,18 @@
 package org.pac4j.jax.rs.pac4j;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.SecurityContext;
 
-import org.pac4j.core.context.WebContext;
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.ProfileHelper;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.CommonHelper;
+import org.pac4j.jax.rs.helpers.ProfilesHelper;
+import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 
 /**
  * 
@@ -25,60 +22,50 @@ import org.pac4j.core.util.CommonHelper;
  */
 public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
 
-    public JaxRsProfileManager(WebContext context) {
+    public JaxRsProfileManager(JaxRsContext context) {
         super(context);
-
-        ContainerRequestContext requestContext = getJaxRsContext().getRequestContext();
-        SecurityContext original = requestContext.getSecurityContext();
-        if (!(original instanceof Pac4JSecurityContext)) {
-            requestContext.setSecurityContext(new Pac4JSecurityContext(original));
-        }
-    }
-
-    protected JaxRsContext getJaxRsContext() {
-        return (JaxRsContext) this.context;
-    }
-
-    @Override
-    protected LinkedHashMap<String, CommonProfile> retrieveAll(boolean readFromSession) {
-        LinkedHashMap<String, CommonProfile> profiles = super.retrieveAll(readFromSession);
-
-        SecurityContext securityContext = getJaxRsContext().getRequestContext().getSecurityContext();
-        if (securityContext instanceof Pac4JSecurityContext) {
-            ((Pac4JSecurityContext) securityContext).setPrincipal(profiles);
-        }
-
-        return profiles;
     }
 
     @Override
     public void logout() {
         super.logout();
 
-        SecurityContext securityContext = getJaxRsContext().getRequestContext().getSecurityContext();
-        if (securityContext instanceof Pac4JSecurityContext) {
-            ((Pac4JSecurityContext) securityContext).unsetPrincipal();
-        }
+        new RequestPac4JSecurityContext((JaxRsContext) this.context).context().ifPresent(c -> c.principal = null);
     }
 
     public static class Pac4JSecurityContext implements SecurityContext {
 
         private final SecurityContext original;
 
-        private PrincipalImpl principal;
+        /**
+         * If this is null, it means we are not logged in!
+         */
+        private Principal principal;
 
-        public Pac4JSecurityContext(SecurityContext original) {
+        private final Optional<Collection<CommonProfile>> profiles;
+
+        private final JaxRsContext context;
+
+        public Pac4JSecurityContext(SecurityContext original, JaxRsContext context,
+                Optional<Collection<CommonProfile>> profiles) {
             this.original = original;
+            this.context = context;
+            this.profiles = profiles;
+            this.principal = profiles.flatMap(ps -> ProfilesHelper.flatIntoOneProfile(ps).map(PrincipalImpl::new))
+                    .orElse(null);
         }
 
-        public void setPrincipal(LinkedHashMap<String, CommonProfile> profiles) {
-            if (profiles != null && !profiles.isEmpty()) {
-                principal = new PrincipalImpl(profiles);
+        public Optional<Collection<CommonProfile>> getProfiles() {
+            if (principal != null) {
+                return profiles.map(ps -> Collections.unmodifiableCollection(ps));
+            } else {
+                return Optional.empty();
             }
         }
 
-        public void unsetPrincipal() {
-            this.principal = null;
+        public JaxRsContext getContext() {
+            // even after logout we can access the context
+            return this.context;
         }
 
         @Override
@@ -93,7 +80,7 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
         @Override
         public boolean isUserInRole(String role) {
             if (principal != null) {
-                return principal.getRoles().contains(role);
+                return profiles.map(ps -> ps.stream().anyMatch(p -> p.getRoles().contains(role))).orElse(false);
             } else {
                 return original != null && original.isUserInRole(role);
             }
@@ -114,30 +101,26 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
         }
     }
 
+    /**
+     * @deprecated will be removed in jax-rs-pac4j 3.0.0, will use Pac4JPrincipal from pac4j 3.0.0 instead
+     */
+    @Deprecated
     public static class PrincipalImpl implements Principal {
 
-        private final CommonProfile profile;
+        private final String name;
 
-        private final Set<String> roles;
-
-        public PrincipalImpl(LinkedHashMap<String, CommonProfile> profiles) {
-            Optional<CommonProfile> optProfile = ProfileHelper.flatIntoOneProfile(profiles);
-            if (!optProfile.isPresent()) {
-                throw new IllegalArgumentException();
+        public PrincipalImpl(CommonProfile profile) {
+            String username = profile.getUsername();
+            if (CommonHelper.isNotBlank(username)) {
+                this.name = username;
+            } else {
+                this.name = profile.getId();
             }
-            this.profile = optProfile.get();
-            Set<String> rs = new HashSet<>();
-            profiles.values().stream().forEach(p -> rs.addAll(p.getRoles()));
-            this.roles = Collections.unmodifiableSet(rs);
         }
 
         @Override
         public String getName() {
-            return this.profile.getId();
-        }
-
-        public Set<String> getRoles() {
-            return roles;
+            return this.name;
         }
 
         @Override
@@ -160,7 +143,7 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
 
         @Override
         public String toString() {
-            return CommonHelper.toString(this.getClass(), "profile", this.profile);
+            return CommonHelper.toString(this.getClass(), "profileId", this.name);
         }
     }
 }

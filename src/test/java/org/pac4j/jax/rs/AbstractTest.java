@@ -210,6 +210,16 @@ public abstract class AbstractTest {
     }
 
     @Test
+    public void containerSpecificSecurityContext() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = container.getTarget("/containerSpecific/securitycontext").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
     public void containerSpecificContext() {
         Form form = new Form();
         form.param("username", "foo");

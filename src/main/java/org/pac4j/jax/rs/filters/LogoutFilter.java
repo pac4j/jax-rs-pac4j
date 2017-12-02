@@ -21,12 +21,6 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 @Priority(Priorities.AUTHORIZATION)
 public class LogoutFilter extends AbstractFilter {
 
-    private static final DefaultLogoutLogic<Object, JaxRsContext> DEFAULT_LOGIC = new DefaultLogoutLogic<>();
-
-    static {
-        DEFAULT_LOGIC.setProfileManagerFactory(JaxRsProfileManager::new);
-    }
-
     private LogoutLogic<Object, JaxRsContext> logoutLogic;
 
     private String defaultUrl;
@@ -45,21 +39,23 @@ public class LogoutFilter extends AbstractFilter {
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
-
         Config config = getConfig();
 
-        LogoutLogic<Object, JaxRsContext> ll;
+        buildLogic(config).perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false),
+                context.getAbsolutePath(logoutUrlPattern, false), localLogout, destroySession, centralLogout);
+    }
 
+    protected LogoutLogic<Object, JaxRsContext> buildLogic(Config config) {
         if (logoutLogic != null) {
-            ll = logoutLogic;
+            return logoutLogic;
         } else if (config.getLogoutLogic() != null) {
-            ll = config.getLogoutLogic();
+            return config.getLogoutLogic();
         } else {
-            ll = DEFAULT_LOGIC;
+            DefaultLogoutLogic<Object, JaxRsContext> logic = new DefaultLogoutLogic<>();
+            logic.setProfileManagerFactory(JaxRsProfileManager::new);
+            return logic;
         }
 
-        ll.perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false),
-                context.getAbsolutePath(logoutUrlPattern, false), localLogout, destroySession, centralLogout);
     }
 
     public String getDefaultUrl() {

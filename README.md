@@ -165,7 +165,7 @@ public class Pac4JFeature implements Feature {
             .register(new JaxRsConfigProvider(config))
             .register(new Pac4JSecurityFeature())
             .register(new Pac4JValueFactoryProvider.Binder()) // only with Jersey <2.26
-            .register(new Pac4JProfileInjectorFactory()) // only with RestEasy
+            .register(new Pac4JProfileInjectorFactory()) // only with Resteasy
             .register(new ServletJaxRsContextFactoryProvider());
 
         return true;
@@ -301,7 +301,7 @@ For example:
 
 ### 5) Get the user profile (`CommonProfile` and `ProfileManager`)
 
-When using Jersey (<2.26) as the JAX-RS runtime, it is possible to directly inject a pac4j profile or profile manager using method parameters injection.
+When using Jersey (<2.26)  or Resteasy as the JAX-RS runtime, it is possible to directly inject a pac4j profile or profile manager using method parameters injection.
 When using another JAX-RS runtime, see below for workarounds.
 
 #### Using method parameters injection
@@ -319,8 +319,6 @@ You can get the profile of the authenticated user using the annotation `@Pac4JPr
         return new UserData(profile.getId(), profile.getDisplayName());
     }
 ```
-
-It has one parameter name `readFromSession` (default is `true`: use `false` not to use the session, but only the current HTTP request, useful in particular with the session-less `JaxRsContextFactoryProvider`).
 
 It is also possible to inject a optional `CommonProfile` like so:
 
@@ -375,36 +373,22 @@ or even:
 
 #### Without method parameters injection
 
-**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey <2.26, help will be appreciated (for example [Jersey >=2.26](https://github.com/pac4j/jax-rs-pac4j/issues/30)).
+**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey <2.26 or Resteasy, help will be appreciated (for example [Jersey >=2.26](https://github.com/pac4j/jax-rs-pac4j/issues/30)).
 
-If using a JAX-RS runtime running on top of a Servlet container, it is always possible to simply exploit the `HttpServletRequest` as explained [there](https://github.com/pac4j/j2e-pac4j#5-get-the-user-profile-profilemanager):
+Other solutions involves:
+ - retrieving the `SecurityContext` and casting it to `Pac4JSecurityContext` to access the profiles.
+ - retrieving the `SecurityContext` and casting it to `Pac4JSecurityContext` to access the `JaxRsContext`.
+ - retrieving the `JaxRsContext` in order to instantiate a `JaxRsProfileManager`.
+
+To retrieve the `Pac4JSecurityContext` or the `JaxRsContext`, see [JerseyResource.java](src/test/java/org/pac4j/jax/rs/resources/JerseyResource.java) or [RestEasyResource.java](src/test/java/org/pac4j/jax/rs/resources/RestEasyResource.java) for examples.
+
+Worst case scenario, when using a JAX-RS runtime running on top of a Servlet container, it is always possible to simply exploit the `HttpServletRequest` as explained [there](https://github.com/pac4j/j2e-pac4j#5-get-the-user-profile-profilemanager):
 ```java
     @GET
     public void get(@Context HttpServletRequest request) {
         ProfileManager manager = new ProfileManager(new J2EContext(request, null));
         Optional<CommonProfile> profile = manager.get(true);
     }
-```
-
-Or with Jersey >=2.26 using the following:
-```java
-public class MyResource {
-    @Context
-    private Providers providers;
-
-    @Inject
-    private ContainerRequest request;
-
-    private JaxRsContext getContext() {
-        return ProvidersHelper.getContext(providers, JaxRsContextFactory.class).provides(request);
-    }
-    
-    @GET
-    public void get() {
-        ProfileManager manager = new ProfileManager(getContext());
-        Optional<CommonProfile> profile = manager.get(true);
-    }
-}
 ```
 
 ---
@@ -459,7 +443,7 @@ If you have any question, please use the following mailing lists:
 ## Development
 
 
-The version 2.1.0-SNAPSHOT is under development.
+The version 2.2.0-SNAPSHOT is under development.
 
 Maven artifacts are built via Travis and available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/pac4j). This repository must be added in the Maven `settings.xml` or `pom.xml` files:
 

@@ -54,7 +54,7 @@ public class TestResource {
     @POST
     @Path("directInject")
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
-    public String directInject(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
+    public String directInject(@Pac4JProfile CommonProfile profile) {
         if (profile != null) {
             return "ok";
         } else {
@@ -79,7 +79,7 @@ public class TestResource {
 
     @GET
     @Path("directInjectNoAuth")
-    public String directInjectNoAuth(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
+    public String directInjectNoAuth(@Pac4JProfile CommonProfile profile) {
         if (profile != null) {
             return "ok";
         } else {
@@ -106,7 +106,7 @@ public class TestResource {
     @POST
     @Path("directInjectSkip")
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED, skipResponse = true)
-    public String directInjectSkip(@Pac4JProfile(readFromSession = false) Optional<CommonProfile> profile) {
+    public String directInjectSkip(@Pac4JProfile Optional<CommonProfile> profile) {
         if (profile.isPresent()) {
             return "ok";
         } else {
