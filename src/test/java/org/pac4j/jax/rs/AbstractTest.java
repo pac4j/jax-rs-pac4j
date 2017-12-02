@@ -132,6 +132,16 @@ public abstract class AbstractTest {
     }
 
     @Test
+    public void directContext() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = container.getTarget("/directContext").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
+    }
+
+    @Test
     public void directInject() {
         Form form = new Form();
         form.param("username", "foo");
@@ -197,5 +207,15 @@ public abstract class AbstractTest {
         assertThat(ok.getStatus()).isEqualTo(Status.OK.getStatusCode());
         assertThat(ok.readEntity(String.class)).isEqualTo("ok");
         assertThat(ok.getHeaderString("X-Content-Type-Options")).isEqualTo("nosniff");
+    }
+
+    @Test
+    public void containerSpecificContext() {
+        Form form = new Form();
+        form.param("username", "foo");
+        form.param("password", "foo");
+        final String ok = container.getTarget("/containerSpecific/context").request()
+                .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        assertThat(ok).isEqualTo("ok");
     }
 }

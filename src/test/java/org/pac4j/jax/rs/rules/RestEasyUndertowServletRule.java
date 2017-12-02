@@ -18,6 +18,7 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.rules.ExternalResource;
 import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
+import org.pac4j.jax.rs.resources.RestEasyResource;
 import org.pac4j.jax.rs.resteasy.features.Pac4JProfileInjectorFactory;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 
@@ -44,6 +45,13 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
                     new Pac4JProfileInjectorFactory(),
                     new Pac4JSecurityFeature());
         }
+    }
+
+    @Override
+    public Set<Class<?>> getResources() {
+        Set<Class<?>> resources = SessionContainerRule.super.getResources();
+        resources.add(RestEasyResource.class);
+        return resources;
     }
 
     @Override

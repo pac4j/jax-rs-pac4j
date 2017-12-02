@@ -5,6 +5,8 @@ import java.util.Optional;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
@@ -15,6 +17,7 @@ import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
+import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.PrincipalImpl;
 
 /**
  * This contains only session-less interactions
@@ -54,6 +57,21 @@ public class TestResource {
     public String directInject(@Pac4JProfile(readFromSession = false) CommonProfile profile) {
         if (profile != null) {
             return "ok";
+        } else {
+            return "error";
+        }
+    }
+
+    @POST
+    @Path("directContext")
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
+    public String directContext(@Context SecurityContext context) {
+        if (context != null) {
+            if (context.getUserPrincipal() instanceof PrincipalImpl) {
+                return "ok";
+            } else {
+                return "fail";
+            }
         } else {
             return "error";
         }

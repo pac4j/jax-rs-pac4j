@@ -61,7 +61,7 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
         }
     }
 
-    private static class Pac4JSecurityContext implements SecurityContext {
+    public static class Pac4JSecurityContext implements SecurityContext {
 
         private final SecurityContext original;
 
