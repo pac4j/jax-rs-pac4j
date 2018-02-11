@@ -13,11 +13,11 @@ import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
 import org.pac4j.core.context.DefaultAuthorizers;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.Pac4JPrincipal;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.PrincipalImpl;
 
 /**
  * This contains only session-less interactions
@@ -67,7 +67,7 @@ public class TestResource {
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
     public String directContext(@Context SecurityContext context) {
         if (context != null) {
-            if (context.getUserPrincipal() instanceof PrincipalImpl) {
+            if (context.getUserPrincipal() instanceof Pac4JPrincipal) {
                 return "ok";
             } else {
                 return "fail";

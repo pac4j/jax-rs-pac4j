@@ -115,12 +115,18 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JCallback is not expected to have more than one value");
             }
 
+            if (cbAnn.defaultClient().length > 1) {
+                throw new IllegalArgumentException(
+                        "defaultClient parameter in @Pac4JCallback is not expected to have more than one value");
+            }
+
             final CallbackFilter filter = new CallbackFilter(providers);
 
             filter.setMultiProfile(cbAnn.multiProfile().length == 0 ? null : cbAnn.multiProfile()[0]);
             filter.setRenewSession(cbAnn.renewSession().length == 0 ? null : cbAnn.renewSession()[0]);
             filter.setDefaultUrl(cbAnn.defaultUrl().length == 0 ? null : cbAnn.defaultUrl()[0]);
             filter.setSkipResponse(cbAnn.skipResponse().length == 0 ? null : cbAnn.skipResponse()[0]);
+            filter.setDefaultClient(cbAnn.defaultClient().length == 0 ? null : cbAnn.defaultClient()[0]);
 
             context.register(filter);
         }

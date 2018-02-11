@@ -10,7 +10,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.http.HttpActionAdapter;
+import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.jax.rs.helpers.ProvidersContext;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;

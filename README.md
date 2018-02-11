@@ -87,6 +87,7 @@ ParameterClient parameterClient = new ParameterClient("token", new JwtAuthentica
 Config config = new Config("/callback", oidcClient, saml2Client, facebookClient,
 	                  twitterClient, formClient, basicAuthClient, casClient, parameterClient);
 config.getClients().setCallbackUrlResolver(new JaxRsUrlResolver());
+config.getClients().setAjaxRequestResolver(new JaxRsAjaxRequestResolver());
 
 config.addAuthorizer("admin", new RequireAnyRoleAuthorizer("ROLE_ADMIN"));
 config.addAuthorizer("custom", new CustomAuthorizer());
@@ -97,9 +98,11 @@ config.addAuthorizer("custom", new CustomAuthorizer());
 
 1) **RECOMMENDED** the `JaxRsUrlResolver` as the default callback url resolver, it will ensure that in practice, the callback url passed to external authentication system corresponds to the real URL of the callback endpoint
 
-2) a specific [`SessionStore`](http://www.pac4j.org/docs/session-store.html) using the `setSessionStore(sessionStore)` method (by default, with `JaxRsContextFactoryProvider`, session handling is not supported; with `ServletJaxRsContextFactoryProvider`, it uses the `ServletJaxRsSessionStore` which relies on the underlying Servlet Container HTTP session; and with `GrizzlyJaxRsContextFactoryProvider`, it uses the `GrizzlySessionStore` which relies on the underlying HTTP session managed by Grizzly).
+2) **RECOMMENDED** the `JaxRsAjaxRequestResolver` as the default callback url resolver, it will ensure that the endpoints won't redirect to the login page but answer 401 in case of authentication error
 
-3) specific [matchers](http://www.pac4j.org/docs/matchers.html) via the `addMatcher(name, Matcher)` method.
+3) a specific [`SessionStore`](http://www.pac4j.org/docs/session-store.html) using the `setSessionStore(sessionStore)` method (by default, with `JaxRsContextFactoryProvider`, session handling is not supported; with `ServletJaxRsContextFactoryProvider`, it uses the `ServletJaxRsSessionStore` which relies on the underlying Servlet Container HTTP session; and with `GrizzlyJaxRsContextFactoryProvider`, it uses the `GrizzlySessionStore` which relies on the underlying HTTP session managed by Grizzly).
+
+4) specific [matchers](http://www.pac4j.org/docs/matchers.html) via the `addMatcher(name, Matcher)` method.
 
 
 #### JAX-RS Configuration
@@ -295,7 +298,9 @@ For example:
 
 3) `renewSession` (optional): it indicates whether the web session must be renewed after login, to avoid session hijacking (`true` by default).
 
-4) `skipResponse` (optional): by default pac4j builds an answer (to redirect to the originally requested url), if this is set to `true` then the response will be skipped. Coupled with the `CommonProfile` parameter injection (see below), it can be useful to implement the desired answer (for example 401) in the resource method.
+4) `defaultClient` (optional): it defines the default client to use to finish the login process if none is provided on the URL (not defined by default)
+
+5) `skipResponse` (optional): by default pac4j builds an answer (to redirect to the originally requested url), if this is set to `true` then the response will be skipped. Coupled with the `CommonProfile` parameter injection (see below), it can be useful to implement the desired answer (for example 401) in the resource method.
 
 ---
 

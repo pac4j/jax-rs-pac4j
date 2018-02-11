@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.pac4j.core.client.Clients;
+import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.jax.rs.rules.SessionContainerRule;
 
 /**
@@ -34,7 +34,7 @@ public abstract class AbstractSessionTest extends AbstractTest {
         form.param("username", "foo");
         form.param("password", "foo");
         final String login = container.getTarget("/session/login")
-                .queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
+                .queryParam(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(login).isEqualTo("ok");
     }
@@ -45,7 +45,7 @@ public abstract class AbstractSessionTest extends AbstractTest {
         form.param("username", "foo");
         form.param("password", "foo");
         final String login = container.getTarget("/session/login")
-                .queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
+                .queryParam(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         assertThat(login).isEqualTo("ok");
 
@@ -59,7 +59,7 @@ public abstract class AbstractSessionTest extends AbstractTest {
         form.param("username", "foo");
         form.param("password", "bar");
         final Response res = container.getTarget("/session/login")
-                .queryParam(Clients.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
+                .queryParam(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER, "FormClient").request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         assertThat(res.getStatus()).isEqualTo(401);
 

@@ -29,6 +29,8 @@ public class CallbackFilter extends AbstractFilter {
 
     private Boolean renewSession;
 
+    private String defaultClient;
+
     public CallbackFilter(Providers providers) {
         super(providers);
     }
@@ -38,7 +40,7 @@ public class CallbackFilter extends AbstractFilter {
         Config config = getConfig();
 
         buildLogic(config).perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false),
-                multiProfile, renewSession);
+                multiProfile, renewSession, defaultClient);
     }
 
     protected CallbackLogic<Object, JaxRsContext> buildLogic(Config config) {
@@ -83,5 +85,13 @@ public class CallbackFilter extends AbstractFilter {
 
     public void setRenewSession(Boolean renewSession) {
         this.renewSession = renewSession;
+    }
+
+    public String getDefaultClient() {
+        return defaultClient;
+    }
+
+    public void setDefaultClient(String defaultClient) {
+        this.defaultClient = defaultClient;
     }
 }

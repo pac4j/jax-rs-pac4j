@@ -31,15 +31,6 @@ public class ServletJaxRsContext extends JaxRsContext {
         this.request = request;
     }
     
-    @Override
-    public void setSessionStore(SessionStore sessionStore) {
-        if (sessionStore == null) {
-            super.setSessionStore(new ServletSessionStore());
-        } else {
-            super.setSessionStore(sessionStore);
-        }
-    }
-    
     public HttpServletRequest getRequest() {
         return request;
     }
