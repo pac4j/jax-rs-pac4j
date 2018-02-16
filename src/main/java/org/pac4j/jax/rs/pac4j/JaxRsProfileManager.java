@@ -3,15 +3,14 @@ package org.pac4j.jax.rs.pac4j;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.ws.rs.core.SecurityContext;
 
 import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.Pac4JPrincipal;
+import org.pac4j.core.profile.ProfileHelper;
 import org.pac4j.core.profile.ProfileManager;
-import org.pac4j.core.util.CommonHelper;
-import org.pac4j.jax.rs.helpers.ProfilesHelper;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 
 /**
@@ -42,22 +41,21 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
          */
         private Principal principal;
 
-        private final Optional<Collection<CommonProfile>> profiles;
+        private final Collection<CommonProfile> profiles;
 
         private final JaxRsContext context;
 
         public Pac4JSecurityContext(SecurityContext original, JaxRsContext context,
-                Optional<Collection<CommonProfile>> profiles) {
+                Collection<CommonProfile> profiles) {
             this.original = original;
             this.context = context;
             this.profiles = profiles;
-            this.principal = profiles.flatMap(ps -> ProfilesHelper.flatIntoOneProfile(ps).map(PrincipalImpl::new))
-                    .orElse(null);
+            this.principal = ProfileHelper.flatIntoOneProfile(profiles).map(Pac4JPrincipal::new).orElse(null);
         }
 
         public Optional<Collection<CommonProfile>> getProfiles() {
             if (principal != null) {
-                return profiles.map(ps -> Collections.unmodifiableCollection(ps));
+                return Optional.of(Collections.unmodifiableCollection(profiles));
             } else {
                 return Optional.empty();
             }
@@ -80,7 +78,7 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
         @Override
         public boolean isUserInRole(String role) {
             if (principal != null) {
-                return profiles.map(ps -> ps.stream().anyMatch(p -> p.getRoles().contains(role))).orElse(false);
+                return profiles.stream().anyMatch(p -> p.getRoles().contains(role));
             } else {
                 return original != null && original.isUserInRole(role);
             }
@@ -98,52 +96,6 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
             } else {
                 return original != null ? original.getAuthenticationScheme() : null;
             }
-        }
-    }
-
-    /**
-     * @deprecated will be removed in jax-rs-pac4j 3.0.0, will use Pac4JPrincipal from pac4j 3.0.0 instead
-     */
-    @Deprecated
-    public static class PrincipalImpl implements Principal {
-
-        private final String name;
-
-        public PrincipalImpl(CommonProfile profile) {
-            String username = profile.getUsername();
-            if (CommonHelper.isNotBlank(username)) {
-                this.name = username;
-            } else {
-                this.name = profile.getId();
-            }
-        }
-
-        @Override
-        public String getName() {
-            return this.name;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(getName());
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            final PrincipalImpl principal = (PrincipalImpl) o;
-            return CommonHelper.areEquals(this.getName(), principal.getName());
-        }
-
-        @Override
-        public String toString() {
-            return CommonHelper.toString(this.getClass(), "profileId", this.name);
         }
     }
 }

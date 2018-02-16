@@ -1,7 +1,7 @@
 package org.pac4j.jax.rs.pac4j;
 
 import org.pac4j.core.context.WebContext;
-import org.pac4j.core.http.UrlResolver;
+import org.pac4j.core.http.url.UrlResolver;
 
 /**
  * 

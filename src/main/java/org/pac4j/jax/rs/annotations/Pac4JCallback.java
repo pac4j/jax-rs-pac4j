@@ -23,6 +23,15 @@ public @interface Pac4JCallback {
 
     /**
      * Note that this parameter only takes one value at most: empty array (default) is used to represent default pac4j
+     * setting (no default client), one string will be used by the filter, and more than one string will fail the
+     * resource method initialisation.
+     * 
+     * @return value for {@link CallbackFilter#setDefaultClient(String)}
+     */
+    String[] defaultClient() default {};
+
+    /**
+     * Note that this parameter only takes one value at most: empty array (default) is used to represent default pac4j
      * setting (false), one boolean will be used by the filter, and more than one boolean will fail the resource method
      * initialisation.
      * 

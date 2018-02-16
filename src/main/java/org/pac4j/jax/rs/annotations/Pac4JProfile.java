@@ -21,10 +21,4 @@ import org.pac4j.core.profile.CommonProfile;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Pac4JProfile {
-
-    /**
-     * @deprecated will be removed in jax-rs-pac4j 3.0.0
-     */
-    @Deprecated
-    boolean readFromSession() default true;
 }

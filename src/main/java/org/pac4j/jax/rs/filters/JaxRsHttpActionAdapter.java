@@ -2,7 +2,7 @@ package org.pac4j.jax.rs.filters;
 
 import javax.ws.rs.core.Response;
 
-import org.pac4j.core.http.HttpActionAdapter;
+import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**

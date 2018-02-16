@@ -48,7 +48,7 @@ public class JaxRsContext implements WebContext {
 
     private final ContainerRequestContext requestContext;
 
-    private SessionStore sessionStore;
+    private final SessionStore sessionStore;
 
     private final Providers providers;
 
@@ -73,12 +73,6 @@ public class JaxRsContext implements WebContext {
     @Override
     public SessionStore getSessionStore() {
         return sessionStore;
-    }
-    
-    @Override
-    public void setSessionStore(SessionStore sessionStore) {
-        CommonHelper.assertNotNull("sessionStore", sessionStore);
-        this.sessionStore = sessionStore;
     }
 
     public ResponseBuilder getAbortBuilder() {

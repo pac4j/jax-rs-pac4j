@@ -7,7 +7,7 @@ import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.http.client.direct.DirectFormClient;
 import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
-import org.pac4j.jax.rs.pac4j.JaxRsConfig;
+import org.pac4j.jax.rs.pac4j.JaxRsAjaxRequestResolver;
 import org.pac4j.jax.rs.pac4j.JaxRsUrlResolver;
 
 public interface TestConfig {
@@ -24,14 +24,13 @@ public interface TestConfig {
 
         Clients clients = new Clients("notUsedCallbackUrl", client, client2, client3);
         // in case of invalid credentials, we simply want the error, not a redirect to the login url
-        clients.setAjaxRequestResolver((c) -> true);
+        clients.setAjaxRequestResolver(new JaxRsAjaxRequestResolver());
+        
         // so that callback url have the correct prefix w.r.t. the container's context
         clients.setUrlResolver(new JaxRsUrlResolver());
+        
+        clients.setDefaultSecurityClients(DEFAULT_CLIENT);
 
-        JaxRsConfig config = new JaxRsConfig();
-        config.setClients(clients);
-        config.setDefaultClients(DEFAULT_CLIENT);
-
-        return config;
+        return new Config(clients);
     }
 }
