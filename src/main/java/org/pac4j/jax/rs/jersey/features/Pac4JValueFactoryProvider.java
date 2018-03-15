@@ -138,7 +138,7 @@ public class Pac4JValueFactoryProvider {
 
         private final ProfileFactoryBuilder profile;
         private final OptionalProfileFactoryBuilder optProfile;
-        private final ProfileManagerFactoryBuilder manager;
+        private ProfileManagerFactoryBuilder manager;
 
         /**
          * Use this in your applications
@@ -162,7 +162,7 @@ public class Pac4JValueFactoryProvider {
                       ProfileManagerFactoryBuilder manager) {
             this.profile = profile == null ? ProfileValueFactory::new : profile;
             this.optProfile = optProfile == null ? OptionalProfileValueFactory::new : optProfile;
-            this.manager = manager == null ? ProfileManagerValueFactory::new : manager;
+            this.manager = manager;
         }
 
         /**
@@ -181,7 +181,14 @@ public class Pac4JValueFactoryProvider {
         protected void configure() {
             bind(profile).to(ProfileFactoryBuilder.class);
             bind(optProfile).to(OptionalProfileFactoryBuilder.class);
-            bind(manager).to(ProfileManagerFactoryBuilder.class);
+
+            if(manager == null){
+                bind(DefaultProfileManagerFactoryBuilder.class)
+                    .to(ProfileManagerFactoryBuilder.class)
+                ;
+            } else {
+                bind(manager).to(ProfileManagerFactoryBuilder.class);
+            }
 
             bind(Pac4JProfileValueFactoryProvider.class).to(ValueParamProvider.class).in(Singleton.class);
 
@@ -198,6 +205,10 @@ public class Pac4JValueFactoryProvider {
     static class ProfileManagerValueFactory implements ProfileManagerFactory{
         @Context
         private Providers providers;
+
+        ProfileManagerValueFactory(Providers providers) {
+            this.providers = providers;
+        }
 
         @Override
         public ProfileManager<CommonProfile> apply(ContainerRequest containerRequest) {
@@ -227,5 +238,15 @@ public class Pac4JValueFactoryProvider {
     private static Optional<CommonProfile> optionalProfile(ContainerRequest containerRequest) {
         RequestPac4JSecurityContext securityContext = new RequestPac4JSecurityContext(containerRequest.getSecurityContext());
         return new RequestCommonProfile(securityContext).profile();
+    }
+
+    public static class DefaultProfileManagerFactoryBuilder implements ProfileManagerFactoryBuilder {
+        @Context
+        private Providers providers;
+
+        @Override
+        public ProfileManagerFactory get() {
+            return new ProfileManagerValueFactory(providers);
+        }
     }
 }
