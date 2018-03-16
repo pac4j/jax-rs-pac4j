@@ -10,11 +10,12 @@ import org.pac4j.jax.rs.resources.TestResource;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
@@ -47,14 +48,16 @@ public interface ContainerRule extends TestRule, TestConfig {
                     }
 
                     public void writeProviderFile(File file) throws IOException {
-                        if(!file.exists()){
-                            file.delete();
+                        if(!file.exists() && !file.delete()){
+                            throw new IOException("Could not delete the existing provider file.");
                         }
 
-                        file.createNewFile();
+                        if(file.createNewFile()){
+                            throw new IOException("Could not create the new provider file.");
+                        }
 
-                        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
-                            writer.write(clazz.getName());
+                        try(OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8"))){
+                            osw.write(clazz.getName());
                         }
                     }
 
