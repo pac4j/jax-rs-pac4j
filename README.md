@@ -3,7 +3,8 @@
 </p>
 
 [![Build Status](https://travis-ci.org/pac4j/jax-rs-pac4j.png?branch=master)](https://travis-ci.org/pac4j/jax-rs-pac4j)
-[![Maven Central](https://img.shields.io/maven-central/v/org.pac4j/jax-rs-pac4j.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.pac4j%22%20AND%20a%3A%22jax-rs-pac4j%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.pac4j/jersey-pac4j.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.pac4j%22%20AND%20a%3A%22jersey-pac4j%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.pac4j/resteasy-pac4j.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.pac4j%22%20AND%20a%3A%22resteasy-pac4j%22)
 
 The `jax-rs-pac4j` project is an **easy and powerful security library for JAX-RS** web applications which supports authentication and authorization, but also application logout and advanced features like session fixation and CSRF protection.
 It's based on Java 8, servlet 3 (when present), JAX-RS 2 and on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. It's available under the Apache 2 license.
@@ -47,7 +48,9 @@ See also [dropwizard-pac4j](https://github.com/pac4j/dropwizard-pac4j) for even 
 
 You need to add a dependency on:
  
-- the `jax-rs-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.1.0**)
+- jax-rs-pac4j
+  1. for Jersey (<2.26) : the `jersey-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **3.0.0**)
+  2. for Resteasy : the `resteasy-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **3.0.0**)
 - the appropriate `pac4j` [submodules](http://www.pac4j.org/docs/clients.html) (<em>groupId</em>: **org.pac4j**, *version*: **2.1.0**): `pac4j-oauth` for OAuth support (Facebook, Twitter...), `pac4j-cas` for CAS support, `pac4j-ldap` for LDAP authentication, etc.
 
 All released artifacts are available in the [Maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cpac4j).
@@ -121,7 +124,7 @@ For a Jersey-based and Servlet-based (e.g., Jetty or Grizzly Servlet) environmen
 resourceConfig
     .register(new ServletJaxRsContextFactoryProvider(config))
     .register(new Pac4JSecurityFeature(config))
-    .register(new Pac4JValueFactoryProvider.Binder()); // only with Jersey <2.26
+    .register(new Pac4JValueFactoryProvider.Binder());
 ```
 
 For a Jersey-based and Grizzly-based environment without Servlet but session management and annotation support and method parameters injection:
@@ -129,7 +132,7 @@ For a Jersey-based and Grizzly-based environment without Servlet but session man
 resourceConfig
     .register(new GrizzlyJaxRsContextFactoryProvider(config))
     .register(new Pac4JSecurityFeature(config))
-    .register(new Pac4JValueFactoryProvider.Binder()); // only with Jersey <2.26
+    .register(new Pac4JValueFactoryProvider.Binder());
 ```
 
 For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session management and annotation support:
@@ -167,7 +170,7 @@ public class Pac4JFeature implements Feature {
         context
             .register(new JaxRsConfigProvider(config))
             .register(new Pac4JSecurityFeature())
-            .register(new Pac4JValueFactoryProvider.Binder()) // only with Jersey <2.26
+            .register(new Pac4JValueFactoryProvider.Binder()) // only with Jersey
             .register(new Pac4JProfileInjectorFactory()) // only with Resteasy
             .register(new ServletJaxRsContextFactoryProvider());
 
@@ -306,7 +309,7 @@ For example:
 
 ### 5) Get the user profile (`CommonProfile` and `ProfileManager`)
 
-When using Jersey (<2.26)  or Resteasy as the JAX-RS runtime, it is possible to directly inject a pac4j profile or profile manager using method parameters injection.
+When using Jersey or Resteasy as the JAX-RS runtime, it is possible to directly inject a pac4j profile or profile manager using method parameters injection.
 When using another JAX-RS runtime, see below for workarounds.
 
 #### Using method parameters injection
@@ -448,7 +451,7 @@ If you have any question, please use the following mailing lists:
 ## Development
 
 
-The version 2.2.0-SNAPSHOT is under development.
+The version 3.0.0-SNAPSHOT is under development.
 
 Maven artifacts are built via Travis and available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/pac4j). This repository must be added in the Maven `settings.xml` or `pom.xml` files:
 
