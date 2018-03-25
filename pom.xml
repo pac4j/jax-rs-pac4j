@@ -9,12 +9,12 @@
     <version>9</version>
   </parent>
 
-  <groupId>org.pac4j</groupId>
-  <artifactId>jax-rs-pac4j</artifactId>
-  <packaging>jar</packaging>
+  <groupId>org.pac4j.jax-rs</groupId>
+  <artifactId>parent</artifactId>
+  <packaging>pom</packaging>
   <name>pac4j implementation for JAX-RS</name>
   <version>2.2.0-SNAPSHOT</version>
-  <description>Security library for JAX-RS based on pac4j, optional support for Jersey</description>
+  <description>Security library for JAX-RS based on pac4j</description>
   <url>https://github.com/pac4j/jax-rs-pac4j</url>
 
   <repositories>
@@ -75,135 +75,19 @@
   </scm>
 
   <properties>
-    <servlet.version>3.1.0</servlet.version>
-    <!-- careful jersey 2.26 moved to jax-rs 2.1 and even though the versionning 
-      does not show it, this is a huge upgrade -->
-    <jax.rs.version>2.0.1</jax.rs.version>
-    <jersey.version>2.25.1</jersey.version>
-    <resteasy.version>3.1.4.Final</resteasy.version>
-    <pac4j.version>2.2.1</pac4j.version>
+    <pac4j.version>2.3.0</pac4j.version>
     <java.version>1.8</java.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-bom</artifactId>
-        <version>${resteasy.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jersey</groupId>
-        <artifactId>jersey-bom</artifactId>
-        <version>${jersey.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
+        <groupId>org.pac4j</groupId>
+        <artifactId>pac4j-core</artifactId>
+        <version>${pac4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${servlet.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>1.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
-      <version>${jax.rs.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <!-- jersey optional dependencies -->
-    <dependency>
-      <groupId>org.glassfish.jersey.core</groupId>
-      <artifactId>jersey-server</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <!-- grizzly optional dependencies -->
-    <dependency>
-      <groupId>org.glassfish.grizzly</groupId>
-      <artifactId>grizzly-http-server</artifactId>
-      <!-- same version as in jersey -->
-      <version>2.3.28</version>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <!-- resteasy optional dependencies -->
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <!-- pac4j -->
-    <dependency>
-      <groupId>org.pac4j</groupId>
-      <artifactId>pac4j-core</artifactId>
-      <version>${pac4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pac4j</groupId>
-      <artifactId>pac4j-http</artifactId>
-      <version>${pac4j.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- test dependencies -->
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>3.5.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-undertow</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.undertow</groupId>
-      <artifactId>undertow-servlet</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-      <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-      <artifactId>jersey-test-framework-provider-inmemory</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
-      <version>3.0.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.1.7</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-      <version>1.7.5</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>
@@ -271,7 +155,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.8</version>
+        <version>3.9.0</version>
         <configuration>
           <includeTests>true</includeTests>
           <printFailingErrors>true</printFailingErrors>
@@ -282,6 +166,24 @@
             <phase>compile</phase>
             <goals>
               <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        <executions>
+          <execution>
+            <id>dependency-convergence</id>
+            <configuration>
+              <rules>
+                <dependencyConvergence />
+              </rules>
+            </configuration>
+            <goals>
+              <goal>enforce</goal>
             </goals>
           </execution>
         </executions>
@@ -319,4 +221,11 @@
     </profile>
   </profiles>
 
+  <modules>
+    <module>core</module>
+    <module>testing</module>
+    <module>jersey</module>
+    <module>resteasy</module>
+    <module>jax-rs-pac4j</module>
+  </modules>
 </project>
