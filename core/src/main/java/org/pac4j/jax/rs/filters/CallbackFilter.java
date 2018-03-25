@@ -41,9 +41,7 @@ public class CallbackFilter extends AbstractFilter {
 
         CallbackLogic<Object, JaxRsContext> logic = buildLogic(config);
 
-        // TODO remove the null check once pac4j 2.3.1 is released
-        // cf https://github.com/pac4j/pac4j/pull/1121
-        if (saveInSession != null && logic instanceof DefaultCallbackLogic) {
+        if (logic instanceof DefaultCallbackLogic) {
             ((DefaultCallbackLogic) logic).setSaveInSession(saveInSession);
         }
 
