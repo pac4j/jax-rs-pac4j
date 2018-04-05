@@ -138,7 +138,7 @@ public class Pac4JValueFactoryProvider {
 
         private final ProfileFactoryBuilder profile;
         private final OptionalProfileFactoryBuilder optProfile;
-        private ProfileManagerFactoryBuilder manager;
+        private final ProfileManagerFactoryBuilder manager;
 
         /**
          * Use this in your applications
@@ -204,7 +204,7 @@ public class Pac4JValueFactoryProvider {
 
     static class ProfileManagerValueFactory implements ProfileManagerFactory{
         @Context
-        private Providers providers;
+        private final Providers providers;
 
         ProfileManagerValueFactory(Providers providers) {
             this.providers = providers;
@@ -236,7 +236,7 @@ public class Pac4JValueFactoryProvider {
     }
 
     private static Optional<CommonProfile> optionalProfile(ContainerRequest containerRequest) {
-        RequestPac4JSecurityContext securityContext = new RequestPac4JSecurityContext(containerRequest.getSecurityContext());
+        RequestPac4JSecurityContext securityContext = new RequestPac4JSecurityContext(containerRequest);
         return new RequestCommonProfile(securityContext).profile();
     }
 
