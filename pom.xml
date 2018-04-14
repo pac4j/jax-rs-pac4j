@@ -225,6 +225,7 @@
     <module>core</module>
     <module>testing</module>
     <module>jersey</module>
+    <module>jersey226</module>
     <module>resteasy</module>
     <module>jax-rs-pac4j</module>
   </modules>
