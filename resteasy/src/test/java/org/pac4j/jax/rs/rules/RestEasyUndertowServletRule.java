@@ -14,6 +14,7 @@ import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.rules.ExternalResource;
 import org.pac4j.jax.rs.features.JaxRsConfigProvider;
@@ -23,6 +24,8 @@ import org.pac4j.jax.rs.resteasy.features.Pac4JProfileInjectorFactory;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 
 import io.undertow.server.session.SessionCookieConfig;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
 
 public class RestEasyUndertowServletRule extends ExternalResource implements SessionContainerRule {
 
@@ -30,19 +33,22 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
 
     private Client client;
 
-    public class MyApp extends Application {
+    public static class MyApp extends Application {
+
+        private RestEasyUndertowServletRule rule = new RestEasyUndertowServletRule(); 
 
         @Override
         public Set<Class<?>> getClasses() {
-            return getResources();
+            Set<Class<?>> classes = rule.getResources();
+            classes.add(ServletJaxRsContextFactoryProvider.class);
+            classes.add(Pac4JProfileInjectorFactory.class);
+            return classes;
         }
 
         @Override
         public Set<Object> getSingletons() {
             return Sets.newLinkedHashSet(
-                    new JaxRsConfigProvider(getConfig()),
-                    new ServletJaxRsContextFactoryProvider(),
-                    new Pac4JProfileInjectorFactory(),
+                    new JaxRsConfigProvider(rule.getConfig()),
                     new Pac4JSecurityFeature());
         }
     }
@@ -66,7 +72,13 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
         System.setProperty("org.jboss.resteasy.port", "24257");
         server = new UndertowJaxrsServer().start();
 
-        server.deploy(new MyApp());
+        ResteasyDeployment deployment = new ResteasyDeployment();
+        deployment.setInjectorFactoryClass("org.jboss.resteasy.cdi.CdiInjectorFactory");
+        deployment.setApplication(new MyApp());
+        DeploymentInfo di = server.undertowDeployment(deployment).setContextPath("/").setDeploymentName("DI")
+			.setClassLoader(RestEasyUndertowServletRule.class.getClassLoader())
+			.addListeners(Servlets.listener(org.jboss.weld.environment.servlet.Listener.class));
+        server.deploy(di);
     }
 
     @Override

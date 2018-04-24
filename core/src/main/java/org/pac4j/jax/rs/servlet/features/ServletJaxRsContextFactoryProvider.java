@@ -1,7 +1,8 @@
 package org.pac4j.jax.rs.servlet.features;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.ext.Provider;
 
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
 import org.pac4j.jax.rs.servlet.pac4j.ServletJaxRsContext;
@@ -15,13 +16,14 @@ import org.pac4j.jax.rs.servlet.pac4j.ServletJaxRsContext;
  * @since 1.0.0
  *
  */
+@Provider
 public class ServletJaxRsContextFactoryProvider extends JaxRsContextFactoryProvider {
 
-    @Context
-    private HttpServletRequest request;
+    @Inject
+    private javax.inject.Provider<HttpServletRequest> requestProvider;
 
     @Override
     public JaxRsContextFactory getContext(Class<?> type) {
-        return context -> new ServletJaxRsContext(getProviders(), context, getConfig().getSessionStore(), request);
+        return context -> new ServletJaxRsContext(getProviders(), context, getConfig().getSessionStore(), requestProvider.get());
     }
 }
