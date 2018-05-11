@@ -13,9 +13,11 @@ import org.assertj.core.util.Sets;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.weld.environment.servlet.Listener;
 import org.junit.rules.ExternalResource;
 import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
@@ -33,13 +35,11 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
 
     private Client client;
 
-    public static class MyApp extends Application {
-
-        private RestEasyUndertowServletRule rule = new RestEasyUndertowServletRule(); 
+    public class MyApp extends Application {
 
         @Override
         public Set<Class<?>> getClasses() {
-            Set<Class<?>> classes = rule.getResources();
+            Set<Class<?>> classes = getResources();
             classes.add(ServletJaxRsContextFactoryProvider.class);
             classes.add(Pac4JProfileInjectorFactory.class);
             return classes;
@@ -48,7 +48,7 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
         @Override
         public Set<Object> getSingletons() {
             return Sets.newLinkedHashSet(
-                    new JaxRsConfigProvider(rule.getConfig()),
+                    new JaxRsConfigProvider(getConfig()),
                     new Pac4JSecurityFeature());
         }
     }
@@ -73,11 +73,13 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
         server = new UndertowJaxrsServer().start();
 
         ResteasyDeployment deployment = new ResteasyDeployment();
-        deployment.setInjectorFactoryClass("org.jboss.resteasy.cdi.CdiInjectorFactory");
+        deployment.setInjectorFactoryClass(CdiInjectorFactory.class.getName());
         deployment.setApplication(new MyApp());
-        DeploymentInfo di = server.undertowDeployment(deployment).setContextPath("/").setDeploymentName("DI")
-			.setClassLoader(RestEasyUndertowServletRule.class.getClassLoader())
-			.addListeners(Servlets.listener(org.jboss.weld.environment.servlet.Listener.class));
+		DeploymentInfo di = server.undertowDeployment(deployment)
+				.setContextPath("/")
+				.setDeploymentName("DI")
+				.setClassLoader(getClass().getClassLoader())
+				.addListeners(Servlets.listener(Listener.class));
         server.deploy(di);
     }
 
