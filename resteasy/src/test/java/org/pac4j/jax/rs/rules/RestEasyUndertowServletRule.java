@@ -75,11 +75,11 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
         ResteasyDeployment deployment = new ResteasyDeployment();
         deployment.setInjectorFactoryClass(CdiInjectorFactory.class.getName());
         deployment.setApplication(new MyApp());
-		DeploymentInfo di = server.undertowDeployment(deployment)
-				.setContextPath("/")
-				.setDeploymentName("DI")
-				.setClassLoader(getClass().getClassLoader())
-				.addListeners(Servlets.listener(Listener.class));
+        DeploymentInfo di = server.undertowDeployment(deployment)
+                .setContextPath("/")
+                .setDeploymentName("DI")
+                .setClassLoader(getClass().getClassLoader())
+                .addListeners(Servlets.listener(Listener.class));
         server.deploy(di);
     }
 
