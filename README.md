@@ -51,8 +51,8 @@ You need to add a dependency on:
  
 - jax-rs-pac4j
   1. for Jersey (<2.26) : the `jersey-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.2.0**)
-  2. for Resteasy : the `resteasy-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.2.0**)
-- the appropriate `pac4j` [submodules](http://www.pac4j.org/docs/clients.html) (<em>groupId</em>: **org.pac4j**, *version*: **2.3.0**): `pac4j-oauth` for OAuth support (Facebook, Twitter...), `pac4j-cas` for CAS support, `pac4j-ldap` for LDAP authentication, etc.
+  2. for Resteasy : the `resteasy-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.2.0**) and `resteasy-cdi` for CDI support
+- the appropriate `pac4j` [submodules](http://www.pac4j.org/docs/clients.html) (<em>groupId</em>: **org.pac4j**, *version*: **2.1.0**): `pac4j-oauth` for OAuth support (Facebook, Twitter...), `pac4j-cas` for CAS support, `pac4j-ldap` for LDAP authentication, etc.
 
 All released artifacts are available in the [Maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cpac4j).
 
@@ -120,7 +120,7 @@ resourceConfig
 For a Jersey-based and Servlet-based (e.g., Jetty or Grizzly Servlet) environment with session management, annotation support and method parameters injection:
 ```java
 resourceConfig
-    .register(new ServletJaxRsContextFactoryProvider(config))
+    .register(ServletJaxRsContextFactoryProvider.class)
     .register(new Pac4JSecurityFeature(config))
     .register(new Pac4JValueFactoryProvider.Binder());
 ```
@@ -142,13 +142,20 @@ For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session
         public Set<Object> getSingletons() {
             Config config = getConfig();
             Set<Object> singletons = new HashSet<>();
-            singletons.add(new ServletJaxRsContextFactoryProvider(config));
             singletons.add(new Pac4JSecurityFeature(config));
-            singletons.add(new Pac4JProfileInjectorFactory());
             return singletons;
+        }
+
+        @Override
+        public Set<Class<?>> getClasses() {
+            Set<Class<?>> classes = new HashSet<>();
+            classes.add(ServletJaxRsContextFactoryProvider.class);
+            classes.add(Pac4JProfileInjectorFactory.class);
+            return classes;
         }
     }
 ```
+For RestEasy, you need to include `resteasy-cdi` support to your project to ensure that dependencies are injected at runtime. Refer to the tests in `resteasy-pac4j` module.
 
 Note that a default value for the `clients` parameter of the `@Pac4JSecurity`
 annotation can be passed to the constructor of `Pac4JSecurityFeature`.
