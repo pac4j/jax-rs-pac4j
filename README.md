@@ -36,7 +36,7 @@ These filters can be directly registered by hand, or instead, the following feat
 5) Container/Implementation-specific Providers and Features extend the basic functionality provided by the generic ones
 
 - The `Pac4JValueFactoryProvider` enables injection of the security profile in resource method (for Apache Jersey <2.26, see [#30](https://github.com/pac4j/jax-rs-pac4j/issues/30))
-- The `ServletJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow).
+- The `ServletJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow). This provider returns a RequestScoped context and so should be added as a class `ServletJaxRsContextFactoryProvider.class` instead of instance `new ServletJaxRsContextFactoryProvider()`. For RestEasy, you need to include `resteasy-cdi` support to your project. Refer to the tests in `resteasy-pac4j` module.
 - The `GrizzlyJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Grizzly2 without Servlet support).
 
 ---
