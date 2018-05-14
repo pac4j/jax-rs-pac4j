@@ -9,12 +9,16 @@
     <groupId>org.pac4j</groupId>
   <artifactId>resteasy-pac4j</artifactId>
 
+  <properties>
+    <resteasy.version>3.1.4.Final</resteasy.version>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-bom</artifactId>
-        <version>3.1.4.Final</version>
+        <version>${resteasy.version}</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -45,8 +49,26 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-cdi</artifactId>
+      <scope>test</scope>
+      <version>${resteasy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>8.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.undertow</groupId>
       <artifactId>undertow-servlet</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.weld.servlet</groupId>
+      <artifactId>weld-servlet</artifactId>
+      <version>2.4.7.Final</version>
       <scope>test</scope>
     </dependency>
     <dependency>

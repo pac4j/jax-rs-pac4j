@@ -34,7 +34,7 @@ public class JerseyGrizzlyServletRule extends JerseyRule implements SessionConta
     protected ResourceConfig configureResourceConfig(ResourceConfig config) {
         return super
                 .configureResourceConfig(config)
-                .register(new ServletJaxRsContextFactoryProvider());
+                .register(ServletJaxRsContextFactoryProvider.class);
     }
 
 }
