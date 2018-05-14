@@ -50,7 +50,7 @@ You need to add a dependency on:
  
 - jax-rs-pac4j
   1. for Jersey (<2.26) : the `jersey-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **3.0.0**)
-  2. for Resteasy : the `resteasy-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **3.0.0**) and resteasy-cdi for CDI support
+  2. for Resteasy : the `resteasy-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **3.0.0**) and `resteasy-cdi` for CDI support
 - the appropriate `pac4j` [submodules](http://www.pac4j.org/docs/clients.html) (<em>groupId</em>: **org.pac4j**, *version*: **2.1.0**): `pac4j-oauth` for OAuth support (Facebook, Twitter...), `pac4j-cas` for CAS support, `pac4j-ldap` for LDAP authentication, etc.
 
 All released artifacts are available in the [Maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cpac4j).
@@ -145,7 +145,6 @@ For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session
             Config config = getConfig();
             Set<Object> singletons = new HashSet<>();
             singletons.add(new Pac4JSecurityFeature(config));
-            singletons.add(new Pac4JProfileInjectorFactory());
             return singletons;
         }
 
@@ -153,6 +152,7 @@ For a Resteasy-based and Servlet-based (e.g., Undertow) environment with session
         public Set<Class<?>> getClasses() {
             Set<Class<?>> classes = new HashSet<>();
             classes.add(ServletJaxRsContextFactoryProvider.class);
+            classes.add(Pac4JProfileInjectorFactory.class);
             return classes;
         }
     }
