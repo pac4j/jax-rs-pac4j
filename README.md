@@ -36,7 +36,7 @@ These filters can be directly registered by hand, or instead, the following feat
 
 5) Container/Implementation-specific Providers and Features extend the basic functionality provided by the generic ones
 
-- The `Pac4JValueFactoryProvider` enables injection of the security profile in resource method (for Apache Jersey <2.26, see [#30](https://github.com/pac4j/jax-rs-pac4j/issues/30))
+- The `Pac4JValueFactoryProvider` enables injection of the security profile in resource method
 - The `ServletJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow).
 - The `GrizzlyJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Grizzly2 without Servlet support).
 
@@ -50,9 +50,10 @@ See also [dropwizard-pac4j](https://github.com/pac4j/dropwizard-pac4j) for even 
 You need to add a dependency on:
  
 - jax-rs-pac4j
-  1. for Jersey (<2.26) : the `jersey-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.2.0**)
-  2. for Resteasy : the `resteasy-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.2.0**) and `resteasy-cdi` for CDI support
-- the appropriate `pac4j` [submodules](http://www.pac4j.org/docs/clients.html) (<em>groupId</em>: **org.pac4j**, *version*: **2.1.0**): `pac4j-oauth` for OAuth support (Facebook, Twitter...), `pac4j-cas` for CAS support, `pac4j-ldap` for LDAP authentication, etc.
+  1. for Jersey (<2.26) : the `jersey-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.3.0**)
+  1. for Jersey (>=2.26) : the `jersey226-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.3.0**)
+  2. for Resteasy : the `resteasy-pac4j` library (<em>groupId</em>: **org.pac4j**, *version*: **2.3.0**) and `resteasy-cdi` for CDI support
+- the appropriate `pac4j` [submodules](http://www.pac4j.org/docs/clients.html) (<em>groupId</em>: **org.pac4j**, *version*: **2.3.1**): `pac4j-oauth` for OAuth support (Facebook, Twitter...), `pac4j-cas` for CAS support, `pac4j-ldap` for LDAP authentication, etc.
 
 All released artifacts are available in the [Maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cpac4j).
 
@@ -383,8 +384,6 @@ or even:
 ```
 
 #### Without method parameters injection
-
-**Help wanted**: if you want to implement method parameters injection for other frameworks than Jersey <2.26 or Resteasy, help will be appreciated (for example [Jersey >=2.26](https://github.com/pac4j/jax-rs-pac4j/issues/30)).
 
 Other solutions involves:
  - retrieving the `SecurityContext` and casting it to `Pac4JSecurityContext` to access the profiles.
