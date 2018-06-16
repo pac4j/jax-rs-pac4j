@@ -56,6 +56,8 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
         public Optional<Collection<CommonProfile>> getProfiles() {
             if (principal != null) {
                 return Optional.of(Collections.unmodifiableCollection(profiles));
+            } else if (original instanceof Pac4JSecurityContext) {
+                return ((Pac4JSecurityContext) original).getProfiles();
             } else {
                 return Optional.empty();
             }
