@@ -177,6 +177,18 @@ public class Pac4JValueFactoryProvider {
             this(() -> (ignored) -> profile, () -> (ignored) -> Optional.ofNullable(profile), null);
         }
 
+        /**
+         * Use this if you want to return a dynamically supplied {@link CommonProfile} (or none with <code>null</code>).
+         * 
+         * Note that it won't mock the profile coming out of {@link ProfileManager}!
+         * 
+         * @param profile
+         *            a profile supplier, can return <code>null</code>.
+         */
+        public Binder(Supplier<CommonProfile> profile) {
+            this(() -> (ignored) -> profile.get(), () -> (ignored) -> Optional.ofNullable(profile.get()), null);
+        }
+
         @Override
         protected void configure() {
             bind(profile).to(ProfileFactoryBuilder.class);
