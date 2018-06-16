@@ -27,10 +27,10 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
-import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.helpers.RequestCommonProfile;
-import org.pac4j.jax.rs.helpers.RequestProfileManager;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
+import org.pac4j.jax.rs.helpers.RequestProfileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,6 +181,18 @@ public class Pac4JValueFactoryProvider {
          */
         public Binder(CommonProfile profile) {
             this(() -> () -> profile, () -> () -> Optional.ofNullable(profile), null);
+        }
+
+        /**
+         * Use this if you want to return a dynamically supplied {@link CommonProfile} (or none with <code>null</code>).
+         * 
+         * Note that it won't mock the profile coming out of {@link ProfileManager}!
+         * 
+         * @param profile
+         *            a profile supplier, can return <code>null</code>.
+         */
+        public Binder(Supplier<CommonProfile> profile) {
+            this(() -> () -> profile.get(), () -> () -> Optional.ofNullable(profile.get()), null);
         }
 
         @Override
