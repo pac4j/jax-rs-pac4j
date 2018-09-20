@@ -90,7 +90,7 @@ ParameterClient parameterClient = new ParameterClient("token", new JwtAuthentica
 
 Config config = new Config("/callback", oidcClient, saml2Client, facebookClient,
 	                  twitterClient, formClient, basicAuthClient, casClient, parameterClient);
-config.getClients().setCallbackUrlResolver(new JaxRsUrlResolver());
+config.getClients().setUrlResolver(new JaxRsUrlResolver());
 config.getClients().setAjaxRequestResolver(new JaxRsAjaxRequestResolver());
 
 config.addAuthorizer("admin", new RequireAnyRoleAuthorizer("ROLE_ADMIN"));
