@@ -183,10 +183,8 @@ public class JaxRsContext implements WebContext {
     @Override
     public void addResponseCookie(Cookie cookie) {
         CommonHelper.assertNotNull("cookie", cookie);
-        // Note: expiry is not in servlet and is meant to be superseeded by
-        // max-age, so we simply make it null
         NewCookie c = new NewCookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
-                cookie.getDomain(), cookie.getVersion(), cookie.getComment(), cookie.getMaxAge(), null,
+                cookie.getDomain(), cookie.getVersion(), cookie.getComment(), cookie.getMaxAge(), cookie.getExpiry(),
                 cookie.isSecure(), cookie.isHttpOnly());
         getAbortBuilder().cookie(c);
         getResponseHolder().addResponseCookie(c);
