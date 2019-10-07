@@ -12,7 +12,7 @@
   <artifactId>parent</artifactId>
   <packaging>pom</packaging>
   <name>pac4j implementation for JAX-RS</name>
-  <version>3.0.1-SNAPSHOT</version>
+  <version>3.0.1</version>
   <description>Security library for JAX-RS based on pac4j</description>
   <url>https://github.com/pac4j/jax-rs-pac4j</url>
 
