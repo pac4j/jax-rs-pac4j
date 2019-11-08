@@ -19,7 +19,7 @@ public class JaxRsUrlResolver implements UrlResolver {
         if (context instanceof JaxRsContext && url != null) {
             return ((JaxRsContext) context).getAbsolutePath(url, true);
         }
-        return null;
+        return url;
     }
 
 }
