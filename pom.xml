@@ -225,6 +225,7 @@
     <module>testing</module>
     <module>jersey</module>
     <module>jersey225</module>
+    <module>jersey228</module>
     <module>resteasy</module>
   </modules>
 </project>
