@@ -59,7 +59,7 @@ public class Pac4JValueFactoryProvider {
             ProfileFactoryBuilder profile,
             Provider<MultivaluedParameterExtractorProvider> mpep
         ) {
-            super(mpep, org.glassfish.jersey.model.Parameter.Source.UNKNOWN);
+            super(mpep, Parameter.Source.UNKNOWN);
             this.manager = manager;
             this.optProfile = opt;
             this.profile = profile;
