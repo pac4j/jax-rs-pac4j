@@ -198,7 +198,7 @@ public class Pac4JValueFactoryProvider {
                 bind(DefaultProfileManagerFactoryBuilder.class)
                     .to(ProfileManagerFactoryBuilder.class).in(Singleton.class);
             } else {
-                bind(manager).to(ProfileManagerFactoryBuilder.class).in(Singleton.class);
+                bind(manager).to(ProfileManagerFactoryBuilder.class);
             }
 
             bindAsContract(Pac4JProfileValueFactoryProvider.class).to(ValueParamProvider.class).in(Singleton.class);
