@@ -179,9 +179,9 @@ public class Pac4JValueFactoryProvider {
 
         /**
          * Use this if you want to return a dynamically supplied {@link CommonProfile} (or none with <code>null</code>).
-         * 
+         *
          * Note that it won't mock the profile coming out of {@link ProfileManager}!
-         * 
+         *
          * @param profile
          *            a profile supplier, can return <code>null</code>.
          */
@@ -196,19 +196,18 @@ public class Pac4JValueFactoryProvider {
 
             if(manager == null){
                 bind(DefaultProfileManagerFactoryBuilder.class)
-                    .to(ProfileManagerFactoryBuilder.class)
-                ;
+                    .to(ProfileManagerFactoryBuilder.class).in(Singleton.class);
             } else {
                 bind(manager).to(ProfileManagerFactoryBuilder.class);
             }
 
-            bind(Pac4JProfileValueFactoryProvider.class).to(ValueParamProvider.class).in(Singleton.class);
+            bindAsContract(Pac4JProfileValueFactoryProvider.class).to(ValueParamProvider.class).in(Singleton.class);
 
-            bind(ProfileInjectionResolver.class)
+            bindAsContract(ProfileInjectionResolver.class)
                 .to(new GenericType<InjectionResolver<Pac4JProfile>>(){})
                 .in(Singleton.class);
 
-            bind(ProfileManagerInjectionResolver.class)
+            bindAsContract(ProfileManagerInjectionResolver.class)
                 .to(new GenericType<InjectionResolver<Pac4JProfileManager>>(){})
                 .in(Singleton.class);
         }
