@@ -56,6 +56,11 @@
 
   <developers>
     <developer>
+      <id>leleuj</id>
+      <name>Jerome LELEU</name>
+      <email>leleuj@gmail.com</email>
+    </developer>
+    <developer>
       <id>victornoel</id>
       <name>Victor NOEL</name>
       <url>https://github.com/victornoel</url>
