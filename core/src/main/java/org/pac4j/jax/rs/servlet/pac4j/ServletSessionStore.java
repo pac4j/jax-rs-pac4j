@@ -3,6 +3,7 @@ package org.pac4j.jax.rs.servlet.pac4j;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -10,7 +11,7 @@ import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -28,8 +29,8 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
     }
 
     @Override
-    public Object get(JaxRsContext context, String key) {
-        return getHttpSession(context).getAttribute(key);
+    public Optional<Object> get(JaxRsContext context, String key) {
+        return Optional.ofNullable(getHttpSession(context).getAttribute(key));
     }
 
     @Override
@@ -40,19 +41,19 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
             getHttpSession(context).setAttribute(key, value);
         }
     }
-    
+
     @Override
     public boolean destroySession(JaxRsContext context) {
         final HttpSession session = getHttpSession(context);
-        
+
         session.invalidate();
-        
+
         return true;
     }
-    
+
     @Override
-    public Object getTrackableSession(JaxRsContext context) {
-        return getHttpSession(context);
+    public Optional<Object> getTrackableSession(JaxRsContext context) {
+        return Optional.ofNullable(getHttpSession(context));
     }
 
     @Override
@@ -67,17 +68,17 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
         // generally unusable depending on the servlet implementation
         final HttpSession newSession = getHttpSession(context);
         attributes.forEach(newSession::setAttribute);
-        
+
         return true;
     }
-    
+
     @Override
-    public SessionStore<JaxRsContext> buildFromTrackableSession(JaxRsContext context, Object trackableSession) {
-        return new ServletSessionStore() {
+    public Optional<SessionStore<JaxRsContext>> buildFromTrackableSession(JaxRsContext context, Object trackableSession) {
+        return Optional.ofNullable(new ServletSessionStore() {
             @Override
             public HttpSession getHttpSession(JaxRsContext context) {
                 return (HttpSession) trackableSession;
             }
-        };
+        });
     }
 }

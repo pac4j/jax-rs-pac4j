@@ -9,9 +9,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 
 import org.pac4j.core.authorization.authorizer.Authorizer;
+import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
-import org.pac4j.core.context.DefaultAuthorizers;
-import org.pac4j.core.exception.HttpAction;
+import org.pac4j.core.exception.http.HttpAction;
+import org.pac4j.core.matching.matcher.DefaultMatchers;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.Pac4JPrincipal;
 import org.pac4j.core.profile.ProfileManager;
@@ -116,8 +117,7 @@ public class TestResource {
 
     @POST
     @Path("directResponseHeadersSet")
-    @Pac4JSecurity(clients = "DirectFormClient", authorizers = { DefaultAuthorizers.IS_AUTHENTICATED,
-            DefaultAuthorizers.NOSNIFF })
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED, matchers = DefaultMatchers.NOSNIFF)
     public String directResponseHeadersSet() {
         return "ok";
     }

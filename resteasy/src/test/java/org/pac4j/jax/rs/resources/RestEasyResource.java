@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.pac4j.core.context.DefaultAuthorizers;
+import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.Pac4JSecurityContext;

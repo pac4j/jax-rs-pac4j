@@ -8,7 +8,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Providers;
 
-import org.pac4j.core.context.DefaultAuthorizers;
+import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
 import org.pac4j.jax.rs.helpers.ProvidersContext;

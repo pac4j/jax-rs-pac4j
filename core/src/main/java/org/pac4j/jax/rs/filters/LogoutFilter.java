@@ -13,7 +13,7 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -52,7 +52,7 @@ public class LogoutFilter extends AbstractFilter {
             return config.getLogoutLogic();
         } else {
             DefaultLogoutLogic<Object, JaxRsContext> logic = new DefaultLogoutLogic<>();
-            logic.setProfileManagerFactory(JaxRsProfileManager::new);
+            logic.setProfileManagerFactory(ctx -> new JaxRsProfileManager((JaxRsContext) ctx));
             return logic;
         }
 
