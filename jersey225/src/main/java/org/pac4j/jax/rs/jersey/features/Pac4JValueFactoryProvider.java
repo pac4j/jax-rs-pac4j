@@ -28,7 +28,7 @@ import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
-import org.pac4j.jax.rs.helpers.RequestCommonProfile;
+import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.slf4j.Logger;
@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link Pac4JProfile &#64;Pac4JProfile} injection value factory provider.
- * 
+ *
  * Register a new {@link Binder} in order to enable this.
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
- * 
+ *
  */
 public class Pac4JValueFactoryProvider {
 
@@ -155,7 +155,7 @@ public class Pac4JValueFactoryProvider {
 
         /**
          * Use this if you want to mock the {@link CommonProfile} or the {@link ProfileManager}.
-         * 
+         *
          * @param profile
          *            a builder for a {@link CommonProfile}, can be <code>null</code> and default will be used.
          * @param optProfile
@@ -173,9 +173,9 @@ public class Pac4JValueFactoryProvider {
 
         /**
          * Use this if you want to always return the same {@link CommonProfile} (or none with <code>null</code>).
-         * 
+         *
          * Note that it won't mock the profile coming out of {@link ProfileManager}!
-         * 
+         *
          * @param profile
          *            a profile, can be <code>null</code>.
          */
@@ -185,9 +185,9 @@ public class Pac4JValueFactoryProvider {
 
         /**
          * Use this if you want to return a dynamically supplied {@link CommonProfile} (or none with <code>null</code>).
-         * 
+         *
          * Note that it won't mock the profile coming out of {@link ProfileManager}!
-         * 
+         *
          * @param profile
          *            a profile supplier, can return <code>null</code>.
          */
@@ -227,7 +227,7 @@ public class Pac4JValueFactoryProvider {
             implements ProfileFactory {
         @Override
         public CommonProfile provide() {
-            return new RequestCommonProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile()
+            return new RequestUserProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile()
                     .orElseThrow(() -> {
                         LOG.debug("Cannot inject a Pac4j profile into an unauthenticated request, responding with 401");
                         return new WebApplicationException(401);
@@ -239,7 +239,7 @@ public class Pac4JValueFactoryProvider {
             implements OptionalProfileFactory {
         @Override
         public Optional<CommonProfile> provide() {
-            return new RequestCommonProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile();
+            return new RequestUserProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile();
         }
     }
 }

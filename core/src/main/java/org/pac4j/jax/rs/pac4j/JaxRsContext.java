@@ -9,12 +9,8 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,7 +33,7 @@ import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.CommonHelper;
 
 /**
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -152,19 +148,6 @@ public class JaxRsContext implements WebContext {
     }
 
     @Override
-    public void writeResponseContent(String content) {
-        getAbortBuilder().entity(content);
-        getResponseHolder().writeResponseContent(content);
-    }
-
-
-    @Override
-    public void setResponseStatus(int code) {
-        getAbortBuilder().status(code);
-        getResponseHolder().setResponseStatus(code);
-    }
-
-    @Override
     public void setResponseHeader(String name, String value) {
         CommonHelper.assertNotNull("name", name);
         // header() adds headers, so we must remove the previous value first
@@ -219,8 +202,8 @@ public class JaxRsContext implements WebContext {
     }
 
     @Override
-    public String getRequestParameter(String name) {
-        return extractedParameters().getFirst(name);
+    public Optional<String> getRequestParameter(String name) {
+        return Optional.ofNullable(extractedParameters().getFirst(name));
     }
 
     @Override
@@ -257,8 +240,8 @@ public class JaxRsContext implements WebContext {
     }
 
     @Override
-    public Object getRequestAttribute(String name) {
-        return requestContext.getProperty(name);
+    public Optional<Object> getRequestAttribute(String name) {
+        return Optional.ofNullable(requestContext.getProperty(name));
     }
 
     @Override
@@ -267,8 +250,8 @@ public class JaxRsContext implements WebContext {
     }
 
     @Override
-    public String getRequestHeader(String name) {
-        return requestContext.getHeaderString(name);
+    public Optional<String> getRequestHeader(String name) {
+        return Optional.ofNullable(requestContext.getHeaderString(name));
     }
 
     @Override

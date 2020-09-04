@@ -13,7 +13,7 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -52,7 +52,7 @@ public class CallbackFilter extends AbstractFilter {
             return config.getCallbackLogic();
         } else {
             DefaultCallbackLogic<Object, JaxRsContext> logic = new DefaultCallbackLogic<>();
-            logic.setProfileManagerFactory(JaxRsProfileManager::new);
+            logic.setProfileManagerFactory(ctx -> new JaxRsProfileManager((JaxRsContext) ctx));
             return logic;
         }
     }

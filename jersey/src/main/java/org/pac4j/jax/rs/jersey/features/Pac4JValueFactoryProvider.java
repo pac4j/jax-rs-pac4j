@@ -12,9 +12,10 @@ import org.glassfish.jersey.server.model.Parameter;
 import org.glassfish.jersey.server.spi.internal.ValueParamProvider;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
-import org.pac4j.jax.rs.helpers.RequestCommonProfile;
+import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
@@ -125,10 +126,10 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    public interface OptionalProfileFactory extends Function<ContainerRequest, Optional<CommonProfile>> {}
+    public interface OptionalProfileFactory extends Function<ContainerRequest, Optional<UserProfile>> {}
     public interface OptionalProfileFactoryBuilder extends Supplier<OptionalProfileFactory> {}
 
-    public interface ProfileFactory extends Function<ContainerRequest, CommonProfile> {}
+    public interface ProfileFactory extends Function<ContainerRequest, UserProfile> {}
     public interface ProfileFactoryBuilder extends Supplier<ProfileFactory> {}
 
     public interface ProfileManagerFactory extends Function<ContainerRequest, ProfileManager<CommonProfile>> {}
@@ -230,7 +231,7 @@ public class Pac4JValueFactoryProvider {
 
     static class ProfileValueFactory implements ProfileFactory {
         @Override
-        public CommonProfile apply(ContainerRequest containerRequest) {
+        public UserProfile apply(ContainerRequest containerRequest) {
             return optionalProfile(containerRequest)
                 .orElseThrow(() -> {
                     LOG.debug("Cannot inject a Pac4j profile into an unauthenticated request, responding with 401");
@@ -241,14 +242,14 @@ public class Pac4JValueFactoryProvider {
 
     static class OptionalProfileValueFactory implements OptionalProfileFactory {
         @Override
-        public Optional<CommonProfile> apply(ContainerRequest containerRequest) {
+        public Optional<UserProfile> apply(ContainerRequest containerRequest) {
             return optionalProfile(containerRequest);
         }
     }
 
-    private static Optional<CommonProfile> optionalProfile(ContainerRequest containerRequest) {
+    private static Optional<UserProfile> optionalProfile(ContainerRequest containerRequest) {
         RequestPac4JSecurityContext securityContext = new RequestPac4JSecurityContext(containerRequest);
-        return new RequestCommonProfile(securityContext).profile();
+        return new RequestUserProfile(securityContext).profile();
     }
 
     public static class DefaultProfileManagerFactoryBuilder implements ProfileManagerFactoryBuilder {

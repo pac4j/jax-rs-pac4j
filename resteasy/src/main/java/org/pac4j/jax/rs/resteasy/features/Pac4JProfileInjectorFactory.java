@@ -18,7 +18,7 @@ import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
-import org.pac4j.jax.rs.helpers.RequestCommonProfile;
+import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
@@ -57,11 +57,11 @@ public class Pac4JProfileInjectorFactory extends InjectorFactoryImpl {
         if (FindAnnotation.findAnnotation(annotations, Pac4JProfile.class) != null) {
             if (type.equals(Optional.class)) {
                 return new Pac4JValueInjector(providerFactory, rc -> rc.context()
-                        .flatMap(c -> new RequestCommonProfile(new RequestPac4JSecurityContext(c)).profile()));
+                        .flatMap(c -> new RequestUserProfile(new RequestPac4JSecurityContext(c)).profile()));
             } else {
                 return new Pac4JValueInjector(providerFactory,
                         rc -> rc.context()
-                                .flatMap(c -> new RequestCommonProfile(new RequestPac4JSecurityContext(c)).profile())
+                                .flatMap(c -> new RequestUserProfile(new RequestPac4JSecurityContext(c)).profile())
                                 .orElseThrow(() -> {
                                     LOG.debug(
                                             "Cannot inject a Pac4j profile into an unauthenticated request, responding with 401");

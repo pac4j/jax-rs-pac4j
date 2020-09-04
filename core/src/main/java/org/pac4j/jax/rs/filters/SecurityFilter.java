@@ -12,16 +12,16 @@ import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
-import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.Pac4JSecurityContext;
 
 /**
- * 
+ *
  * TODO this is missing a way to influence URL's prefix for the used clients and authorizers (this is a pac4j
  * limitation)
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -63,7 +63,7 @@ public class SecurityFilter extends AbstractFilter {
             return config.getSecurityLogic();
         } else {
             DefaultSecurityLogic<Object, JaxRsContext> logic = new DefaultSecurityLogic<>();
-            logic.setProfileManagerFactory(JaxRsProfileManager::new);
+            logic.setProfileManagerFactory(ctx -> new JaxRsProfileManager((JaxRsContext) ctx));
             return logic;
         }
     }
@@ -110,7 +110,7 @@ public class SecurityFilter extends AbstractFilter {
 
     private static class SecurityGrantedAccessOutcome implements SecurityGrantedAccessAdapter<Object, JaxRsContext> {
         @Override
-        public Object adapt(JaxRsContext context, Collection<CommonProfile> profiles, Object... parameters) {
+        public Object adapt(JaxRsContext context, Collection<UserProfile> profiles, Object... parameters) {
             SecurityContext original = context.getRequestContext().getSecurityContext();
             context.getRequestContext().setSecurityContext(new Pac4JSecurityContext(original, context, profiles));
             return null;

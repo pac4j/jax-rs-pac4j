@@ -14,7 +14,7 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
-import org.pac4j.jax.rs.helpers.RequestCommonProfile;
+import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
@@ -179,9 +179,9 @@ public class Pac4JValueFactoryProvider {
 
         /**
          * Use this if you want to return a dynamically supplied {@link CommonProfile} (or none with <code>null</code>).
-         * 
+         *
          * Note that it won't mock the profile coming out of {@link ProfileManager}!
-         * 
+         *
          * @param profile
          *            a profile supplier, can return <code>null</code>.
          */
@@ -249,7 +249,7 @@ public class Pac4JValueFactoryProvider {
 
     private static Optional<CommonProfile> optionalProfile(ContainerRequest containerRequest) {
         RequestPac4JSecurityContext securityContext = new RequestPac4JSecurityContext(containerRequest);
-        return new RequestCommonProfile(securityContext).profile();
+        return new RequestUserProfile(securityContext).profile();
     }
 
     public static class DefaultProfileManagerFactoryBuilder implements ProfileManagerFactoryBuilder {

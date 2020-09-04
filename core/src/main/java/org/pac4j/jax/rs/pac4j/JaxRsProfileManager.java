@@ -7,14 +7,11 @@ import java.util.Optional;
 
 import javax.ws.rs.core.SecurityContext;
 
-import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.Pac4JPrincipal;
-import org.pac4j.core.profile.ProfileHelper;
-import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.profile.*;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 
 /**
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -41,19 +38,19 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
          */
         private Principal principal;
 
-        private final Collection<CommonProfile> profiles;
+        private final Collection<UserProfile> profiles;
 
         private final JaxRsContext context;
 
         public Pac4JSecurityContext(SecurityContext original, JaxRsContext context,
-                Collection<CommonProfile> profiles) {
+                Collection<UserProfile> profiles) {
             this.original = original;
             this.context = context;
             this.profiles = profiles;
             this.principal = ProfileHelper.flatIntoOneProfile(profiles).map(Pac4JPrincipal::new).orElse(null);
         }
 
-        public Optional<Collection<CommonProfile>> getProfiles() {
+        public Optional<Collection<UserProfile>> getProfiles() {
             if (principal != null) {
                 return Optional.of(Collections.unmodifiableCollection(profiles));
             } else if (original instanceof Pac4JSecurityContext) {
