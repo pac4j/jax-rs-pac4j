@@ -25,6 +25,7 @@ import org.glassfish.jersey.server.model.Parameter;
 import org.glassfish.jersey.server.spi.internal.ValueFactoryProvider;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
@@ -107,16 +108,16 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    public interface OptionalProfileFactory extends Factory<Optional<CommonProfile>> {
+    public interface OptionalProfileFactory extends Factory<Optional<UserProfile>> {
         @Override
-        default void dispose(Optional<CommonProfile> instance) {
+        default void dispose(Optional<UserProfile> instance) {
             // do nothing
         }
     }
 
-    public interface ProfileFactory extends Factory<CommonProfile> {
+    public interface ProfileFactory extends Factory<UserProfile> {
         @Override
-        default void dispose(CommonProfile instance) {
+        default void dispose(UserProfile instance) {
             // do nothing
         }
     }
@@ -223,10 +224,10 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    static class ProfileValueFactory extends AbstractContainerRequestValueFactory<CommonProfile>
+    static class ProfileValueFactory extends AbstractContainerRequestValueFactory<UserProfile>
             implements ProfileFactory {
         @Override
-        public CommonProfile provide() {
+        public UserProfile provide() {
             return new RequestUserProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile()
                     .orElseThrow(() -> {
                         LOG.debug("Cannot inject a Pac4j profile into an unauthenticated request, responding with 401");
@@ -235,10 +236,10 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    static class OptionalProfileValueFactory extends AbstractContainerRequestValueFactory<Optional<CommonProfile>>
+    static class OptionalProfileValueFactory extends AbstractContainerRequestValueFactory<Optional<UserProfile>>
             implements OptionalProfileFactory {
         @Override
-        public Optional<CommonProfile> provide() {
+        public Optional<UserProfile> provide() {
             return new RequestUserProfile(new RequestPac4JSecurityContext(getContainerRequest())).profile();
         }
     }

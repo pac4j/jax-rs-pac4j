@@ -30,7 +30,7 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
 
     @Override
     public Optional<Object> get(JaxRsContext context, String key) {
-        return Optional.of(getHttpSession(context).getAttribute(key));
+        return Optional.ofNullable(getHttpSession(context).getAttribute(key));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
 
     @Override
     public Optional<Object> getTrackableSession(JaxRsContext context) {
-        return Optional.of(getHttpSession(context));
+        return Optional.ofNullable(getHttpSession(context));
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
 
     @Override
     public Optional<SessionStore<JaxRsContext>> buildFromTrackableSession(JaxRsContext context, Object trackableSession) {
-        return Optional.of(new ServletSessionStore() {
+        return Optional.ofNullable(new ServletSessionStore() {
             @Override
             public HttpSession getHttpSession(JaxRsContext context) {
                 return (HttpSession) trackableSession;
