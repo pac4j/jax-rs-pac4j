@@ -3,7 +3,7 @@ package org.pac4j.jax.rs.resteasy.helpers;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Providers;
 
-import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
+import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
