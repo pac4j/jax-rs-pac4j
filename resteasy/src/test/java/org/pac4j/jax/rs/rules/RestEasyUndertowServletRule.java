@@ -2,6 +2,7 @@ package org.pac4j.jax.rs.rules;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.time.Duration;
 import java.util.Set;
 
 import javax.ws.rs.ProcessingException;
@@ -11,7 +12,6 @@ import javax.ws.rs.core.Application;
 
 import org.assertj.core.util.Sets;
 import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
@@ -87,7 +87,7 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
     protected void after() {
         server.stop();
         // server.stop is not instantaneous
-        Awaitility.await().atMost(Duration.FIVE_SECONDS).until(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> {
             try {
                 getTarget("/").request().get();
             } catch (ProcessingException e) {

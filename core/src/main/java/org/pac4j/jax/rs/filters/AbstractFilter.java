@@ -16,7 +16,7 @@ import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -57,7 +57,9 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
 
     /**
      * Prefer to set a specific {@link HttpActionAdapter} on the {@link Config} instead of overriding this method.
-     * 
+     *
+     * @param config the security configuration
+     *
      * @return an {@link HttpActionAdapter}
      */
     protected HttpActionAdapter<Object, JaxRsContext> adapter(Config config) {
@@ -84,7 +86,7 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
     /**
      * Note that if this is set to <code>true</code>, this will also disable the effects of {@link Authorizer} and such
      * that set things on the HTTP response! Use with caution!
-     * 
+     *
      * @param skipResponse
      *            If set to <code>true</code>, the pac4j response, such as redirect, will be skipped (the annotated
      *            method will be executed instead).
