@@ -143,9 +143,9 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.5</version>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.0.4</version>
         <configuration>
           <effort>Low</effort>
           <threshold>Max</threshold>
@@ -154,7 +154,7 @@
         </configuration>
         <executions>
           <execution>
-            <id>run-findbugs</id>
+            <id>run-spotbugs</id>
             <phase>compile</phase>
             <goals>
               <goal>check</goal>
