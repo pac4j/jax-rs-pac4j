@@ -11,7 +11,7 @@
   <artifactId>jersey228-pac4j</artifactId>
 
   <properties>
-    <jersey.version>2.34</jersey.version>
+    <jersey.version>3.0.2</jersey.version>
   </properties>
 
   <dependencyManagement>
