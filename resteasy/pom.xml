@@ -10,7 +10,7 @@
   <artifactId>resteasy-pac4j</artifactId>
 
   <properties>
-    <resteasy.version>3.15.1.Final</resteasy.version>
+    <resteasy.version>3.15.2.Final</resteasy.version>
   </properties>
 
   <dependencyManagement>
