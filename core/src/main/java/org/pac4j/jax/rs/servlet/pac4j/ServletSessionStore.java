@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
-import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
  *
@@ -16,25 +16,20 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
  * @since 1.0.0
  *
  */
-public class ServletSessionStore implements SessionStore<JaxRsContext> {
+public class ServletSessionStore implements SessionStore {
 
-    public HttpSession getHttpSession(JaxRsContext context) {
+    public HttpSession getHttpSession(WebContext context) {
         assert context instanceof ServletJaxRsContext;
         return ((ServletJaxRsContext) context).getRequest().getSession();
     }
 
     @Override
-    public String getOrCreateSessionId(JaxRsContext context) {
-        return getHttpSession(context).getId();
-    }
-
-    @Override
-    public Optional<Object> get(JaxRsContext context, String key) {
+    public Optional<Object> get(WebContext context, String key) {
         return Optional.ofNullable(getHttpSession(context).getAttribute(key));
     }
 
     @Override
-    public void set(JaxRsContext context, String key, Object value) {
+    public void set(WebContext context, String key, Object value) {
         if (value == null) {
             getHttpSession(context).removeAttribute(key);
         } else {
@@ -43,7 +38,7 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
     }
 
     @Override
-    public boolean destroySession(JaxRsContext context) {
+    public boolean destroySession(WebContext context) {
         final HttpSession session = getHttpSession(context);
 
         session.invalidate();
@@ -52,12 +47,12 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
     }
 
     @Override
-    public Optional<Object> getTrackableSession(JaxRsContext context) {
+    public Optional<Object> getTrackableSession(WebContext context) {
         return Optional.ofNullable(getHttpSession(context));
     }
 
     @Override
-    public boolean renewSession(JaxRsContext context) {
+    public boolean renewSession(WebContext context) {
         final HttpSession session = getHttpSession(context);
         final Map<String, Object> attributes = new HashMap<>();
         Collections.list(session.getAttributeNames()).forEach(k -> attributes.put(k, session.getAttribute(k)));
@@ -73,12 +68,18 @@ public class ServletSessionStore implements SessionStore<JaxRsContext> {
     }
 
     @Override
-    public Optional<SessionStore<JaxRsContext>> buildFromTrackableSession(JaxRsContext context, Object trackableSession) {
+    public Optional<SessionStore> buildFromTrackableSession(WebContext context, Object trackableSession) {
         return Optional.ofNullable(new ServletSessionStore() {
             @Override
-            public HttpSession getHttpSession(JaxRsContext context) {
+            public HttpSession getHttpSession(WebContext context) {
                 return (HttpSession) trackableSession;
             }
         });
+    }
+
+    @Override
+    public Optional<String> getSessionId(WebContext context, boolean createSession) {
+        HttpSession session = getHttpSession(context);
+        return (session != null) ? Optional.of(session.getId()) : Optional.empty();
     }
 }

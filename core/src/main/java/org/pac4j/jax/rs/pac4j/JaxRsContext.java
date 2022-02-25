@@ -9,8 +9,13 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,18 +49,22 @@ public class JaxRsContext implements WebContext {
 
     private final ContainerRequestContext requestContext;
 
-    private final SessionStore sessionStore;
-
     private final Providers providers;
 
     private ResponseBuilder abortResponse = null;
 
     private MultivaluedMap<String, String> parameters = null;
 
+    private SessionStore sessionStore = null;
+
     public JaxRsContext(Providers providers, ContainerRequestContext requestContext, SessionStore sessionStore) {
         this.providers = providers;
         this.requestContext = requestContext;
         this.sessionStore = sessionStore;
+    }
+
+    public SessionStore getSessionStore() {
+        return sessionStore;
     }
 
     public Providers getProviders() {
@@ -64,11 +73,6 @@ public class JaxRsContext implements WebContext {
 
     public ContainerRequestContext getRequestContext() {
         return requestContext;
-    }
-
-    @Override
-    public SessionStore getSessionStore() {
-        return sessionStore;
     }
 
     public ResponseBuilder getAbortBuilder() {
@@ -85,6 +89,11 @@ public class JaxRsContext implements WebContext {
             requestContext.setProperty(RESPONSE_HOLDER, prop);
         }
         return prop;
+    }
+
+    @Override
+    public Optional<String> getResponseHeader(String name) {
+        return Optional.ofNullable(getResponseHolder().getResponseHeader(name));
     }
 
     public static class ResponseHolder {
@@ -128,6 +137,10 @@ public class JaxRsContext implements WebContext {
             hasResponseContentType = true;
         }
 
+        public String getResponseHeader(String name) {
+            return responseHeaders.get(name);
+        }
+
         public void populateResponse(ContainerResponseContext responseContext) {
             if (hasResponseContent) {
                 responseContext.setEntity(responseContent);
@@ -166,9 +179,8 @@ public class JaxRsContext implements WebContext {
     @Override
     public void addResponseCookie(Cookie cookie) {
         CommonHelper.assertNotNull("cookie", cookie);
-        NewCookie c = new NewCookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
-                cookie.getDomain(), cookie.getVersion(), cookie.getComment(), cookie.getMaxAge(), cookie.getExpiry(),
-                cookie.isSecure(), cookie.isHttpOnly());
+        NewCookie c = new NewCookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), "",
+                cookie.getMaxAge(), cookie.isSecure());
         getAbortBuilder().cookie(c);
         getResponseHolder().addResponseCookie(c);
     }
@@ -301,7 +313,6 @@ public class JaxRsContext implements WebContext {
             Cookie nc = new Cookie(c.getName(), c.getValue());
             nc.setDomain(c.getDomain());
             nc.setPath(c.getPath());
-            nc.setVersion(c.getVersion());
             return nc;
         }).collect(Collectors.toList());
     }

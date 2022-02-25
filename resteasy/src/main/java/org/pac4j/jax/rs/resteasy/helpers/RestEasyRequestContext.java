@@ -1,5 +1,6 @@
 package org.pac4j.jax.rs.resteasy.helpers;
 
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Providers;
 
@@ -25,6 +26,6 @@ public class RestEasyRequestContext extends RequestJaxRsContext {
                         // if we went through a pac4j security filter
                         .map(sc -> sc.getContext().getRequestContext())
                         // if not, we create a new ContainerRequestContext
-                        .orElse(new PreMatchContainerRequestContext(request)));
+                        .orElse(new PreMatchContainerRequestContext(request, new ContainerRequestFilter[] {}, null)));
     }
 }

@@ -29,9 +29,10 @@ import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
-import org.pac4j.jax.rs.helpers.RequestUserProfile;
-import org.pac4j.jax.rs.helpers.RequestProfileManager;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
+import org.pac4j.jax.rs.helpers.RequestProfileManager;
+import org.pac4j.jax.rs.helpers.RequestUserProfile;
+import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,9 +123,9 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    public interface ProfileManagerFactory extends Factory<ProfileManager<CommonProfile>> {
+    public interface ProfileManagerFactory extends Factory<ProfileManager> {
         @Override
-        default void dispose(ProfileManager<CommonProfile> instance) {
+        default void dispose(ProfileManager instance) {
             // do nothing
         }
     }
@@ -155,15 +156,15 @@ public class Pac4JValueFactoryProvider {
         }
 
         /**
-         * Use this if you want to mock the {@link CommonProfile} or the {@link ProfileManager}.
+         * Use this if you want to mock the {@link CommonProfile} or the
+         * {@link ProfileManager}.
          *
-         * @param profile
-         *            a builder for a {@link CommonProfile}, can be <code>null</code> and default will be used.
-         * @param optProfile
-         *            a builder for an {@link Optional} of {@link CommonProfile}, can be <code>null</code> and default
-         *            will be used.
-         * @param manager
-         *            a builder for a {@link ProfileManager}, can be <code>null</code> and default will be used.
+         * @param profile    a builder for a {@link CommonProfile}, can be
+         *                   <code>null</code> and default will be used.
+         * @param optProfile a builder for an {@link Optional} of {@link CommonProfile},
+         *                   can be <code>null</code> and default will be used.
+         * @param manager    a builder for a {@link ProfileManager}, can be
+         *                   <code>null</code> and default will be used.
          */
         public Binder(ProfileFactoryBuilder profile, OptionalProfileFactoryBuilder optProfile,
                 ProfileManagerFactoryBuilder manager) {
@@ -173,24 +174,24 @@ public class Pac4JValueFactoryProvider {
         }
 
         /**
-         * Use this if you want to always return the same {@link CommonProfile} (or none with <code>null</code>).
+         * Use this if you want to always return the same {@link CommonProfile} (or none
+         * with <code>null</code>).
          *
          * Note that it won't mock the profile coming out of {@link ProfileManager}!
          *
-         * @param profile
-         *            a profile, can be <code>null</code>.
+         * @param profile a profile, can be <code>null</code>.
          */
         public Binder(CommonProfile profile) {
             this(() -> () -> profile, () -> () -> Optional.ofNullable(profile), null);
         }
 
         /**
-         * Use this if you want to return a dynamically supplied {@link CommonProfile} (or none with <code>null</code>).
+         * Use this if you want to return a dynamically supplied {@link CommonProfile}
+         * (or none with <code>null</code>).
          *
          * Note that it won't mock the profile coming out of {@link ProfileManager}!
          *
-         * @param profile
-         *            a profile supplier, can return <code>null</code>.
+         * @param profile a profile supplier, can return <code>null</code>.
          */
         public Binder(Supplier<CommonProfile> profile) {
             this(() -> () -> profile.get(), () -> () -> Optional.ofNullable(profile.get()), null);
@@ -211,16 +212,16 @@ public class Pac4JValueFactoryProvider {
         }
     }
 
-    static class ProfileManagerValueFactory extends AbstractContainerRequestValueFactory<ProfileManager<CommonProfile>>
+    static class ProfileManagerValueFactory extends AbstractContainerRequestValueFactory<ProfileManager>
             implements ProfileManagerFactory {
 
         @Context
         Providers providers;
 
         @Override
-        public ProfileManager<CommonProfile> provide() {
-            return new RequestProfileManager(new RequestJaxRsContext(providers, getContainerRequest()))
-                    .profileManager();
+        public ProfileManager provide() {
+            JaxRsContext context = new RequestJaxRsContext(providers, getContainerRequest()).contextOrNew();
+            return new RequestProfileManager(context, context.getSessionStore()).profileManager();
         }
     }
 

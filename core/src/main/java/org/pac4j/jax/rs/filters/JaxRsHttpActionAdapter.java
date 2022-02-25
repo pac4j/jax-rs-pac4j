@@ -3,6 +3,7 @@ package org.pac4j.jax.rs.filters;
 import javax.ws.rs.core.Response;
 
 import org.pac4j.core.context.HttpConstants;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.exception.http.HttpAction;
 import org.pac4j.core.exception.http.WithContentAction;
@@ -16,26 +17,27 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
  * @since 1.1.1
  *
  */
-public class JaxRsHttpActionAdapter implements HttpActionAdapter<Object, JaxRsContext> {
+public class JaxRsHttpActionAdapter implements HttpActionAdapter {
 
     public static final JaxRsHttpActionAdapter INSTANCE = new JaxRsHttpActionAdapter();
 
     @Override
-    public Object adapt(final HttpAction action, final JaxRsContext context) {
-        if (action != null) {
+    public Object adapt(final HttpAction action, final WebContext context) {
+        if (action != null && context instanceof JaxRsContext) {
+            JaxRsContext jaxRsContext = (JaxRsContext) context;
             final int code = action.getCode();
-            context.getAbortBuilder().status(code);
-            context.getResponseHolder().setResponseStatus(code);
+            jaxRsContext.getAbortBuilder().status(code);
+            jaxRsContext.getResponseHolder().setResponseStatus(code);
             if (action instanceof WithLocationAction) {
                 final WithLocationAction withLocationAction = (WithLocationAction) action;
                 context.setResponseHeader(HttpConstants.LOCATION_HEADER, withLocationAction.getLocation());
             } else if (action instanceof WithContentAction) {
                 final String content = ((WithContentAction) action).getContent();
-                context.getAbortBuilder().entity(content);
-                context.getResponseHolder().writeResponseContent(content);
+                jaxRsContext.getAbortBuilder().entity(content);
+                jaxRsContext.getResponseHolder().writeResponseContent(content);
             }
-            Response response = context.getAbortBuilder().build();
-            context.getRequestContext().abortWith(response);
+            Response response = jaxRsContext.getAbortBuilder().build();
+            jaxRsContext.getRequestContext().abortWith(response);
             return null;
         }
 

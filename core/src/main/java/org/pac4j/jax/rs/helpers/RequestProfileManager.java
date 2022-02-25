@@ -1,5 +1,7 @@
 package org.pac4j.jax.rs.helpers;
 
+import org.pac4j.core.context.session.SessionStore;
+import org.pac4j.jax.rs.pac4j.JaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 
 /**
@@ -8,13 +10,15 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
  */
 public class RequestProfileManager {
 
-    private final RequestJaxRsContext context;
+    private final JaxRsContext context;
+    private final SessionStore sessionStore;
 
-    public RequestProfileManager(RequestJaxRsContext context) {
+    public RequestProfileManager(JaxRsContext context, SessionStore sessionStore) {
         this.context = context;
+        this.sessionStore = sessionStore;
     }
 
     public JaxRsProfileManager profileManager() {
-        return new JaxRsProfileManager(context.contextOrNew());
+        return new JaxRsProfileManager(context, sessionStore);
     }
 }
