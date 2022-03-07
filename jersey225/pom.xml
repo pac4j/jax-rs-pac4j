@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.pac4j.jax-rs</groupId>
     <artifactId>parent</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <groupId>org.pac4j</groupId>
   <artifactId>jersey225-pac4j</artifactId>
@@ -52,23 +52,11 @@
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-inmemory</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>

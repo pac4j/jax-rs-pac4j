@@ -5,13 +5,13 @@
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.pac4j.jax-rs</groupId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <groupId>org.pac4j</groupId>
   <artifactId>jersey228-pac4j</artifactId>
 
   <properties>
-    <jersey.version>3.0.4</jersey.version>
+    <jersey.version>2.31</jersey.version>
   </properties>
 
   <dependencyManagement>
@@ -74,22 +74,12 @@
           <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 </project>
