@@ -10,6 +10,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.jax.rs.helpers.ProvidersContext;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
@@ -35,6 +36,10 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
         return new ProvidersContext(providers).resolveNotNull(Config.class);
     }
 
+    protected SessionStore getSessionStore() {
+        return new ProvidersContext(providers).resolveNotNull(SessionStore.class);
+    }
+
     protected abstract void filter(JaxRsContext context) throws IOException;
 
     @Override
@@ -45,9 +50,12 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
             throws IOException {
-        // in case the filter aborts the request, we never arrive here, but if it is not aborted
-        // there is case when pac4j sets things on the response, this is the role of this method.
-        // unfortunately, if skipResponse is used, we can't do that because pac4j considers
+        // in case the filter aborts the request, we never arrive here, but if it is not
+        // aborted
+        // there is case when pac4j sets things on the response, this is the role of
+        // this method.
+        // unfortunately, if skipResponse is used, we can't do that because pac4j
+        // considers
         // its abort response in the same way as the normal response
         if (skipResponse == null || !skipResponse) {
             new RequestJaxRsContext(providers, requestContext).contextOrNew().getResponseHolder()
@@ -56,13 +64,14 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
     }
 
     /**
-     * Prefer to set a specific {@link HttpActionAdapter} on the {@link Config} instead of overriding this method.
+     * Prefer to set a specific {@link HttpActionAdapter} on the {@link Config}
+     * instead of overriding this method.
      *
      * @param config the security configuration
      *
      * @return an {@link HttpActionAdapter}
      */
-    protected HttpActionAdapter<Object, JaxRsContext> adapter(Config config) {
+    protected HttpActionAdapter adapter(Config config) {
 
         final HttpActionAdapter adapter;
         if (config.getHttpActionAdapter() != null) {
@@ -84,12 +93,13 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
     }
 
     /**
-     * Note that if this is set to <code>true</code>, this will also disable the effects of {@link Authorizer} and such
-     * that set things on the HTTP response! Use with caution!
+     * Note that if this is set to <code>true</code>, this will also disable the
+     * effects of {@link Authorizer} and such that set things on the HTTP response!
+     * Use with caution!
      *
-     * @param skipResponse
-     *            If set to <code>true</code>, the pac4j response, such as redirect, will be skipped (the annotated
-     *            method will be executed instead).
+     * @param skipResponse If set to <code>true</code>, the pac4j response, such as
+     *                     redirect, will be skipped (the annotated method will be
+     *                     executed instead).
      */
     public void setSkipResponse(Boolean skipResponse) {
         this.skipResponse = skipResponse;

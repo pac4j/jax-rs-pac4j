@@ -10,7 +10,21 @@
   <artifactId>resteasy-pac4j</artifactId>
 
   <properties>
-    <resteasy.version>3.13.0.Final</resteasy.version>
+    <resteasy.version>3.15.3.Final</resteasy.version>
+
+    <cdi-api.version>2.0.SP1</cdi-api.version>
+    <servlet-api.version>4.0.3</servlet-api.version>
+    <inject-api.version>1.0.5</inject-api.version>
+
+    <osgi.version>6.0.0</osgi.version>
+    <jersey.version>2.35</jersey.version>
+    <weld.version>3.1.9.Final</weld.version>
+    <undertow.version>2.2.16.Final</undertow.version>
+    <jboss-logging.version>3.4.1.Final</jboss-logging.version>
+    <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
+    <jboss-logging-processor.version>2.2.1.Final</jboss-logging-processor.version>
+    <commons-codec.version>1.11</commons-codec.version>
+    <wildfly-common.version>1.5.4.Final</wildfly-common.version>
   </properties>
 
   <dependencyManagement>
@@ -21,6 +35,70 @@
         <version>${resteasy.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+
+      <!-- pinning conflicting dependencies -->
+      <dependency>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet-parent</artifactId>
+        <version>${weld.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${osgi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons-codec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${servlet-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>${cdi-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.inject</groupId>
+        <artifactId>jakarta.inject-api</artifactId>
+        <version>${inject-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>${jboss-logging.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-annotations</artifactId>
+        <version>${jboss-logging-annotations.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-processor</artifactId>
+        <version>${jboss-logging-processor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly.common</groupId>
+        <artifactId>wildfly-common</artifactId>
+        <version>${wildfly-common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-servlet</artifactId>
+        <version>${undertow.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-core</artifactId>
+        <version>${undertow.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -36,6 +114,7 @@
       <artifactId>resteasy-jaxrs</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
@@ -45,47 +124,29 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-undertow</artifactId>
+      <artifactId>resteasy-cdi</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-codec</groupId>
-          <artifactId>commons-codec</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.logging</groupId>
-          <artifactId>jboss-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-cdi</artifactId>
-      <scope>test</scope>
-      <version>${resteasy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>8.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.undertow</groupId>
-      <artifactId>undertow-servlet</artifactId>
-      <version>2.0.23.Final</version>
+      <artifactId>resteasy-undertow</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
-      <artifactId>weld-servlet</artifactId>
-      <version>2.4.8.Final</version>
+      <artifactId>weld-servlet-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
-      <version>2.25.1</version>
+      <version>${jersey.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-cdi2-se</artifactId>
+      <version>${jersey.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

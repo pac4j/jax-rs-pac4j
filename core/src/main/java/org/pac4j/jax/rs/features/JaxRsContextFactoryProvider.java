@@ -5,18 +5,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 
-import org.pac4j.core.client.IndirectClient;
-import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
-import org.pac4j.jax.rs.helpers.ProvidersContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
  * 
- * This provides to the JAX-RS runtime a way to build a {@link JaxRsContext} adequate for the container.
- * 
- * This is the generic implementation and will not support session management (and hence won't support pac4j
- * {@link IndirectClient}).
+ * This provides the JAX-RS runtime a way to build a {@link JaxRsContext}
+ * adequate for the container.
  * 
  * This can be subclassed for specific containers.
  * 
@@ -30,7 +25,7 @@ public class JaxRsContextFactoryProvider implements ContextResolver<JaxRsContext
 
     @Override
     public JaxRsContextFactory getContext(Class<?> type) {
-        return context -> new JaxRsContext(getProviders(), context, getConfig().getSessionStore());
+        return context -> new JaxRsContext(getProviders(), context);
     }
 
     protected Providers getProviders() {
@@ -38,13 +33,9 @@ public class JaxRsContextFactoryProvider implements ContextResolver<JaxRsContext
         return providers;
     }
 
-    protected Config getConfig() {
-        return new ProvidersContext(providers).resolveNotNull(Config.class);
-    }
-
     /**
-     * We need to provide a factory because it is not possible to get the {@link ContainerRequestContext} injected
-     * directly here...
+     * We need to provide a factory because it is not possible to get the
+     * {@link ContainerRequestContext} injected directly here...
      */
     @FunctionalInterface
     public interface JaxRsContextFactory {

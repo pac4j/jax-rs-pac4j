@@ -16,12 +16,13 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
-import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
+import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.resteasy.helpers.RestEasyRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +36,25 @@ public class Pac4JProfileInjectorFactory extends InjectorFactoryImpl {
     private static Logger LOG = LoggerFactory.getLogger(Pac4JProfileInjectorFactory.class);
 
     @Override
-    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
-            Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
-        final ValueInjector injector = getValueInjector(type, annotations, factory);
+    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget,
+            String defaultName, Class type, Type genericType, Annotation[] annotations, boolean useDefault,
+            ResteasyProviderFactory providerFactory) {
+        final ValueInjector injector = getValueInjector(type, annotations, providerFactory);
         if (injector != null)
             return injector;
-        return super.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
+        return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType,
+                annotations, useDefault, providerFactory);
+    }
+
+    @Override
+    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget,
+            String defaultName, Class type, Type genericType, Annotation[] annotations,
+            ResteasyProviderFactory providerFactory) {
+        final ValueInjector injector = getValueInjector(type, annotations, providerFactory);
+        if (injector != null)
+            return injector;
+        return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType,
+                annotations, providerFactory);
     }
 
     @Override
@@ -69,7 +83,8 @@ public class Pac4JProfileInjectorFactory extends InjectorFactoryImpl {
                                 }));
             }
         } else if (FindAnnotation.findAnnotation(annotations, Pac4JProfileManager.class) != null) {
-            return new Pac4JValueInjector(providerFactory, c -> new RequestProfileManager(c).profileManager());
+            return new Pac4JValueInjector(providerFactory, c -> new RequestProfileManager(c.contextOrNew(),
+                    c.getProviders().resolveNotNull(SessionStore.class)).profileManager());
         } else {
             return null;
         }

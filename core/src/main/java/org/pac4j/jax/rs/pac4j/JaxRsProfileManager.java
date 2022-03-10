@@ -7,8 +7,12 @@ import java.util.Optional;
 
 import javax.ws.rs.core.SecurityContext;
 
-import org.pac4j.core.profile.*;
-import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
+import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.session.SessionStore;
+import org.pac4j.core.profile.Pac4JPrincipal;
+import org.pac4j.core.profile.ProfileHelper;
+import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.profile.UserProfile;
 
 /**
  *
@@ -16,17 +20,10 @@ import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
  * @since 1.0.0
  *
  */
-public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
+public class JaxRsProfileManager extends ProfileManager {
 
-    public JaxRsProfileManager(JaxRsContext context) {
-        super(context);
-    }
-
-    @Override
-    public void logout() {
-        super.logout();
-
-        new RequestPac4JSecurityContext((JaxRsContext) this.context).context().ifPresent(c -> c.principal = null);
+    public JaxRsProfileManager(WebContext context, SessionStore sessionStore) {
+        super(context, sessionStore);
     }
 
     public static class Pac4JSecurityContext implements SecurityContext {
@@ -42,8 +39,7 @@ public class JaxRsProfileManager extends ProfileManager<CommonProfile> {
 
         private final JaxRsContext context;
 
-        public Pac4JSecurityContext(SecurityContext original, JaxRsContext context,
-                Collection<UserProfile> profiles) {
+        public Pac4JSecurityContext(SecurityContext original, JaxRsContext context, Collection<UserProfile> profiles) {
             this.original = original;
             this.context = context;
             this.profiles = profiles;

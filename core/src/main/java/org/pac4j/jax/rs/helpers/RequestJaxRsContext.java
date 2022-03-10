@@ -15,16 +15,31 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.Pac4JSecurityContext;
  */
 public class RequestJaxRsContext {
 
-    private final ProvidersContext providers;
-    private final ContainerRequestContext context;
+    private ProvidersContext providers;
+    private ContainerRequestContext context;
+
+    private JaxRsContext jaxContext;
 
     public RequestJaxRsContext(Providers providers, ContainerRequestContext context) {
         this.providers = new ProvidersContext(providers);
         this.context = context;
     }
 
+    public RequestJaxRsContext(JaxRsContext context) {
+        this.jaxContext = context;
+    }
+
+    public ProvidersContext getProviders() {
+        return providers;
+    }
+
+    public ContainerRequestContext getContainerRequestContext() {
+        return context;
+    }
+
     public Optional<JaxRsContext> context() {
-        return new RequestPac4JSecurityContext(context).context().map(Pac4JSecurityContext::getContext);
+        return jaxContext != null ? Optional.of(jaxContext)
+                : new RequestPac4JSecurityContext(context).context().map(Pac4JSecurityContext::getContext);
     }
 
     public JaxRsContext contextOrNew() {

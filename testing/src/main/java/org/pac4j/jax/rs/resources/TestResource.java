@@ -19,6 +19,7 @@ import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
+import org.pac4j.jax.rs.servlet.pac4j.ServletSessionStore;
 
 /**
  * This contains only session-less interactions
@@ -30,7 +31,7 @@ import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 @Path("/")
 public class TestResource {
 
-    private final Authorizer<CommonProfile> IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer<>();
+    private final Authorizer IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer();
 
     @GET
     @Path("no")
@@ -91,10 +92,10 @@ public class TestResource {
     @POST
     @Path("directInjectManager")
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED, skipResponse = true)
-    public String directInjectManager(@Pac4JProfileManager ProfileManager<CommonProfile> pm) throws HttpAction {
+    public String directInjectManager(@Pac4JProfileManager ProfileManager pm) throws HttpAction {
         if (pm != null) {
             // pm.isAuthorized is relying on the session...
-            if (IS_AUTHENTICATED_AUTHORIZER.isAuthorized(null, pm.getAll(false))) {
+            if (IS_AUTHENTICATED_AUTHORIZER.isAuthorized(null, ServletSessionStore.INSTANCE, pm.getProfiles())) {
                 return "ok";
             } else {
                 return "fail";

@@ -1,5 +1,7 @@
 package org.pac4j.jax.rs.resources;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.ws.rs.Path;
 
 import javassist.util.proxy.Proxy;
@@ -20,13 +22,14 @@ public class TestProxyResource {
         try {
             final ProxyFactory factory = new ProxyFactory();
             factory.setSuperclass(TestClassLevelResource.class);
-            final Proxy proxy = (Proxy) factory.createClass().newInstance();
+            final Proxy proxy = (Proxy) factory.createClass().getConstructor().newInstance();
             proxy.setHandler((self, overridden, proceed, args) -> {
                 return proceed.invoke(self, args);
             });
 
             return (TestClassLevelResource) proxy;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
             throw new AssertionError(e);
         }
     }

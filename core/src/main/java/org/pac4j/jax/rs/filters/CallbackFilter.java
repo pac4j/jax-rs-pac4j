@@ -7,6 +7,7 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
@@ -21,7 +22,7 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
 @Priority(Priorities.AUTHORIZATION)
 public class CallbackFilter extends AbstractFilter {
 
-    private CallbackLogic<Object, JaxRsContext> callbackLogic;
+    private CallbackLogic callbackLogic;
 
     private String defaultUrl;
 
@@ -40,28 +41,29 @@ public class CallbackFilter extends AbstractFilter {
     @Override
     protected void filter(JaxRsContext context) throws IOException {
         Config config = getConfig();
+        SessionStore sessionStore = getSessionStore();
 
-        buildLogic(config).perform(context, config, adapter(config), context.getAbsolutePath(defaultUrl, false),
-                saveInSession, multiProfile, renewSession, defaultClient);
+        buildLogic(config).perform(context, sessionStore, config, adapter(config),
+                context.getAbsolutePath(defaultUrl, false), renewSession, defaultClient);
     }
 
-    protected CallbackLogic<Object, JaxRsContext> buildLogic(Config config) {
+    protected CallbackLogic buildLogic(Config config) {
         if (callbackLogic != null) {
             return callbackLogic;
         } else if (config.getCallbackLogic() != null) {
             return config.getCallbackLogic();
         } else {
-            DefaultCallbackLogic<Object, JaxRsContext> logic = new DefaultCallbackLogic<>();
-            logic.setProfileManagerFactory(ctx -> new JaxRsProfileManager((JaxRsContext) ctx));
+            DefaultCallbackLogic logic = new DefaultCallbackLogic();
+            logic.setProfileManagerFactory((ctx, sessionStore) -> new JaxRsProfileManager(ctx, sessionStore));
             return logic;
         }
     }
 
-    public CallbackLogic<Object, JaxRsContext> getCallbackLogic() {
+    public CallbackLogic getCallbackLogic() {
         return callbackLogic;
     }
 
-    public void setCallbackLogic(CallbackLogic<Object, JaxRsContext> callbackLogic) {
+    public void setCallbackLogic(CallbackLogic callbackLogic) {
         this.callbackLogic = callbackLogic;
     }
 

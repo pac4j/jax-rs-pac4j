@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.glassfish.grizzly.http.server.Session;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
-import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
  *
@@ -14,25 +14,31 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
  * @since 1.0.0
  *
  */
-public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
+public class GrizzlySessionStore implements SessionStore {
 
-    public Session getSession(final JaxRsContext context) {
+    public static final GrizzlySessionStore INSTANCE = new GrizzlySessionStore();
+
+    protected Session session;
+
+    protected GrizzlySessionStore() {
+    }
+
+    protected GrizzlySessionStore(final Session httpSession) {
+        this.session = httpSession;
+    }
+
+    public Session getSession(final WebContext context) {
         assert context instanceof GrizzlyJaxRsContext;
         return ((GrizzlyJaxRsContext) context).getRequest().getSession();
     }
 
     @Override
-    public String getOrCreateSessionId(JaxRsContext context) {
-        return getSession(context).getIdInternal();
-    }
-
-    @Override
-    public Optional<Object> get(JaxRsContext context, String key) {
+    public Optional<Object> get(WebContext context, String key) {
         return Optional.ofNullable(getSession(context).getAttribute(key));
     }
 
     @Override
-    public void set(JaxRsContext context, String key, Object value) {
+    public void set(WebContext context, String key, Object value) {
         if (value == null) {
             getSession(context).removeAttribute(key);
         } else {
@@ -41,7 +47,7 @@ public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
     }
 
     @Override
-    public boolean destroySession(JaxRsContext context) {
+    public boolean destroySession(WebContext context) {
         final Session session = getSession(context);
 
         session.setValid(false);
@@ -50,12 +56,12 @@ public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
     }
 
     @Override
-    public Optional<Object> getTrackableSession(JaxRsContext context) {
+    public Optional<Object> getTrackableSession(WebContext context) {
         return Optional.ofNullable(getSession(context));
     }
 
     @Override
-    public boolean renewSession(JaxRsContext context) {
+    public boolean renewSession(WebContext context) {
         final Session session = getSession(context);
         final Map<String, Object> attributes = new HashMap<>();
         attributes.putAll(session.attributes());
@@ -70,13 +76,17 @@ public class GrizzlySessionStore implements SessionStore<JaxRsContext> {
         return true;
     }
 
-
+    @Override
+    public Optional<String> getSessionId(WebContext context, boolean createSession) {
+        Session session = getSession(context);
+        return (session != null) ? Optional.of(session.getIdInternal()) : Optional.empty();
+    }
 
     @Override
-    public Optional<SessionStore<JaxRsContext>> buildFromTrackableSession(JaxRsContext context, Object trackableSession) {
+    public Optional<SessionStore> buildFromTrackableSession(WebContext context, Object trackableSession) {
         return Optional.of(new GrizzlySessionStore() {
             @Override
-            public Session getSession(JaxRsContext context) {
+            public Session getSession(WebContext context) {
                 return (Session) trackableSession;
             }
         });

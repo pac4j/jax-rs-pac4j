@@ -79,8 +79,15 @@
   </scm>
 
   <properties>
-    <pac4j.version>4.0.3</pac4j.version>
-    <java.version>1.8</java.version>
+    <pac4j.version>5.3.1</pac4j.version>
+    <java.version>11</java.version>
+
+    <slf4j.version>1.7.35</slf4j.version>
+    <log4j.version>1.2.17</log4j.version>
+
+    <mockito.version>4.3.1</mockito.version>
+    <junit.version>4.13.2</junit.version>
+    <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
   </properties>
 
   <dependencyManagement>
@@ -91,10 +98,30 @@
         <version>${pac4j.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>3.5.10</version>
-        <scope>test</scope>
+        <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>findbugs-annotations</artifactId>
+        <version>${findbugs-annotations.version}</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -104,7 +131,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.10.0</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -127,7 +154,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.2</version>
         <configuration>
           <charset>UTF-8</charset>
           <encoding>UTF-8</encoding>
@@ -145,7 +172,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.0.4</version>
+        <version>4.5.3.0</version>
         <configuration>
           <effort>Low</effort>
           <threshold>Max</threshold>
@@ -166,7 +193,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.13.0</version>
+        <version>3.16.0</version>
         <configuration>
           <includeTests>true</includeTests>
           <printFailingErrors>true</printFailingErrors>
@@ -184,7 +211,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0-M3</version>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>dependency-convergence</id>
@@ -216,7 +243,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.0.1</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
