@@ -19,11 +19,10 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.weld.environment.servlet.Listener;
 import org.junit.rules.ExternalResource;
-import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.resources.RestEasyResource;
 import org.pac4j.jax.rs.resteasy.features.Pac4JProfileInjectorFactory;
-import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
+import org.pac4j.jax.rs.servlet.features.Pac4JServletFeature;
 
 import io.undertow.server.session.SessionCookieConfig;
 import io.undertow.servlet.Servlets;
@@ -40,7 +39,6 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
         @Override
         public Set<Class<?>> getClasses() {
             Set<Class<?>> classes = getResources();
-            classes.add(ServletJaxRsContextFactoryProvider.class);
             classes.add(Pac4JProfileInjectorFactory.class);
             return classes;
         }
@@ -48,7 +46,7 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
         @Override
         public Set<Object> getSingletons() {
             return Sets.newLinkedHashSet(
-                    new JaxRsConfigProvider(getConfig()),
+                    new Pac4JServletFeature(getConfig()),
                     new Pac4JSecurityFeature());
         }
     }

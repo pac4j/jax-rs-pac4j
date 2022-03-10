@@ -7,6 +7,7 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
@@ -40,8 +41,9 @@ public class CallbackFilter extends AbstractFilter {
     @Override
     protected void filter(JaxRsContext context) throws IOException {
         Config config = getConfig();
+        SessionStore sessionStore = getSessionStore();
 
-        buildLogic(config).perform(context, context.getSessionStore(), config, adapter(config),
+        buildLogic(config).perform(context, sessionStore, config, adapter(config),
                 context.getAbsolutePath(defaultUrl, false), renewSession, defaultClient);
     }
 

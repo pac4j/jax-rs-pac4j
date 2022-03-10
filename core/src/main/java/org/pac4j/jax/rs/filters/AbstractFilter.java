@@ -10,6 +10,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.jax.rs.helpers.ProvidersContext;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
@@ -33,6 +34,10 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
 
     protected Config getConfig() {
         return new ProvidersContext(providers).resolveNotNull(Config.class);
+    }
+
+    protected SessionStore getSessionStore() {
+        return new ProvidersContext(providers).resolveNotNull(SessionStore.class);
     }
 
     protected abstract void filter(JaxRsContext context) throws IOException;

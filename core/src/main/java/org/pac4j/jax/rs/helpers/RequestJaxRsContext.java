@@ -29,6 +29,14 @@ public class RequestJaxRsContext {
         this.jaxContext = context;
     }
 
+    public ProvidersContext getProviders() {
+        return providers;
+    }
+
+    public ContainerRequestContext getContainerRequestContext() {
+        return context;
+    }
+
     public Optional<JaxRsContext> context() {
         return jaxContext != null ? Optional.of(jaxContext)
                 : new RequestPac4JSecurityContext(context).context().map(Pac4JSecurityContext::getContext);

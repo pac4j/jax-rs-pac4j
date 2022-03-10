@@ -13,7 +13,6 @@ import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.spi.TestContainerException;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.rules.ExternalResource;
-import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 
@@ -38,7 +37,6 @@ public abstract class JerseyRule extends ExternalResource implements ContainerRu
 
     protected ResourceConfig configureResourceConfig(ResourceConfig config) {
         return config
-                .register(new JaxRsConfigProvider(getConfig()))
                 .register(new Pac4JSecurityFeature())
                 .register(new Pac4JValueFactoryProvider.Binder());
     }

@@ -16,6 +16,17 @@ import org.pac4j.core.context.session.SessionStore;
  */
 public class GrizzlySessionStore implements SessionStore {
 
+    public static final GrizzlySessionStore INSTANCE = new GrizzlySessionStore();
+
+    protected Session session;
+
+    protected GrizzlySessionStore() {
+    }
+
+    protected GrizzlySessionStore(final Session httpSession) {
+        this.session = httpSession;
+    }
+
     public Session getSession(final WebContext context) {
         assert context instanceof GrizzlyJaxRsContext;
         return ((GrizzlyJaxRsContext) context).getRequest().getSession();

@@ -26,13 +26,6 @@ public class JaxRsProfileManager extends ProfileManager {
         super(context, sessionStore);
     }
 
-//    @Override
-//    public void logout() {
-//        super.logout();
-//
-//        new RequestPac4JSecurityContext((JaxRsContext) this.context).context().ifPresent(c -> c.principal = null);
-//    }
-
     public static class Pac4JSecurityContext implements SecurityContext {
 
         private final SecurityContext original;

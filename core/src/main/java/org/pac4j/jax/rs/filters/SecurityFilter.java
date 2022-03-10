@@ -47,16 +47,16 @@ public class SecurityFilter extends AbstractFilter {
 
     @Override
     protected void filter(JaxRsContext context) throws IOException {
-
         Config config = getConfig();
+        SessionStore sessionStore = getSessionStore();
 
         // Note: basically, there is two possible outcomes:
         // either the access is granted or there was an error or a redirect!
         // For the former, we do nothing (see SecurityGrantedAccessOutcome comments)
         // For the later, we interpret the error and abort the request using jax-rs
         // abstractions
-        buildLogic(config).perform(context, context.getSessionStore(), config, new SecurityGrantedAccessOutcome(),
-                adapter(config), clients, authorizers, matchers, multiProfile);
+        buildLogic(config).perform(context, sessionStore, config, new SecurityGrantedAccessOutcome(), adapter(config),
+                clients, authorizers, matchers, multiProfile);
     }
 
     protected SecurityLogic buildLogic(Config config) {

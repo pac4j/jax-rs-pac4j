@@ -87,6 +87,7 @@
 
     <mockito.version>4.3.1</mockito.version>
     <junit.version>4.13.2</junit.version>
+    <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
   </properties>
 
   <dependencyManagement>
@@ -115,6 +116,12 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>findbugs-annotations</artifactId>
+        <version>${findbugs-annotations.version}</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

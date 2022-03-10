@@ -18,6 +18,17 @@ import org.pac4j.core.context.session.SessionStore;
  */
 public class ServletSessionStore implements SessionStore {
 
+    public static final ServletSessionStore INSTANCE = new ServletSessionStore();
+
+    protected HttpSession httpSession;
+
+    protected ServletSessionStore() {
+    }
+
+    protected ServletSessionStore(final HttpSession httpSession) {
+        this.httpSession = httpSession;
+    }
+
     public HttpSession getHttpSession(WebContext context) {
         assert context instanceof ServletJaxRsContext;
         return ((ServletJaxRsContext) context).getRequest().getSession();

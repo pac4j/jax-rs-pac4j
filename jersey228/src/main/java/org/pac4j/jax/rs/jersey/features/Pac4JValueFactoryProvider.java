@@ -23,11 +23,13 @@ import org.glassfish.jersey.server.internal.inject.MultivaluedParameterExtractor
 import org.glassfish.jersey.server.internal.inject.ParamInjectionResolver;
 import org.glassfish.jersey.server.model.Parameter;
 import org.glassfish.jersey.server.spi.internal.ValueParamProvider;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
+import org.pac4j.jax.rs.helpers.ProvidersContext;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
@@ -218,7 +220,8 @@ public class Pac4JValueFactoryProvider {
         @Override
         public ProfileManager apply(ContainerRequest containerRequest) {
             JaxRsContext context = new RequestJaxRsContext(providers, containerRequest).contextOrNew();
-            return new RequestProfileManager(context, context.getSessionStore()).profileManager();
+            SessionStore sessionStore = new ProvidersContext(providers).resolveNotNull(SessionStore.class);
+            return new RequestProfileManager(context, sessionStore).profileManager();
         }
     }
 

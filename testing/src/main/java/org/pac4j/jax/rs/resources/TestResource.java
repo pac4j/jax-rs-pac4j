@@ -95,7 +95,7 @@ public class TestResource {
     public String directInjectManager(@Pac4JProfileManager ProfileManager pm) throws HttpAction {
         if (pm != null) {
             // pm.isAuthorized is relying on the session...
-            if (IS_AUTHENTICATED_AUTHORIZER.isAuthorized(null, new ServletSessionStore(), pm.getProfiles())) {
+            if (IS_AUTHENTICATED_AUTHORIZER.isAuthorized(null, ServletSessionStore.INSTANCE, pm.getProfiles())) {
                 return "ok";
             } else {
                 return "fail";

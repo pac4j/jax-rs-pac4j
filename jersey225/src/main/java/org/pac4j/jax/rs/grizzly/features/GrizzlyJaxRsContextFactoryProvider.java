@@ -9,9 +9,8 @@ import org.pac4j.jax.rs.grizzly.pac4j.GrizzlyJaxRsContext;
 
 /**
  * 
- * Extends {@link JaxRsContextFactoryProvider} to support the Grizzly container (without the need for servlet support)
- * and its session manager (i.e., pac4j indirect clients will work, contrary than with
- * {@link JaxRsContextFactoryProvider}).
+ * Extends {@link JaxRsContextFactoryProvider} to support the Grizzly container
+ * (without the need for servlet support)
  * 
  * @see JaxRsContextFactoryProvider
  * @author Victor Noel - Linagora
@@ -27,6 +26,6 @@ public class GrizzlyJaxRsContextFactoryProvider extends JaxRsContextFactoryProvi
     public JaxRsContextFactory getContext(Class<?> type) {
         Request request = requestProvider.get();
         assert request != null;
-        return context -> new GrizzlyJaxRsContext(getProviders(), context, getConfig().getSessionStore(), request);
+        return context -> new GrizzlyJaxRsContext(getProviders(), context, request);
     }
 }

@@ -9,7 +9,7 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.pac4j.jax.rs.resources.JerseyResource;
-import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
+import org.pac4j.jax.rs.servlet.features.Pac4JServletFeature;
 
 public class JerseyGrizzlyServletRule extends JerseyRule implements SessionContainerRule {
 
@@ -34,7 +34,7 @@ public class JerseyGrizzlyServletRule extends JerseyRule implements SessionConta
     protected ResourceConfig configureResourceConfig(ResourceConfig config) {
         return super
                 .configureResourceConfig(config)
-                .register(ServletJaxRsContextFactoryProvider.class);
+                .register(new Pac4JServletFeature(getConfig()));
     }
 
 }

@@ -9,8 +9,7 @@ import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.mockito.Mockito;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.session.SessionStore;
-import org.pac4j.jax.rs.features.JaxRsConfigProvider;
-import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
+import org.pac4j.jax.rs.features.Pac4JFeature;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.resources.JerseyResource;
@@ -40,9 +39,8 @@ public class JerseyInMemoryRule extends JerseyRule {
         // or pac4j should be able to handle no session store.
         pac4jConfig.setSessionStore(Mockito.mock(SessionStore.class));
         return config
-            .register(new JaxRsConfigProvider(pac4jConfig))
+            .register(new Pac4JFeature(pac4jConfig))
             .register(new Pac4JSecurityFeature())
-            .register(new Pac4JValueFactoryProvider.Binder())
-            .register(JaxRsContextFactoryProvider.class);
+            .register(new Pac4JValueFactoryProvider.Binder());
     }
 }

@@ -28,15 +28,22 @@ These filters can be directly registered by hand, or instead, the following feat
 
 5) Generic JAX-RS Providers and Features activate the use of some of the filters on the JAX-RS implementation based on various conditions
 
-- The `JaxRsContextFactoryProvider` enables generic JAX-RS based pac4j functioning, without session handling (i.e., it will only work with direct clients)
+- The `Pac4JFeature` enables generic JAX-RS based pac4j functionality. The default configuration does not provide session handling (i.e., it will only work with direct clients). The feature registers the following default providers:
+    - `JaxRsContextFactoryProvider` to create the generic pac4j context for JAX-RS
+    - `JaxRsConfigProvider` to provide the pac4j configuration
+    - `JaxRsSessionStoreProvider` to provide the configured pac4j `SessionStore`
+
+
 - The `Pac4JSecurityFeature` enables annotation-based activation of the filters at the resource method level
 - The `Pac4JSecurityFilterFeature` activates a global filter that will be applied to every resources.
 
 6) Container/Implementation-specific Providers and Features extend the basic functionality provided by the generic ones
 
 - The `Pac4JValueFactoryProvider` enables injection of the security profile in resource method
-- The `ServletJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow).
-- The `GrizzlyJaxRsContextFactoryProvider` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` (for Grizzly2 without Servlet support).
+
+- The `Pac4JServletFeature` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` with `ServletJaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow) and `JaxRsSessionStoreProvider` with `ServletSessionStoreProvider`.
+
+- The `Pac4JGrizzlyFeature` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` with `GrizzlyJaxRsContextFactoryProvider` (for Grizzly2 without Servlet support) and `JaxRsSessionStoreProvider` with `GrizzlySessionStoreProvider`.
 
 
 ## Usage
@@ -59,7 +66,7 @@ These filters can be directly registered by hand, or instead, the following feat
 The latest released version is the [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.pac4j.jax-rs/core/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.pac4j.jax-rs/core), available in the [Maven central repository](https://repo.maven.apache.org/maven2).
 The [next version](https://github.com/pac4j/jax-rs-pac4j/wiki/Next-version) is under development.
 
-See the [release notes](https://github.com/pac4j/jax-rs-pac4j/wiki/Release-Notes). Learn more by browsing the [pac4j documentation](https://www.javadoc.io/doc/org.pac4j/pac4j-core/4.0.0/index.html) and the [jax-rs-pac4j Javadoc](http://www.javadoc.io/doc/org.pac4j.jax-rs/core/4.0.0).
+See the [release notes](https://github.com/pac4j/jax-rs-pac4j/wiki/Release-Notes). Learn more by browsing the [pac4j documentation](https://www.javadoc.io/doc/org.pac4j/pac4j-core/5.0.0/index.html) and the [jax-rs-pac4j Javadoc](http://www.javadoc.io/doc/org.pac4j.jax-rs/core/4.0.0).
 
 See the [migration guide](https://github.com/pac4j/jax-rs-pac4j/wiki/Migration-guide) as well.
 

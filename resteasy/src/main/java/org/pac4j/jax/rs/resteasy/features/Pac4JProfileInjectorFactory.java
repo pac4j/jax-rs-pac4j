@@ -16,6 +16,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
@@ -23,7 +24,6 @@ import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
 import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.resteasy.helpers.RestEasyRequestContext;
-import org.pac4j.jax.rs.servlet.pac4j.ServletSessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +83,8 @@ public class Pac4JProfileInjectorFactory extends InjectorFactoryImpl {
                                 }));
             }
         } else if (FindAnnotation.findAnnotation(annotations, Pac4JProfileManager.class) != null) {
-            return new Pac4JValueInjector(providerFactory,
-                    c -> new RequestProfileManager(c.contextOrNew(), new ServletSessionStore()).profileManager());
+            return new Pac4JValueInjector(providerFactory, c -> new RequestProfileManager(c.contextOrNew(),
+                    c.getProviders().resolveNotNull(SessionStore.class)).profileManager());
         } else {
             return null;
         }

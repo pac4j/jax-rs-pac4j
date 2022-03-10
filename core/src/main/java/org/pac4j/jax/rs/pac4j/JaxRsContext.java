@@ -33,7 +33,6 @@ import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.context.Cookie;
 import org.pac4j.core.context.WebContext;
-import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.CommonHelper;
 
@@ -55,16 +54,9 @@ public class JaxRsContext implements WebContext {
 
     private MultivaluedMap<String, String> parameters = null;
 
-    private SessionStore sessionStore = null;
-
-    public JaxRsContext(Providers providers, ContainerRequestContext requestContext, SessionStore sessionStore) {
+    public JaxRsContext(Providers providers, ContainerRequestContext requestContext) {
         this.providers = providers;
         this.requestContext = requestContext;
-        this.sessionStore = sessionStore;
-    }
-
-    public SessionStore getSessionStore() {
-        return sessionStore;
     }
 
     public Providers getProviders() {
@@ -329,7 +321,6 @@ public class JaxRsContext implements WebContext {
             }
 
             // TODO newlines?! this is copied from J2EContext
-            @SuppressWarnings("OS_OPEN_STREAM")
             String content = new BufferedReader(new InputStreamReader(stream, charset)).lines().reduce("",
                     (accumulator, actual) -> accumulator.concat(actual));
             return content;
