@@ -9,6 +9,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Providers;
 
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
 import org.pac4j.jax.rs.helpers.ProvidersContext;
@@ -48,6 +49,18 @@ public class JerseyResource {
         JaxRsContext context = new ProvidersContext(providers).resolveNotNull(JaxRsContextFactory.class)
                 .provides(requestContext);
         if (context != null) {
+            return "ok";
+        } else {
+            return "fail";
+        }
+    }
+
+    @POST
+    @Path("/sessionstore")
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
+    public String directSessionStore() {
+        SessionStore sessionStore = new ProvidersContext(providers).resolveNotNull(SessionStore.class);
+        if (sessionStore != null) {
             return "ok";
         } else {
             return "fail";
