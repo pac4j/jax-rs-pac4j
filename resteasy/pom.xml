@@ -13,7 +13,7 @@
     <resteasy.version>3.15.3.Final</resteasy.version>
 
     <cdi-api.version>2.0.SP1</cdi-api.version>
-    <servlet-api.version>4.0.3</servlet-api.version>
+    <servlet-api.version>5.0.0</servlet-api.version>
     <inject-api.version>1.0.5</inject-api.version>
 
     <osgi.version>6.0.0</osgi.version>
