@@ -24,7 +24,7 @@
     <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
     <jboss-logging-processor.version>2.2.1.Final</jboss-logging-processor.version>
     <commons-codec.version>1.15</commons-codec.version>
-    <wildfly-common.version>1.5.4.Final</wildfly-common.version>
+    <wildfly-common.version>1.6.0.Final</wildfly-common.version>
   </properties>
 
   <dependencyManagement>
