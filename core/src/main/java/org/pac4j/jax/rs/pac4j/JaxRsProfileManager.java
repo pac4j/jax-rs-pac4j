@@ -39,10 +39,14 @@ public class JaxRsProfileManager extends ProfileManager {
 
         private final JaxRsContext context;
 
-        public Pac4JSecurityContext(SecurityContext original, JaxRsContext context, Collection<UserProfile> profiles) {
+        private final SessionStore sessionStore;
+
+        public Pac4JSecurityContext(SecurityContext original, JaxRsContext context, SessionStore sessionStore,
+                Collection<UserProfile> profiles) {
             this.original = original;
             this.context = context;
             this.profiles = profiles;
+            this.sessionStore = sessionStore;
             this.principal = ProfileHelper.flatIntoOneProfile(profiles).map(Pac4JPrincipal::new).orElse(null);
         }
 
@@ -59,6 +63,10 @@ public class JaxRsProfileManager extends ProfileManager {
         public JaxRsContext getContext() {
             // even after logout we can access the context
             return this.context;
+        }
+
+        public SessionStore getSessionStore() {
+            return sessionStore;
         }
 
         @Override

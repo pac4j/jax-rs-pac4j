@@ -119,7 +119,7 @@ public class SecurityFilter extends AbstractFilter {
                 JaxRsContext jaxRsContext = (JaxRsContext) context;
                 SecurityContext original = jaxRsContext.getRequestContext().getSecurityContext();
                 jaxRsContext.getRequestContext()
-                        .setSecurityContext(new Pac4JSecurityContext(original, jaxRsContext, profiles));
+                        .setSecurityContext(new Pac4JSecurityContext(original, jaxRsContext, sessionStore, profiles));
             }
             return null;
         }
