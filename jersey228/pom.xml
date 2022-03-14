@@ -21,7 +21,7 @@
     <!-- same version as in org.glassfish.jersey:project -->
     <grizzly-http-server.version>2.4.4</grizzly-http-server.version>
     <!-- Conflicts with jersey-hk2 -->
-    <javassist.version>3.22.0-CR2</javassist.version>
+    <javassist.version>3.28.0-GA</javassist.version>
   </properties>
 
   <dependencyManagement>
