@@ -33,6 +33,12 @@ public class GrizzlySessionStore implements SessionStore {
     }
 
     @Override
+    public Optional<String> getSessionId(WebContext context, boolean createSession) {
+        Session session = getSession(context);
+        return (session != null) ? Optional.of(session.getIdInternal()) : Optional.empty();
+    }
+
+    @Override
     public Optional<Object> get(WebContext context, String key) {
         return Optional.ofNullable(getSession(context).getAttribute(key));
     }
@@ -74,12 +80,6 @@ public class GrizzlySessionStore implements SessionStore {
         attributes.forEach(newSession::setAttribute);
 
         return true;
-    }
-
-    @Override
-    public Optional<String> getSessionId(WebContext context, boolean createSession) {
-        Session session = getSession(context);
-        return (session != null) ? Optional.of(session.getIdInternal()) : Optional.empty();
     }
 
     @Override

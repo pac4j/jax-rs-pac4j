@@ -1,7 +1,7 @@
 package org.pac4j.jax.rs.grizzly.features;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.ws.rs.core.Context;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
@@ -19,7 +19,7 @@ import org.pac4j.jax.rs.grizzly.pac4j.GrizzlyJaxRsContext;
  */
 public class GrizzlyJaxRsContextFactoryProvider extends JaxRsContextFactoryProvider {
 
-    @Inject
+    @Context
     protected Provider<Request> requestProvider;
 
     @Override
