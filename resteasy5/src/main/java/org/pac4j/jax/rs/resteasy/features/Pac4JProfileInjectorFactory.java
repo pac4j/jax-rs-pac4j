@@ -26,6 +26,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Factory for injecting the pac4j-profile into resteasy
+ * 
+ * @author Michael Kohlsche
+ * @since 5.0.0
+ * 
  */
 public class Pac4JProfileInjectorFactory extends InjectorFactoryImpl {
 
