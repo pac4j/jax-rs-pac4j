@@ -262,9 +262,10 @@
   <modules>
     <module>core</module>
     <module>testing</module>
-    <module>jersey</module>
+    <module>jersey2</module>
     <module>jersey225</module>
     <module>jersey228</module>
-    <module>resteasy</module>
+    <module>resteasy3</module>
+    <module>resteasy5</module>
   </modules>
 </project>
