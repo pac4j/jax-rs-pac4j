@@ -20,7 +20,7 @@
     <jersey.version>2.35</jersey.version>
     <weld.version>3.1.9.Final</weld.version>
     <undertow.version>2.2.16.Final</undertow.version>
-    <jboss-logging.version>3.4.3.Final</jboss-logging.version>
+    <jboss-logging.version>3.5.0.Final</jboss-logging.version>
     <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
     <jboss-logging-processor.version>2.2.1.Final</jboss-logging-processor.version>
     <log4j.version>2.13.3</log4j.version>
