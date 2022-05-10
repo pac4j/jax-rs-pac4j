@@ -5,7 +5,7 @@
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.pac4j.jax-rs</groupId>
-    <version>5.0.0</version>
+    <version>5.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.pac4j</groupId>
   <artifactId>jersey228-pac4j</artifactId>
