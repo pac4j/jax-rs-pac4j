@@ -14,7 +14,7 @@
     <assertj.version>3.23.1</assertj.version>
     <javassist.version>3.29.0-GA</javassist.version>
     <awaitility.version>4.2.0</awaitility.version>
-    <objenesis.version>3.2</objenesis.version>
+    <objenesis.version>3.3</objenesis.version>
   </properties>
 
   <dependencies>
