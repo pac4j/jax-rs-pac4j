@@ -10,7 +10,7 @@
   <artifactId>jersey2-pac4j</artifactId>
 
   <properties>
-    <jersey.version>2.35</jersey.version>
+    <jersey.version>2.37</jersey.version>
 
     <xml.bind-api.version>2.3.3</xml.bind-api.version>
     <activation-api.version>2.1.0</activation-api.version>
