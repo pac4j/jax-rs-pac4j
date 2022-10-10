@@ -19,7 +19,7 @@
     <osgi.version>6.0.0</osgi.version>
     <jersey.version>2.37</jersey.version>
     <weld.version>3.1.9.Final</weld.version>
-    <undertow.version>2.2.19.Final</undertow.version>
+    <undertow.version>2.2.20.Final</undertow.version>
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
     <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
     <jboss-logging-processor.version>2.2.1.Final</jboss-logging-processor.version>
