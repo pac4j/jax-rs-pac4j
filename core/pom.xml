@@ -12,7 +12,7 @@
     <ws.rs-api.version>2.1.6</ws.rs-api.version>
     <annotation-api.version>1.3.5</annotation-api.version>
     <inject-api.version>1.0.5</inject-api.version>
-    <servlet-api.version>4.0.4</servlet-api.version>
+    <servlet-api.version>6.0.0</servlet-api.version>
 
     <hamcrest.version>2.2</hamcrest.version>
   </properties>
