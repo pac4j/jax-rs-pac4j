@@ -85,7 +85,7 @@
     <slf4j.version>2.0.6</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
 
-    <mockito.version>4.10.0</mockito.version>
+    <mockito.version>4.11.0</mockito.version>
     <junit.version>4.13.2</junit.version>
     <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
   </properties>
