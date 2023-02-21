@@ -23,7 +23,7 @@
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
     <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
     <jboss-logging-processor.version>2.2.1.Final</jboss-logging-processor.version>
-    <log4j.version>2.19.0</log4j.version>
+    <log4j.version>2.20.0</log4j.version>
     <commons-codec.version>1.11</commons-codec.version>
     <wildfly-common.version>1.5.4.Final</wildfly-common.version>
   </properties>
