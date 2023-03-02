@@ -10,7 +10,7 @@
   <artifactId>resteasy5-pac4j</artifactId>
 
   <properties>
-    <resteasy.version>5.0.4.Final</resteasy.version>
+    <resteasy.version>5.0.6.Final</resteasy.version>
 
     <cdi-api.version>2.0.SP1</cdi-api.version>
     <servlet-api.version>4.0.3</servlet-api.version>
