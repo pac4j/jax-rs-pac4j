@@ -2,9 +2,9 @@ package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
 
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.ext.Providers;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.session.SessionStore;
@@ -25,10 +25,6 @@ public class CallbackFilter extends AbstractFilter {
     private CallbackLogic callbackLogic;
 
     private String defaultUrl;
-
-    private Boolean saveInSession;
-
-    private Boolean multiProfile;
 
     private Boolean renewSession;
 
@@ -73,22 +69,6 @@ public class CallbackFilter extends AbstractFilter {
 
     public void setDefaultUrl(String defaultUrl) {
         this.defaultUrl = defaultUrl;
-    }
-
-    public boolean isSaveInSession() {
-        return saveInSession;
-    }
-
-    public void setSaveInSession(Boolean saveInSession) {
-        this.saveInSession = saveInSession;
-    }
-
-    public boolean isMultiProfile() {
-        return multiProfile;
-    }
-
-    public void setMultiProfile(Boolean multiProfile) {
-        this.multiProfile = multiProfile;
     }
 
     public boolean isRenewSession() {

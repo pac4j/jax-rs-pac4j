@@ -1,16 +1,16 @@
 package org.pac4j.jax.rs.features;
 
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
 
 import org.pac4j.core.config.Config;
 
 /**
  * This feature can be used to register the default set of necessary providers.
- * 
+ *
  * This should be subclassed for container specific implementations and override
  * the necessary registration methods.
- * 
+ *
  * @author Michael Kohlsche
  * @since 5.0.0
  */

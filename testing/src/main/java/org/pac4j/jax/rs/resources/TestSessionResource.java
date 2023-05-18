@@ -1,8 +1,8 @@
 package org.pac4j.jax.rs.resources;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.profile.CommonProfile;

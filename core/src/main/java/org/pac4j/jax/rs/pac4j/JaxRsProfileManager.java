@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;

@@ -2,13 +2,13 @@ package org.pac4j.jax.rs.features;
 
 import java.lang.reflect.Method;
 
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JLogout;
@@ -19,11 +19,11 @@ import org.pac4j.jax.rs.filters.SecurityFilter;
 import org.pac4j.jax.rs.helpers.AnnotationsHelper;
 
 /**
- * 
+ *
  * Injects {@link SecurityFilter}s, {@link CallbackFilter}s and {@link LogoutFilter}s on JAX-RS resources methods
  * annotated with {@link Pac4JSecurity &#64;Pac4JSecurity}, {@link Pac4JCallback &#64;Pac4JCallback} and
  * {@link Pac4JLogout &#64;Pac4JLogout}.
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.0
  *
@@ -60,11 +60,6 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
         if (secAnn != null && !secAnn.ignore()) {
 
-            if (secAnn.multiProfile().length > 1) {
-                throw new IllegalArgumentException(
-                        "multiProfile parameter in @Pac4JSecurity is not expected to have more than one value");
-            }
-
             if (secAnn.skipResponse().length > 1) {
                 throw new IllegalArgumentException(
                         "skipResponse parameter in @Pac4JSecurity is not expected to have more than one value");
@@ -84,7 +79,6 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
             filter.setAuthorizers(String.join(",", secAnn.authorizers()));
             filter.setClients(clients);
             filter.setMatchers(String.join(",", secAnn.matchers()));
-            filter.setMultiProfile(secAnn.multiProfile().length == 0 ? null : secAnn.multiProfile()[0]);
             filter.setSkipResponse(secAnn.skipResponse().length == 0 ? null : secAnn.skipResponse()[0]);
 
             context.register(filter);
@@ -98,16 +92,6 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
             if (cbAnn.defaultUrl().length > 1) {
                 throw new IllegalArgumentException(
                         "defaultUrl parameter in @Pac4JCallback is not expected to have more than one value");
-            }
-
-            if (cbAnn.saveInSession().length > 1) {
-                throw new IllegalArgumentException(
-                        "saveInSession parameter in @Pac4JCallback is not expected to have more than one value");
-            }
-
-            if (cbAnn.multiProfile().length > 1) {
-                throw new IllegalArgumentException(
-                        "multiProfile parameter in @Pac4JCallback is not expected to have more than one value");
             }
 
             if (cbAnn.renewSession().length > 1) {
@@ -127,8 +111,6 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
 
             final CallbackFilter filter = new CallbackFilter(providers);
 
-            filter.setSaveInSession(cbAnn.saveInSession().length == 0 ? null : cbAnn.saveInSession()[0]);
-            filter.setMultiProfile(cbAnn.multiProfile().length == 0 ? null : cbAnn.multiProfile()[0]);
             filter.setRenewSession(cbAnn.renewSession().length == 0 ? null : cbAnn.renewSession()[0]);
             filter.setDefaultUrl(cbAnn.defaultUrl().length == 0 ? null : cbAnn.defaultUrl()[0]);
             filter.setSkipResponse(cbAnn.skipResponse().length == 0 ? null : cbAnn.skipResponse()[0]);

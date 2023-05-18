@@ -12,7 +12,7 @@
   <artifactId>parent</artifactId>
   <packaging>pom</packaging>
   <name>pac4j implementation for JAX-RS</name>
-  <version>5.0.1-SNAPSHOT</version>
+  <version>6.0.0-SNAPSHOT</version>
   <description>Security library for JAX-RS based on pac4j</description>
   <url>https://github.com/pac4j/jax-rs-pac4j</url>
 
@@ -262,10 +262,7 @@
   <modules>
     <module>core</module>
     <module>testing</module>
-    <module>jersey2</module>
-    <module>jersey225</module>
-    <module>jersey228</module>
-    <module>resteasy3</module>
-    <module>resteasy5</module>
+    <module>jersey3</module>
+    <module>resteasy6</module>
   </modules>
 </project>

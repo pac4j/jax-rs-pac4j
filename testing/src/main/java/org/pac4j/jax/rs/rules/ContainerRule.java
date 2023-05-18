@@ -2,7 +2,7 @@ package org.pac4j.jax.rs.rules;
 
 import java.util.Set;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 
 import org.assertj.core.util.Sets;
 import org.junit.rules.TestRule;

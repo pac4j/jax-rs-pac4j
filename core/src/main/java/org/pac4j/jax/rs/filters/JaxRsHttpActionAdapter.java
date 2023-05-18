@@ -1,6 +1,6 @@
 package org.pac4j.jax.rs.filters;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.context.WebContext;

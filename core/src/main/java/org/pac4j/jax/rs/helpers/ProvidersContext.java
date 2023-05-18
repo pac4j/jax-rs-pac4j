@@ -2,9 +2,9 @@ package org.pac4j.jax.rs.helpers;
 
 import java.util.Optional;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.CommonHelper;
