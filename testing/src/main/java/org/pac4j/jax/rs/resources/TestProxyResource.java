@@ -2,14 +2,14 @@ package org.pac4j.jax.rs.resources;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 
 /**
  * See https://github.com/pac4j/jax-rs-pac4j/issues/10 to understand this test
- * 
+ *
  * @author Victor Noel - Linagora
  * @since 1.0.1
  *

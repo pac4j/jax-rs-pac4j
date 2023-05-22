@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pac4j.jax-rs</groupId>
     <artifactId>parent</artifactId>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>testing</artifactId>
 
   <properties>
-    <ws.rs-api.version>2.1.6</ws.rs-api.version>
+    <ws.rs-api.version>3.0.0</ws.rs-api.version>
 
     <assertj.version>3.24.2</assertj.version>
     <javassist.version>3.29.2-GA</javassist.version>

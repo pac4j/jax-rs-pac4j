@@ -46,15 +46,6 @@ public @interface Pac4JSecurity {
     String[] matchers() default {};
 
     /**
-     * Note that this parameter only takes one value at most: empty array (default) is used to represent default pac4j
-     * setting, one boolean will be used by the filter, and more than one boolean will fail the resource method
-     * initialisation.
-     * 
-     * @return value for {@link SecurityFilter#setMultiProfile(Boolean)}
-     */
-    boolean[] multiProfile() default {};
-    
-    /**
      * Set to <code>true</code> to ignore a class-level {@link Pac4JSecurity} annotation.
      * 
      * @return <code>true</code> if no security filter should be set on this method

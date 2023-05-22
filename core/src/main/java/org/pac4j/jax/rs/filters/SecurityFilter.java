@@ -3,10 +3,10 @@ package org.pac4j.jax.rs.filters;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.Providers;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.WebContext;
@@ -39,8 +39,6 @@ public class SecurityFilter extends AbstractFilter {
 
     private String matchers;
 
-    private Boolean multiProfile;
-
     public SecurityFilter(Providers providers) {
         super(providers);
     }
@@ -56,7 +54,7 @@ public class SecurityFilter extends AbstractFilter {
         // For the later, we interpret the error and abort the request using jax-rs
         // abstractions
         buildLogic(config).perform(context, sessionStore, config, new SecurityGrantedAccessOutcome(), adapter(config),
-                clients, authorizers, matchers, multiProfile);
+                clients, authorizers, matchers);
     }
 
     protected SecurityLogic buildLogic(Config config) {
@@ -93,14 +91,6 @@ public class SecurityFilter extends AbstractFilter {
 
     public void setMatchers(String matchers) {
         this.matchers = matchers;
-    }
-
-    public boolean getMultiProfile() {
-        return multiProfile;
-    }
-
-    public void setMultiProfile(Boolean multiProfile) {
-        this.multiProfile = multiProfile;
     }
 
     public SecurityLogic getSecurityLogic() {

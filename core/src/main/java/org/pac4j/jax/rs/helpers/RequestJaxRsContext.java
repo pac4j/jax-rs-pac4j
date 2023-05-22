@@ -2,8 +2,8 @@ package org.pac4j.jax.rs.helpers;
 
 import java.util.Optional;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
