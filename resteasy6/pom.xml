@@ -18,7 +18,7 @@
 
     <jersey.version>3.0.10</jersey.version>
     <weld.version>4.0.3.Final</weld.version>
-    <undertow.version>2.2.20.Final</undertow.version>
+    <undertow.version>2.2.24.Final</undertow.version>
     <jboss-logging.version>3.5.1.Final</jboss-logging.version>
     <commons-codec.version>1.15</commons-codec.version>
     <wildfly-common.version>1.5.4.Final</wildfly-common.version>
