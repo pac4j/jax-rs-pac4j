@@ -4,7 +4,7 @@
 
 
 The `jax-rs-pac4j` project is an **easy and powerful security library for JAX-RS web applications and web services** which supports authentication and authorization, but also logout and advanced features like session fixation and CSRF protection.
-It's based on Java 11, servlet 5 (when present), JAX-RS 3 and on the **[pac4j security engine](https://github.com/pac4j/pac4j) v5**. It's available under the Apache 2 license.
+It's based on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. It's available under the Apache 2 license.
 
 | jax-rs-pac4j | JDK | pac4j | JAX-RS | Servlet |
 |--------------|-----|-------|--------|---------|
@@ -16,11 +16,11 @@ It's based on Java 11, servlet 5 (when present), JAX-RS 3 and on the **[pac4j se
 
 1) A [**client**](http://www.pac4j.org/docs/clients.html) represents an authentication mechanism. It performs the login process and returns a user profile. An indirect client is for UI authentication while a direct client is for web services authentication:
 
-&#9656; OAuth - SAML - CAS - OpenID Connect - HTTP - OpenID - Google App Engine - LDAP - SQL - JWT - MongoDB - Stormpath - IP address
+&#9656; OAuth - SAML - CAS - OpenID Connect - HTTP - Google App Engine - LDAP - SQL - JWT - MongoDB - CouchDB - Kerberos - IP address - Kerberos (SPNEGO) - REST API
 
 2) An [**authorizer**](http://www.pac4j.org/docs/authorizers.html) is meant to check authorizations on the authenticated user profile(s) or on the current web context:
 
-&#9656; Roles / permissions - Anonymous / remember-me / (fully) authenticated - Profile type, attribute -  CORS - CSRF - Security headers - IP address, HTTP method
+&#9656; Roles - Anonymous / remember-me / (fully) authenticated - Profile type, attribute - CORS - CSRF - Security headers - IP address, HTTP method
 
 3) A [**matcher**](http://www.pac4j.org/docs/matchers.html) defines whether the `SecurityFilter` must be applied and can be used for additional web processing
 
