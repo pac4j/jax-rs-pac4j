@@ -22,29 +22,42 @@ public class ServletSessionStore implements SessionStore {
 
     protected HttpSession httpSession;
 
-    protected ServletSessionStore() {
-    }
+    protected ServletSessionStore() {}
 
     protected ServletSessionStore(final HttpSession httpSession) {
         this.httpSession = httpSession;
     }
 
-    public HttpSession getHttpSession(WebContext context) {
+    public HttpSession getHttpSession(final WebContext context) {
         assert context instanceof ServletJaxRsContext;
-        return ((ServletJaxRsContext) context).getRequest().getSession();
+        try {
+            return ((ServletJaxRsContext) context).getRequest().getSession();
+        } catch (final IllegalStateException e) {
+            return null;
+        }
     }
 
     @Override
-    public Optional<Object> get(WebContext context, String key) {
-        return Optional.ofNullable(getHttpSession(context).getAttribute(key));
+    public Optional<Object> get(final WebContext context, final String key) {
+        final HttpSession session = getHttpSession(context);
+
+        if (session == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(session.getAttribute(key));
     }
 
     @Override
-    public void set(WebContext context, String key, Object value) {
-        if (value == null) {
-            getHttpSession(context).removeAttribute(key);
-        } else {
-            getHttpSession(context).setAttribute(key, value);
+    public void set(final WebContext context, final String key, final Object value) {
+        final HttpSession session = getHttpSession(context);
+
+        if (session != null) {
+            if (value == null) {
+                session.removeAttribute(key);
+            } else {
+                session.setAttribute(key, value);
+            }
         }
     }
 
@@ -52,9 +65,13 @@ public class ServletSessionStore implements SessionStore {
     public boolean destroySession(WebContext context) {
         final HttpSession session = getHttpSession(context);
 
-        session.invalidate();
+        if (session != null) {
+            session.invalidate();
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -65,17 +82,22 @@ public class ServletSessionStore implements SessionStore {
     @Override
     public boolean renewSession(WebContext context) {
         final HttpSession session = getHttpSession(context);
-        final Map<String, Object> attributes = new HashMap<>();
-        Collections.list(session.getAttributeNames()).forEach(k -> attributes.put(k, session.getAttribute(k)));
 
-        session.invalidate();
+        if (session != null) {
+            final Map<String, Object> attributes = new HashMap<>();
+            Collections.list(session.getAttributeNames()).forEach(k -> attributes.put(k, session.getAttribute(k)));
 
-        // let's recreate the session from zero, the previous becomes
-        // generally unusable depending on the servlet implementation
-        final HttpSession newSession = getHttpSession(context);
-        attributes.forEach(newSession::setAttribute);
+            session.invalidate();
 
-        return true;
+            // let's recreate the session from zero, the previous becomes
+            // generally unusable depending on the servlet implementation
+            final HttpSession newSession = getHttpSession(context);
+            attributes.forEach(newSession::setAttribute);
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
