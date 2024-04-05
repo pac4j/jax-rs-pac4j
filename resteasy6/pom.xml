@@ -16,7 +16,7 @@
     <servlet-api.version>5.0.0</servlet-api.version>
     <inject-api.version>2.0.1.MR</inject-api.version>
 
-    <jersey.version>3.0.10</jersey.version>
+    <jersey.version>3.1.6</jersey.version>
     <weld.version>4.0.3.Final</weld.version>
     <undertow.version>2.2.20.Final</undertow.version>
     <jboss-logging.version>3.5.3.Final</jboss-logging.version>
