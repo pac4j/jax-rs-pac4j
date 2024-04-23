@@ -20,99 +20,79 @@ public class ServletSessionStore implements SessionStore {
 
     public static final ServletSessionStore INSTANCE = new ServletSessionStore();
 
-    protected HttpSession httpSession;
-
     protected ServletSessionStore() {}
 
-    protected ServletSessionStore(final HttpSession httpSession) {
-        this.httpSession = httpSession;
-    }
-
-    public HttpSession getHttpSession(final WebContext context) {
+    public Optional<HttpSession> getNativeSession(final WebContext context, final boolean createSession) {
         assert context instanceof ServletJaxRsContext;
-        try {
-            return ((ServletJaxRsContext) context).getRequest().getSession();
-        } catch (final IllegalStateException e) {
-            return null;
-        }
+
+        final HttpSession nativeSession = ((ServletJaxRsContext) context).getRequest().getSession(createSession);
+        return Optional.ofNullable(nativeSession);
     }
 
     @Override
     public Optional<Object> get(final WebContext context, final String key) {
-        final HttpSession session = getHttpSession(context);
-
-        if (session == null) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(session.getAttribute(key));
+        return getNativeSession(context, false)
+            .map(it -> it.getAttribute(key));
     }
 
     @Override
     public void set(final WebContext context, final String key, final Object value) {
-        final HttpSession session = getHttpSession(context);
-
-        if (session != null) {
-            if (value == null) {
-                session.removeAttribute(key);
-            } else {
-                session.setAttribute(key, value);
-            }
-        }
+        getNativeSession(context, value != null)
+            .ifPresent(it -> {
+                if (value == null) {
+                    it.removeAttribute(key);
+                } else {
+                    it.setAttribute(key, value);
+                }
+            });
     }
 
     @Override
-    public boolean destroySession(WebContext context) {
-        final HttpSession session = getHttpSession(context);
-
-        if (session != null) {
-            session.invalidate();
-
-            return true;
-        }
-
-        return false;
+    public boolean destroySession(final WebContext context) {
+        return getNativeSession(context, false)
+            .map(it -> {
+                it.invalidate();
+                return true;
+            })
+            .orElse(false);
     }
 
     @Override
-    public Optional<Object> getTrackableSession(WebContext context) {
-        return Optional.ofNullable(getHttpSession(context));
+    public Optional<Object> getTrackableSession(final WebContext context) {
+        return Optional.ofNullable(getNativeSession(context, false));
     }
 
     @Override
-    public boolean renewSession(WebContext context) {
-        final HttpSession session = getHttpSession(context);
+    public boolean renewSession(final WebContext context) {
+        return getNativeSession(context, false)
+            .map(it -> {
+                final Map<String, Object> attributes = new HashMap<>();
+                Collections.list(it.getAttributeNames()).forEach(k -> attributes.put(k, it.getAttribute(k)));
 
-        if (session != null) {
-            final Map<String, Object> attributes = new HashMap<>();
-            Collections.list(session.getAttributeNames()).forEach(k -> attributes.put(k, session.getAttribute(k)));
+                it.invalidate();
 
-            session.invalidate();
+                // let's recreate the session from zero, the previous becomes
+                // generally unusable depending on the servlet implementation
+                getNativeSession(context, true)
+                    .ifPresent(newSession -> attributes.forEach(newSession::setAttribute));
 
-            // let's recreate the session from zero, the previous becomes
-            // generally unusable depending on the servlet implementation
-            final HttpSession newSession = getHttpSession(context);
-            attributes.forEach(newSession::setAttribute);
-
-            return true;
-        }
-
-        return false;
+                return true;
+            })
+            .orElse(false);
     }
 
     @Override
-    public Optional<SessionStore> buildFromTrackableSession(WebContext context, Object trackableSession) {
-        return Optional.ofNullable(new ServletSessionStore() {
+    public Optional<SessionStore> buildFromTrackableSession(final WebContext context, final Object trackableSession) {
+        return Optional.of(new ServletSessionStore() {
             @Override
-            public HttpSession getHttpSession(WebContext context) {
-                return (HttpSession) trackableSession;
+            public Optional<HttpSession> getNativeSession(WebContext context, boolean createSession) {
+                return Optional.of((HttpSession) trackableSession);
             }
         });
     }
 
     @Override
-    public Optional<String> getSessionId(WebContext context, boolean createSession) {
-        HttpSession session = getHttpSession(context);
-        return (session != null) ? Optional.of(session.getId()) : Optional.empty();
+    public Optional<String> getSessionId(final WebContext context, final boolean createSession) {
+        return getNativeSession(context, createSession).map(HttpSession::getId);
     }
 }
