@@ -9,7 +9,7 @@
   <artifactId>testing</artifactId>
 
   <properties>
-    <ws.rs-api.version>3.1.0</ws.rs-api.version>
+    <ws.rs-api.version>4.0.0</ws.rs-api.version>
 
     <assertj.version>3.25.3</assertj.version>
     <javassist.version>3.30.2-GA</javassist.version>
