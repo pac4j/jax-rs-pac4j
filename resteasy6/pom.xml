@@ -21,7 +21,7 @@
     <undertow.version>2.2.20.Final</undertow.version>
     <jboss-logging.version>3.6.0.Final</jboss-logging.version>
     <commons-codec.version>1.17.0</commons-codec.version>
-    <wildfly-common.version>1.7.0.Final</wildfly-common.version>
+    <wildfly-common.version>2.0.0</wildfly-common.version>
   </properties>
 
   <dependencyManagement>
