@@ -11,7 +11,7 @@
   <properties>
     <ws.rs-api.version>3.1.0</ws.rs-api.version>
 
-    <assertj.version>3.26.0</assertj.version>
+    <assertj.version>3.26.3</assertj.version>
     <javassist.version>3.30.2-GA</javassist.version>
     <awaitility.version>4.2.1</awaitility.version>
     <objenesis.version>3.4</objenesis.version>
