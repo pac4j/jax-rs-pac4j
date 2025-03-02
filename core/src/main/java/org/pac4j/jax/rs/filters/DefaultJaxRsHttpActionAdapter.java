@@ -17,9 +17,9 @@ import org.pac4j.jax.rs.pac4j.JaxRsContext;
  * @since 1.1.1
  *
  */
-public class JaxRsHttpActionAdapter implements HttpActionAdapter {
+public class DefaultJaxRsHttpActionAdapter implements HttpActionAdapter {
 
-    public static final JaxRsHttpActionAdapter INSTANCE = new JaxRsHttpActionAdapter();
+    public static final DefaultJaxRsHttpActionAdapter INSTANCE = new DefaultJaxRsHttpActionAdapter();
 
     @Override
     public Object adapt(final HttpAction action, final WebContext context) {

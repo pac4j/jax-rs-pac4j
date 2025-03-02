@@ -3,30 +3,32 @@ package org.pac4j.jax.rs.servlet.features;
 import jakarta.ws.rs.core.FeatureContext;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.jax.rs.features.Pac4JFeature;
+import org.pac4j.jax.rs.features.Pac4JDefaultFeature;
 
 /**
  *
- * Extends {@link Pac4JFeature} to register the default providers for
+ * Extends {@link Pac4JDefaultFeature} to register the default providers for
  * servlet-based containers
  *
- * @see Pac4JFeature
+ * @see Pac4JDefaultFeature
  * @author Michael Kohlsche
  * @since 5.0.0
  *
  */
-public class Pac4JServletFeature extends Pac4JFeature {
+public class Pac4JServletFeature extends Pac4JDefaultFeature {
 
     public Pac4JServletFeature(Config config) {
         super(config);
     }
 
-    protected boolean registerContextFactoryProvider(FeatureContext context) {
+    @Override
+    public boolean registerContextFactoryProvider(Config config, FeatureContext context) {
         context.register(ServletJaxRsContextFactoryProvider.class);
         return true;
     }
 
-    protected boolean registerSessionStoreProvider(FeatureContext context) {
+    @Override
+    public boolean registerSessionStoreProvider(Config config, FeatureContext context) {
         context.register(new ServletSessionStoreProvider(config));
         return true;
     }

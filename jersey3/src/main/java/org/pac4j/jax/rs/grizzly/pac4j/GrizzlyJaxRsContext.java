@@ -1,9 +1,7 @@
 package org.pac4j.jax.rs.grizzly.pac4j;
 
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.ext.Providers;
-
 import org.glassfish.grizzly.http.server.Request;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
@@ -24,8 +22,8 @@ public class GrizzlyJaxRsContext extends JaxRsContext {
 
     private final Request request;
 
-    public GrizzlyJaxRsContext(Providers providers, ContainerRequestContext requestContext, Request request) {
-        super(providers, requestContext);
+    public GrizzlyJaxRsContext(RequestJaxRsContext requestJaxRsContext, Request request) {
+        super(requestJaxRsContext);
         this.request = request;
     }
 

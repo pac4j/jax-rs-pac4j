@@ -24,7 +24,7 @@ public class JaxRsSessionStoreProvider implements ContextResolver<SessionStore> 
 
     @Override
     public SessionStore getContext(Class<?> type) {
-        return config.getSessionStore();
+        return this.config.getSessionStoreFactory().newSessionStore(null);
     }
 
 }

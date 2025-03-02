@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Context;
 
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.servlet.pac4j.ServletJaxRsContext;
 
 /**
@@ -22,6 +23,6 @@ public class ServletJaxRsContextFactoryProvider extends JaxRsContextFactoryProvi
 
     @Override
     public JaxRsContextFactory getContext(Class<?> type) {
-        return context -> new ServletJaxRsContext(getProviders(), context, httpRequest);
+        return context -> new ServletJaxRsContext(new RequestJaxRsContext(getProviders(), context), httpRequest);
     }
 }

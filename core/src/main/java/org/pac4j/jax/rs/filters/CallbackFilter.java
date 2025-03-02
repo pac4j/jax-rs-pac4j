@@ -4,14 +4,13 @@ import java.io.IOException;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.DefaultCallbackLogic;
-import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
+import org.pac4j.jax.rs.pac4j.JaxRsFrameworkParameters;
 
 /**
  *
@@ -35,12 +34,9 @@ public class CallbackFilter extends AbstractFilter {
     }
 
     @Override
-    protected void filter(JaxRsContext context) throws IOException {
-        Config config = getConfig();
-        SessionStore sessionStore = getSessionStore();
-
-        buildLogic(config).perform(context, sessionStore, config, adapter(config),
-                context.getAbsolutePath(defaultUrl, false), renewSession, defaultClient);
+    protected void filter(Config config, ContainerRequestContext requestContext) throws IOException {
+        JaxRsFrameworkParameters frameworkParameters = new JaxRsFrameworkParameters(providers, requestContext);
+        buildLogic(config).perform(config, getAbsolutePath(requestContext, defaultUrl, false), renewSession, defaultClient, frameworkParameters);
     }
 
     protected CallbackLogic buildLogic(Config config) {
@@ -49,9 +45,7 @@ public class CallbackFilter extends AbstractFilter {
         } else if (config.getCallbackLogic() != null) {
             return config.getCallbackLogic();
         } else {
-            DefaultCallbackLogic logic = new DefaultCallbackLogic();
-            logic.setProfileManagerFactory((ctx, sessionStore) -> new JaxRsProfileManager(ctx, sessionStore));
-            return logic;
+            return new DefaultCallbackLogic();
         }
     }
 
@@ -71,7 +65,7 @@ public class CallbackFilter extends AbstractFilter {
         this.defaultUrl = defaultUrl;
     }
 
-    public boolean isRenewSession() {
+    public Boolean isRenewSession() {
         return renewSession;
     }
 
