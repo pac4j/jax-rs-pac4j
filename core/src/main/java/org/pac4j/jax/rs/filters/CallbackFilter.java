@@ -65,7 +65,7 @@ public class CallbackFilter extends AbstractFilter {
         this.defaultUrl = defaultUrl;
     }
 
-    public Boolean isRenewSession() {
+    public boolean isRenewSession() {
         return renewSession;
     }
 

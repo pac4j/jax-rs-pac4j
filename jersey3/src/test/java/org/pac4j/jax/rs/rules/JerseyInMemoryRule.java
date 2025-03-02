@@ -7,7 +7,6 @@ import org.glassfish.jersey.test.DeploymentContext;
 import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.pac4j.core.config.Config;
-import org.pac4j.jax.rs.SessionStoreFactoryMock;
 import org.pac4j.jax.rs.features.Pac4JJaxRsFeature;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
@@ -36,8 +35,6 @@ public class JerseyInMemoryRule extends JerseyRule {
         final Config pac4jConfig = getConfig();
         // we create a fake session to make tests pass. Otherwise we would need: matchers="none"
         // or pac4j should be able to handle no session store.
-       // TODO (Jean) Check if it is necessary to mock the SessionStore
-        pac4jConfig.setSessionStoreFactory(SessionStoreFactoryMock.INSTANCE);
         return config
             .register(new Pac4JJaxRsFeature(pac4jConfig))
             .register(new Pac4JSecurityFeature())

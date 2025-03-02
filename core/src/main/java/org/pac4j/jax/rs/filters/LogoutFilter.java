@@ -65,7 +65,7 @@ public class LogoutFilter extends AbstractFilter {
         return defaultUrl;
     }
 
-    public void setDefaultUrl(String defaultUrl) {
+    public void setDefaultUrl(final String defaultUrl) {
         this.defaultUrl = defaultUrl;
     }
 
@@ -85,7 +85,7 @@ public class LogoutFilter extends AbstractFilter {
         this.localLogout = localLogout;
     }
 
-    public Boolean isDestroySession() {
+    public Boolean getDestroySession() {
         return destroySession;
     }
 
