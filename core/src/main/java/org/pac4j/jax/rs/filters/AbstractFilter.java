@@ -1,6 +1,7 @@
 package org.pac4j.jax.rs.filters;
 
 import java.io.IOException;
+import java.net.URI;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -8,13 +9,12 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Providers;
 
+import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.session.SessionStore;
-import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.jax.rs.helpers.ProvidersContext;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
  *
@@ -26,7 +26,7 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
 
     protected Boolean skipResponse;
 
-    private final Providers providers;
+    protected final Providers providers;
 
     public AbstractFilter(Providers providers) {
         this.providers = providers;
@@ -40,11 +40,13 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
         return new ProvidersContext(providers).resolveNotNull(SessionStore.class);
     }
 
-    protected abstract void filter(JaxRsContext context) throws IOException;
+    protected abstract void filter(Config config, ContainerRequestContext requestContext) throws IOException;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        filter(new RequestJaxRsContext(providers, requestContext).contextOrNew());
+        Config config = getConfig();
+        FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
+        filter(config, requestContext);
     }
 
     @Override
@@ -63,29 +65,22 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
         }
     }
 
-    /**
-     * Prefer to set a specific {@link HttpActionAdapter} on the {@link Config}
-     * instead of overriding this method.
-     *
-     * @param config the security configuration
-     *
-     * @return an {@link HttpActionAdapter}
-     */
-    protected HttpActionAdapter adapter(Config config) {
-
-        final HttpActionAdapter adapter;
-        if (config.getHttpActionAdapter() != null) {
-            adapter = config.getHttpActionAdapter();
-        } else {
-            adapter = JaxRsHttpActionAdapter.INSTANCE;
-        }
-
-        return (code, context) -> {
-            if (skipResponse == null || !skipResponse) {
-                adapter.adapt(code, context);
-            }
+    protected String getAbsolutePath(ContainerRequestContext requestContext, String relativePath, boolean full) {
+        if (relativePath == null) {
             return null;
-        };
+        } else if (relativePath.startsWith("/")) {
+            URI baseUri = requestContext.getUriInfo().getBaseUri();
+            String urlPrefix;
+            if (full) {
+                urlPrefix = baseUri.toString();
+            } else {
+                urlPrefix = baseUri.getPath();
+            }
+            // urlPrefix already contains the ending /
+            return urlPrefix + relativePath.substring(1);
+        } else {
+            return relativePath;
+        }
     }
 
     public Boolean isSkipResponse() {

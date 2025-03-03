@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Providers;
 
@@ -16,7 +17,7 @@ import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.engine.SecurityLogic;
 import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
+import org.pac4j.jax.rs.pac4j.JaxRsFrameworkParameters;
 import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.Pac4JSecurityContext;
 
 /**
@@ -44,17 +45,15 @@ public class SecurityFilter extends AbstractFilter {
     }
 
     @Override
-    protected void filter(JaxRsContext context) throws IOException {
-        Config config = getConfig();
-        SessionStore sessionStore = getSessionStore();
+    protected void filter(Config config, ContainerRequestContext requestContext) throws IOException {
+        JaxRsFrameworkParameters frameworkParameters = new JaxRsFrameworkParameters(providers, requestContext);
 
         // Note: basically, there is two possible outcomes:
         // either the access is granted or there was an error or a redirect!
         // For the former, we do nothing (see SecurityGrantedAccessOutcome comments)
         // For the later, we interpret the error and abort the request using jax-rs
         // abstractions
-        buildLogic(config).perform(context, sessionStore, config, new SecurityGrantedAccessOutcome(), adapter(config),
-                clients, authorizers, matchers);
+        buildLogic(config).perform(config, new SecurityGrantedAccessOutcome(), clients, authorizers, matchers, frameworkParameters);
     }
 
     protected SecurityLogic buildLogic(Config config) {
@@ -63,10 +62,16 @@ public class SecurityFilter extends AbstractFilter {
         } else if (config.getSecurityLogic() != null) {
             return config.getSecurityLogic();
         } else {
-            DefaultSecurityLogic logic = new DefaultSecurityLogic();
-            logic.setProfileManagerFactory((ctx, sessionStore) -> new JaxRsProfileManager(ctx, sessionStore));
-            return logic;
+            return new DefaultSecurityLogic();
         }
+    }
+
+    public SecurityLogic getSecurityLogic() {
+        return securityLogic;
+    }
+
+    public void setSecurityLogic(SecurityLogic securityLogic) {
+        this.securityLogic = securityLogic;
     }
 
     public String getClients() {
@@ -93,23 +98,13 @@ public class SecurityFilter extends AbstractFilter {
         this.matchers = matchers;
     }
 
-    public SecurityLogic getSecurityLogic() {
-        return securityLogic;
-    }
-
-    public void setSecurityLogic(SecurityLogic securityLogic) {
-        this.securityLogic = securityLogic;
-    }
-
     private static class SecurityGrantedAccessOutcome implements SecurityGrantedAccessAdapter {
         @Override
-        public Object adapt(WebContext context, SessionStore sessionStore, Collection<UserProfile> profiles,
-                Object... parameters) {
-            if (context instanceof JaxRsContext) {
-                JaxRsContext jaxRsContext = (JaxRsContext) context;
+        public Object adapt(WebContext context, SessionStore sessionStore, Collection<UserProfile> profiles) throws Exception {
+            if (context instanceof JaxRsContext jaxRsContext) {
                 SecurityContext original = jaxRsContext.getRequestContext().getSecurityContext();
                 jaxRsContext.getRequestContext()
-                        .setSecurityContext(new Pac4JSecurityContext(original, jaxRsContext, sessionStore, profiles));
+                    .setSecurityContext(new Pac4JSecurityContext(original, jaxRsContext, sessionStore, profiles));
             }
             return null;
         }

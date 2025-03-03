@@ -6,6 +6,7 @@ import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.jax.rs.features.JaxRsContextFactoryProvider.JaxRsContextFactory;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
@@ -23,9 +24,13 @@ public class JaxRsContextFactoryProvider implements ContextResolver<JaxRsContext
     @Context
     private Providers providers;
 
+    public JaxRsContextFactoryProvider() {
+
+    }
+
     @Override
     public JaxRsContextFactory getContext(Class<?> type) {
-        return context -> new JaxRsContext(getProviders(), context);
+        return context -> new JaxRsContext(new RequestJaxRsContext(getProviders(), context));
     }
 
     protected Providers getProviders() {

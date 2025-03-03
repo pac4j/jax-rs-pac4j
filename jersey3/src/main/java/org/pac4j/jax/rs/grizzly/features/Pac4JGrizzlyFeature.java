@@ -3,32 +3,35 @@ package org.pac4j.jax.rs.grizzly.features;
 import jakarta.ws.rs.core.FeatureContext;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.jax.rs.features.Pac4JFeature;
+import org.pac4j.jax.rs.features.Pac4JDefaultFeature;
 
 /**
  *
- * Extends {@link Pac4JFeature} to register the default providers for the
+ * Extends {@link Pac4JDefaultFeature} to register the default providers for the
  * Grizzly container (without the need for servlet support)
  *
- * @see Pac4JFeature
+ * @see Pac4JDefaultFeature
  * @author Michael Kohlsche
  * @since 5.0.0
  *
  */
-public class Pac4JGrizzlyFeature extends Pac4JFeature {
+public class Pac4JGrizzlyFeature extends Pac4JDefaultFeature {
 
     public Pac4JGrizzlyFeature(Config config) {
         super(config);
     }
 
-    protected boolean registerContextFactoryProvider(FeatureContext context) {
-        context.register(GrizzlyJaxRsContextFactoryProvider.class);
-        return true;
-    }
-
-    protected boolean registerSessionStoreProvider(FeatureContext context) {
+    @Override
+    protected boolean registerSessionStoreProvider(Config config, FeatureContext context) {
         context.register(new GrizzlySessionStoreProvider(config));
         return true;
     }
+
+    @Override
+    public boolean registerContextFactoryProvider(Config config, FeatureContext context) {
+        context.register(new GrizzlyJaxRsContextFactoryProvider());
+        return true;
+    }
+
 
 }

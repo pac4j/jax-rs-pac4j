@@ -35,6 +35,7 @@ import org.pac4j.core.context.Cookie;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.CommonHelper;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 
 /**
  *
@@ -46,25 +47,24 @@ public class JaxRsContext implements WebContext {
 
     public static final String RESPONSE_HOLDER = JaxRsContext.class + ".ResponseHolder";
 
-    private final ContainerRequestContext requestContext;
-
-    private final Providers providers;
+    private final RequestJaxRsContext requestJaxRsContext;
+    private final ContainerRequestContext containerRequestContext;
 
     private ResponseBuilder abortResponse = null;
 
     private MultivaluedMap<String, String> parameters = null;
 
-    public JaxRsContext(Providers providers, ContainerRequestContext requestContext) {
-        this.providers = providers;
-        this.requestContext = requestContext;
+    public JaxRsContext(RequestJaxRsContext requestJaxRsContext) {
+        this.requestJaxRsContext = requestJaxRsContext;
+        this.containerRequestContext = requestJaxRsContext.getRequestContext();
     }
 
     public Providers getProviders() {
-        return providers;
+        return this.requestJaxRsContext.getProviders();
     }
 
     public ContainerRequestContext getRequestContext() {
-        return requestContext;
+        return this.requestJaxRsContext.getRequestContext();
     }
 
     public ResponseBuilder getAbortBuilder() {
@@ -75,6 +75,7 @@ public class JaxRsContext implements WebContext {
     }
 
     public ResponseHolder getResponseHolder() {
+        ContainerRequestContext requestContext = this.requestJaxRsContext.getRequestContext();
         ResponseHolder prop = (ResponseHolder) requestContext.getProperty(RESPONSE_HOLDER);
         if (prop == null) {
             prop = new ResponseHolder();
@@ -184,14 +185,14 @@ public class JaxRsContext implements WebContext {
     @Override
     public String getPath() {
         // pac4j expects a URL starting with /
-        return "/" + requestContext.getUriInfo().getPath();
+        return "/" + this.containerRequestContext.getUriInfo().getPath();
     }
 
     public String getAbsolutePath(String relativePath, boolean full) {
         if (relativePath == null) {
             return null;
         } else if (relativePath.startsWith("/")) {
-            URI baseUri = requestContext.getUriInfo().getBaseUri();
+            URI baseUri = this.containerRequestContext.getUriInfo().getBaseUri();
             String urlPrefix;
             if (full) {
                 urlPrefix = baseUri.toString();
@@ -220,6 +221,8 @@ public class JaxRsContext implements WebContext {
     }
 
     private MultivaluedMap<String, String> extractedParameters() {
+        ContainerRequestContext requestContext = this.containerRequestContext;
+        Providers providers = this.requestJaxRsContext.getProviders();
         if (parameters == null) {
             MultivaluedHashMap<String, String> multivaluedHashMap = new MultivaluedHashMap<>();
             // efficient
@@ -245,22 +248,22 @@ public class JaxRsContext implements WebContext {
 
     @Override
     public Optional<Object> getRequestAttribute(String name) {
-        return Optional.ofNullable(requestContext.getProperty(name));
+        return Optional.ofNullable(this.containerRequestContext.getProperty(name));
     }
 
     @Override
     public void setRequestAttribute(String name, Object value) {
-        requestContext.setProperty(name, value);
+        this.containerRequestContext.setProperty(name, value);
     }
 
     @Override
     public Optional<String> getRequestHeader(String name) {
-        return Optional.ofNullable(requestContext.getHeaderString(name));
+        return Optional.ofNullable(this.containerRequestContext.getHeaderString(name));
     }
 
     @Override
     public String getRequestMethod() {
-        return requestContext.getMethod();
+        return this.containerRequestContext.getMethod();
     }
 
     @Override
@@ -290,18 +293,18 @@ public class JaxRsContext implements WebContext {
     }
 
     private URI getRequestUri() {
-        return requestContext.getUriInfo().getRequestUri();
+        return this.containerRequestContext.getUriInfo().getRequestUri();
     }
 
     @Override
     public boolean isSecure() {
         // in jax-rs the security context is never null
-        return requestContext.getSecurityContext().isSecure();
+        return this.containerRequestContext.getSecurityContext().isSecure();
     }
 
     @Override
     public Collection<Cookie> getRequestCookies() {
-        return requestContext.getCookies().values().stream().map(c -> {
+        return this.containerRequestContext.getCookies().values().stream().map(c -> {
             Cookie nc = new Cookie(c.getName(), c.getValue());
             nc.setDomain(c.getDomain());
             nc.setPath(c.getPath());
@@ -312,7 +315,7 @@ public class JaxRsContext implements WebContext {
     @Override
     public String getRequestContent() {
         return readAndResetEntityStream(stream -> {
-            String charsetS = requestContext.getMediaType().getParameters().get(MediaType.CHARSET_PARAMETER);
+            String charsetS = this.containerRequestContext.getMediaType().getParameters().get(MediaType.CHARSET_PARAMETER);
             Charset charset;
             if (charsetS != null) {
                 charset = Charset.forName(charsetS);
@@ -328,7 +331,7 @@ public class JaxRsContext implements WebContext {
     }
 
     private <T> T readAndResetEntityStream(Function<InputStream, T> f) {
-        try (InputStream entityStream = requestContext.getEntityStream()) {
+        try (InputStream entityStream = this.containerRequestContext.getEntityStream()) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int len;
@@ -341,7 +344,7 @@ public class JaxRsContext implements WebContext {
                 return f.apply(stream);
             } finally {
                 stream.reset();
-                requestContext.setEntityStream(stream);
+                this.containerRequestContext.setEntityStream(stream);
             }
         } catch (IOException e) {
             throw new TechnicalException(e);
