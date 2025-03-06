@@ -49,6 +49,6 @@ public class DefaultJaxRsHttpActionAdapter implements HttpActionAdapter {
 
     private boolean isSkipResponse(ContainerRequestContext requestContext) {
         Object skipResponse = requestContext.getProperty("skipResponse");
-        return (skipResponse == null || !Boolean.parseBoolean(skipResponse.toString()));
+        return skipResponse == null || !Boolean.parseBoolean(skipResponse.toString());
     }
 }
