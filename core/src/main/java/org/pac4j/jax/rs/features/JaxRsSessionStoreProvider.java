@@ -4,6 +4,7 @@ import jakarta.ws.rs.ext.ContextResolver;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.session.SessionStore;
+import org.pac4j.jax.rs.pac4j.NoOpSessionStoreFactory;
 
 /**
  * This class can be used to inject the pac4j {@link SessionStore} in the
@@ -20,6 +21,7 @@ public class JaxRsSessionStoreProvider implements ContextResolver<SessionStore> 
 
     public JaxRsSessionStoreProvider(Config config) {
         this.config = config;
+        config.setSessionStoreFactory(NoOpSessionStoreFactory.INSTANCE);
     }
 
     @Override

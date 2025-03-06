@@ -9,7 +9,6 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Providers;
 
-import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.session.SessionStore;
@@ -45,7 +44,8 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         Config config = getConfig();
-        FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
+        // Added skipResponse variable to request context to carry it through the request handling process
+        requestContext.setProperty("skipResponse", isSkipResponse());
         filter(config, requestContext);
     }
 
@@ -59,7 +59,7 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
         // unfortunately, if skipResponse is used, we can't do that because pac4j
         // considers
         // its abort response in the same way as the normal response
-        if (skipResponse == null || !skipResponse) {
+        if (isSkipResponse()) {
             new RequestJaxRsContext(providers, requestContext).contextOrNew().getResponseHolder()
                     .populateResponse(responseContext);
         }
@@ -83,8 +83,8 @@ public abstract class AbstractFilter implements ContainerRequestFilter, Containe
         }
     }
 
-    public Boolean isSkipResponse() {
-        return skipResponse;
+    public boolean isSkipResponse() {
+        return skipResponse == null || !skipResponse;
     }
 
     /**

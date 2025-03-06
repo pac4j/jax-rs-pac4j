@@ -2,7 +2,6 @@ package org.pac4j.jax.rs.features;
 
 import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.core.FeatureContext;
-import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.filters.DefaultJaxRsHttpActionAdapter;
 import org.pac4j.jax.rs.pac4j.DefaultJaxRsWebContextFactory;

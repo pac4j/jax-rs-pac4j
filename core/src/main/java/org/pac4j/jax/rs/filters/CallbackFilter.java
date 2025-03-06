@@ -7,6 +7,7 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.ext.Providers;
 
+import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.DefaultCallbackLogic;
@@ -35,7 +36,8 @@ public class CallbackFilter extends AbstractFilter {
 
     @Override
     protected void filter(Config config, ContainerRequestContext requestContext) throws IOException {
-        JaxRsFrameworkParameters frameworkParameters = new JaxRsFrameworkParameters(providers, requestContext);
+        FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
+        JaxRsFrameworkParameters frameworkParameters = new JaxRsFrameworkParameters(this.providers, requestContext);
         buildLogic(config).perform(config, getAbsolutePath(requestContext, defaultUrl, false), renewSession, defaultClient, frameworkParameters);
     }
 

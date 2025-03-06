@@ -9,6 +9,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Providers;
 
+import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
@@ -46,6 +47,7 @@ public class SecurityFilter extends AbstractFilter {
 
     @Override
     protected void filter(Config config, ContainerRequestContext requestContext) throws IOException {
+        FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
         JaxRsFrameworkParameters frameworkParameters = new JaxRsFrameworkParameters(providers, requestContext);
 
         // Note: basically, there is two possible outcomes:
