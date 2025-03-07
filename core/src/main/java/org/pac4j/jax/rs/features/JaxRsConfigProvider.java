@@ -22,7 +22,7 @@ public class JaxRsConfigProvider implements ContextResolver<Config> {
 
     @Override
     public Config getContext(Class<?> type) {
-        return config;
+        return this.config;
     }
 
 }

@@ -15,34 +15,33 @@ import org.pac4j.jax.rs.pac4j.JaxRsProfileManager.Pac4JSecurityContext;
  */
 public class RequestJaxRsContext {
 
-    private ProvidersContext providers;
-    private ContainerRequestContext context;
+    private final Providers providers;
+    private final ProvidersContext providersContext;
+    private final ContainerRequestContext requestContext;
 
-    private JaxRsContext jaxContext;
-
-    public RequestJaxRsContext(Providers providers, ContainerRequestContext context) {
-        this.providers = new ProvidersContext(providers);
-        this.context = context;
-    }
-
-    public RequestJaxRsContext(JaxRsContext context) {
-        this.jaxContext = context;
-    }
-
-    public ProvidersContext getProviders() {
-        return providers;
-    }
-
-    public ContainerRequestContext getContainerRequestContext() {
-        return context;
+    public RequestJaxRsContext(Providers providers, ContainerRequestContext requestContext) {
+        this.providers = providers;
+        this.providersContext = new ProvidersContext(providers);
+        this.requestContext = requestContext;
     }
 
     public Optional<JaxRsContext> context() {
-        return jaxContext != null ? Optional.of(jaxContext)
-                : new RequestPac4JSecurityContext(context).context().map(Pac4JSecurityContext::getContext);
+        return new RequestPac4JSecurityContext(requestContext).context().map(Pac4JSecurityContext::getContext);
     }
 
     public JaxRsContext contextOrNew() {
-        return context().orElse(providers.resolveNotNull(JaxRsContextFactory.class).provides(context));
+        return context().orElse(providersContext.resolveNotNull(JaxRsContextFactory.class).provides(requestContext));
+    }
+
+    public Providers getProviders() {
+        return providers;
+    }
+
+    public ProvidersContext getProvidersContext() {
+        return providersContext;
+    }
+
+    public ContainerRequestContext getRequestContext() {
+        return requestContext;
     }
 }

@@ -1,10 +1,9 @@
 package org.pac4j.jax.rs.servlet.pac4j;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.core.util.CommonHelper;
+import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 import org.pac4j.jax.rs.pac4j.JaxRsContext;
 
 /**
@@ -26,15 +25,15 @@ public class ServletJaxRsContext extends JaxRsContext {
 
     private final HttpServletRequest request;
 
-    public ServletJaxRsContext(Providers providers, ContainerRequestContext requestContext,
-            HttpServletRequest request) {
-        super(providers, requestContext);
+    public ServletJaxRsContext(RequestJaxRsContext requestJaxRsContext,
+                               HttpServletRequest request) {
+        super(requestJaxRsContext);
         CommonHelper.assertNotNull("request", request);
         this.request = request;
     }
 
     public HttpServletRequest getRequest() {
-        return request;
+        return this.request;
     }
 
     @Override

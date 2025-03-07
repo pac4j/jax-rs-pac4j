@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.ext.Providers;
 
+import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.engine.DefaultLogoutLogic;
 import org.pac4j.core.engine.LogoutLogic;
-import org.pac4j.jax.rs.pac4j.JaxRsContext;
-import org.pac4j.jax.rs.pac4j.JaxRsProfileManager;
+import org.pac4j.jax.rs.pac4j.JaxRsFrameworkParameters;
 
 /**
  *
@@ -39,13 +39,10 @@ public class LogoutFilter extends AbstractFilter {
     }
 
     @Override
-    protected void filter(JaxRsContext context) throws IOException {
-        Config config = getConfig();
-        SessionStore sessionStore = getSessionStore();
-
-        buildLogic(config).perform(context, sessionStore, config, adapter(config),
-                context.getAbsolutePath(defaultUrl, false), context.getAbsolutePath(logoutUrlPattern, false),
-                localLogout, destroySession, centralLogout);
+    protected void filter(Config config, ContainerRequestContext requestContext) throws IOException {
+        FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
+        JaxRsFrameworkParameters frameworkParameters = new JaxRsFrameworkParameters(providers, requestContext);
+        buildLogic(config).perform(config, defaultUrl, getAbsolutePath(requestContext, logoutUrlPattern, false), localLogout, destroySession, centralLogout, frameworkParameters);
     }
 
     protected LogoutLogic buildLogic(Config config) {
@@ -54,15 +51,20 @@ public class LogoutFilter extends AbstractFilter {
         } else if (config.getLogoutLogic() != null) {
             return config.getLogoutLogic();
         } else {
-            DefaultLogoutLogic logic = new DefaultLogoutLogic();
-            logic.setProfileManagerFactory((ctx, sessionStore) -> new JaxRsProfileManager(ctx, sessionStore));
-            return logic;
+            return new DefaultLogoutLogic();
         }
+    }
 
+    public LogoutLogic getLogoutLogic() {
+        return logoutLogic;
+    }
+
+    public void setLogoutLogic(LogoutLogic logoutLogic) {
+        this.logoutLogic = logoutLogic;
     }
 
     public String getDefaultUrl() {
-        return this.defaultUrl;
+        return defaultUrl;
     }
 
     public void setDefaultUrl(final String defaultUrl) {
@@ -99,13 +101,5 @@ public class LogoutFilter extends AbstractFilter {
 
     public void setCentralLogout(Boolean centralLogout) {
         this.centralLogout = centralLogout;
-    }
-
-    public LogoutLogic getLogoutLogic() {
-        return logoutLogic;
-    }
-
-    public void setLogoutLogic(LogoutLogic applicationLogoutLogic) {
-        this.logoutLogic = applicationLogoutLogic;
     }
 }
