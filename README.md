@@ -78,6 +78,11 @@ See the [release notes](https://github.com/pac4j/jax-rs-pac4j/wiki/Release-Notes
 See the [migration guide](https://github.com/pac4j/jax-rs-pac4j/wiki/Migration-guide) as well.
 
 
+## Demo
+
+A demo: [jax-rs-pac4j-demo](https://github.com/pac4j/jax-rs-pac4j-demo) is available for tests and implement several authentication mechanisms: basic auth, login form and CAS.
+
+
 ## Need help?
 
 If you need commercial support (premium support or new/specific features), contact us at [info@pac4j.org](mailto:info@pac4j.org).
