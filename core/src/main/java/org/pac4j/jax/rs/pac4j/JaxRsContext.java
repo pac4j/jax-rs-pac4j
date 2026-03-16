@@ -86,7 +86,12 @@ public class JaxRsContext implements WebContext {
 
     @Override
     public Optional<String> getResponseHeader(String name) {
-        return Optional.ofNullable(getResponseHolder().getResponseHeader(name));
+        String value = getResponseHolder().getResponseHeader(name);
+        // Treat empty strings as not present - pac4j uses empty string to "remove" headers (since 6.3.x)
+        if (value == null || value.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(value);
     }
 
     public static class ResponseHolder {
@@ -118,7 +123,12 @@ public class JaxRsContext implements WebContext {
         }
 
         public void setResponseHeader(String name, String value) {
-            responseHeaders.put(name, value);
+            // Remove header if value is null or empty - pac4j uses empty string to "remove" headers (since 6.3.x)
+            if (value == null || value.isEmpty()) {
+                responseHeaders.remove(name);
+            } else {
+                responseHeaders.put(name, value);
+            }
         }
 
         public void addResponseCookie(NewCookie cookie) {
@@ -158,7 +168,10 @@ public class JaxRsContext implements WebContext {
         CommonHelper.assertNotNull("name", name);
         // header() adds headers, so we must remove the previous value first
         getAbortBuilder().header(name, null);
-        getAbortBuilder().header(name, value);
+        // Skip empty values - pac4j uses empty string to "remove" headers (since 6.3.x)
+        if (value != null && !value.isEmpty()) {
+            getAbortBuilder().header(name, value);
+        }
         getResponseHolder().setResponseHeader(name, value);
     }
 
