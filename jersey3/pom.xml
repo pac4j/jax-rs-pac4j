@@ -12,7 +12,7 @@
   <properties>
     <jersey.version>3.1.11</jersey.version>
 
-    <xml.bind-api.version>3.0.1</xml.bind-api.version>
+    <xml.bind-api.version>4.0.5</xml.bind-api.version>
     <activation-api.version>2.1.4</activation-api.version>
 
     <!-- same version as in org.glassfish.jersey:project -->
