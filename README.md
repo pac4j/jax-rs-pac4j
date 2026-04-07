@@ -17,7 +17,7 @@ It's based on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. I
 
 1) A [**client**](http://www.pac4j.org/docs/clients.html) represents an authentication mechanism. It performs the login process and returns a user profile. An indirect client is for UI authentication while a direct client is for web services authentication:
 
-&#9656; OAuth - SAML - CAS - OpenID Connect - HTTP - Google App Engine - LDAP - SQL - JWT - MongoDB - CouchDB - Kerberos - IP address - Kerberos (SPNEGO) - REST API
+&#9656; OpenID Connect - SAML - CAS - OAuth - HTTP - LDAP - SQL - JWT - MongoDB - Kerberos - IP address - REST API
 
 2) An [**authorizer**](http://www.pac4j.org/docs/authorizers.html) is meant to check authorizations on the authenticated user profile(s) or on the current web context:
 
@@ -70,7 +70,7 @@ These filters can be directly registered by hand, or instead, the following feat
 
 ## Versions
 
-The latest released version is the [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.pac4j.jax-rs/core/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.pac4j.jax-rs/core), available in the [Maven central repository](https://repo.maven.apache.org/maven2).
+The latest released version is the [![Maven Central](https://img.shields.io/maven-central/v/org.pac4j/jersey3-pac4j.svg)](https://repo1.maven.org/maven2/org/pac4j/jersey3-pac4j).
 The [next version](https://github.com/pac4j/jax-rs-pac4j/wiki/Next-version) is under development.
 
 See the [release notes](https://github.com/pac4j/jax-rs-pac4j/wiki/Release-Notes).
@@ -85,11 +85,4 @@ A demo: [jax-rs-pac4j-demo](https://github.com/pac4j/jax-rs-pac4j-demo) is avail
 
 ## Need help?
 
-If you need commercial support (premium support or new/specific features), contact us at [info@pac4j.org](mailto:info@pac4j.org).
-
-If you have any questions, want to contribute or be notified about the new releases and security fixes, please subscribe to the following [mailing lists](http://www.pac4j.org/mailing-lists.html):
-
-- [pac4j-users](https://groups.google.com/forum/?hl=en#!forum/pac4j-users)
-- [pac4j-developers](https://groups.google.com/forum/?hl=en#!forum/pac4j-dev)
-- [pac4j-announce](https://groups.google.com/forum/?hl=en#!forum/pac4j-announce)
-- [pac4j-security](https://groups.google.com/forum/#!forum/pac4j-security)
+You can use the [mailing lists](https://www.pac4j.org/mailing-lists.html) or the [commercial support](https://www.pac4j.org/commercial-support.html).
