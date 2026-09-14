@@ -19,7 +19,7 @@ public class ServletSessionStoreProvider extends JaxRsSessionStoreProvider {
 
     public ServletSessionStoreProvider(Config config) {
         super(config);
-        config.setSessionStoreFactory(ServletSessionStoreFactory.INSTANCE);
+        config.setSessionStoreFactoryIfUndefined(ServletSessionStoreFactory.INSTANCE);
     }
 
 }

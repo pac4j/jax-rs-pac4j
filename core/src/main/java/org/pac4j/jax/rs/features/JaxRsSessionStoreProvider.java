@@ -1,5 +1,7 @@
 package org.pac4j.jax.rs.features;
 
+import java.util.Optional;
+
 import jakarta.ws.rs.ext.ContextResolver;
 
 import org.pac4j.core.config.Config;
@@ -21,12 +23,13 @@ public class JaxRsSessionStoreProvider implements ContextResolver<SessionStore> 
 
     public JaxRsSessionStoreProvider(Config config) {
         this.config = config;
-        config.setSessionStoreFactory(NoOpSessionStoreFactory.INSTANCE);
     }
 
     @Override
     public SessionStore getContext(Class<?> type) {
-        return this.config.getSessionStoreFactory().newSessionStore(null);
+        return Optional.ofNullable(this.config.getSessionStoreFactory())
+            .orElse(NoOpSessionStoreFactory.INSTANCE)
+            .newSessionStore(null);
     }
 
 }

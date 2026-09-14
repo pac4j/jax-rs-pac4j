@@ -20,7 +20,7 @@ public class GrizzlySessionStoreProvider extends JaxRsSessionStoreProvider {
 
     public GrizzlySessionStoreProvider(Config config) {
         super(config);
-        config.setSessionStoreFactory(GrizzlySessionStoreFactory.INSTANCE);
+        config.setSessionStoreFactoryIfUndefined(GrizzlySessionStoreFactory.INSTANCE);
     }
 
 }
