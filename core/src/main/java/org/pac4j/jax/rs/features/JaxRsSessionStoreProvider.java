@@ -6,11 +6,11 @@ import jakarta.ws.rs.ext.ContextResolver;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.session.SessionStore;
-import org.pac4j.jax.rs.pac4j.NoOpSessionStoreFactory;
+import org.pac4j.core.exception.TechnicalException;
 
 /**
  * This class can be used to inject the pac4j {@link SessionStore} in the
- * JAX-RS runtime.
+ * JAX-RS runtime. The session store factory should be set in the provided config.
  *
  * This can be subclassed for container specific implementations.
  *
@@ -28,7 +28,8 @@ public class JaxRsSessionStoreProvider implements ContextResolver<SessionStore> 
     @Override
     public SessionStore getContext(Class<?> type) {
         return Optional.ofNullable(this.config.getSessionStoreFactory())
-            .orElse(NoOpSessionStoreFactory.INSTANCE)
+            .orElseThrow(() ->
+                new TechnicalException("No session store factory has been set in the config"))
             .newSessionStore(null);
     }
 
