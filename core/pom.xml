@@ -4,9 +4,10 @@
   <parent>
     <groupId>org.pac4j.jax-rs</groupId>
     <artifactId>parent</artifactId>
-    <version>7.0.2-SNAPSHOT</version>
+    <version>7.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>core</artifactId>
+  <name>pac4j core for JAX-RS</name>
 
   <properties>
     <ws.rs-api.version>4.0.0</ws.rs-api.version>

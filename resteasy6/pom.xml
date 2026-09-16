@@ -4,10 +4,11 @@
   <parent>
     <groupId>org.pac4j.jax-rs</groupId>
     <artifactId>parent</artifactId>
-    <version>7.0.2-SNAPSHOT</version>
+    <version>7.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.pac4j</groupId>
   <artifactId>resteasy6-pac4j</artifactId>
+  <name>pac4j implementation for RESTEasy 6</name>
 
   <properties>
     <resteasy.version>6.0.3.Final</resteasy.version>
@@ -37,10 +38,13 @@
       <!-- pinning conflicting dependencies -->
       <dependency>
         <groupId>org.jboss.weld.servlet</groupId>
-        <artifactId>weld-servlet-parent</artifactId>
+        <artifactId>weld-servlet-core</artifactId>
         <version>${weld.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <version>${weld.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>

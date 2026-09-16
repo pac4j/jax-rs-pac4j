@@ -4,10 +4,11 @@
   <parent>
     <groupId>org.pac4j.jax-rs</groupId>
     <artifactId>parent</artifactId>
-    <version>7.0.2-SNAPSHOT</version>
+    <version>7.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.pac4j</groupId>
   <artifactId>jersey3-pac4j</artifactId>
+  <name>pac4j implementation for Jersey 3</name>
 
   <properties>
     <jersey.version>3.1.11</jersey.version>
