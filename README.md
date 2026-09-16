@@ -8,7 +8,7 @@ It's based on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. I
 
 | jax-rs-pac4j | JDK | pac4j | JAX-RS | Servlet |
 |--------------|-----|-------|--------|---------|
-| version >= 7 | 17  | v6    | v3     | v5      |
+| version >= 7 | 17  | v6    | v3 / v4 | v5      |
 | version >= 6 | 11  | v5    | v3     | v5      |
 | version >= 5 | 11  | v5    | v2     | v4      |
 | version >= 4 | 8   | v4    | v2     | v4      |
@@ -46,7 +46,7 @@ These filters can be directly registered by hand, or instead, the following feat
 
 6) Container/Implementation-specific Providers and Features extend the basic functionality provided by the generic ones
 
-- The `Pac4JValueFactoryProvider` enables injection of the security profile in resource method
+- The `Pac4JValueFactoryProvider` (Jersey) and the `Pac4JProfileInjectorFactory` (RESTEasy) enable injection of the security profile in resource method
 
 - The `Pac4JServletFeature` provides session handling (and thus indirect clients support) by replacing the generic `JaxRsContextFactoryProvider` with `ServletJaxRsContextFactoryProvider` (for Servlet-based JAX-RS implementations, e.g., Jersey on Netty or Grizzly Servlet, Resteasy on Undertow) and `JaxRsSessionStoreProvider` with `ServletSessionStoreProvider`.
 
