@@ -12,6 +12,9 @@
 
   <properties>
     <jersey.version>3.1.12</jersey.version>
+    <junit5.version>5.13.4</junit5.version>
+    <!-- Do not silently accept a test engine that cannot discover our tests. -->
+    <failIfNoTests>true</failIfNoTests>
 
     <xml.bind-api.version>4.0.5</xml.bind-api.version>
     <activation-api.version>2.1.4</activation-api.version>
@@ -24,6 +27,13 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit5.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
       <dependency>
         <groupId>org.glassfish.jersey</groupId>
         <artifactId>jersey-bom</artifactId>
@@ -78,6 +88,12 @@
     </dependency>
 
     <!-- test dependencies -->
+    <!-- Jersey brings in Jupiter; Vintage runs our JUnit 4 tests on the same platform. -->
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>testing</artifactId>
