@@ -15,7 +15,7 @@
     <failIfNoTests>true</failIfNoTests>
 
     <cdi-api.version>4.1.0</cdi-api.version>
-    <servlet-api.version>6.0.0</servlet-api.version>
+    <servlet-api.version>6.1.0</servlet-api.version>
     <inject-api.version>2.0.1.MR</inject-api.version>
 
     <jersey.version>4.0.2</jersey.version>
