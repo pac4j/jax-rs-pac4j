@@ -8,6 +8,7 @@ It's based on the **[pac4j security engine](https://github.com/pac4j/pac4j)**. I
 
 | jax-rs-pac4j | JDK | pac4j | JAX-RS | Servlet |
 |--------------|-----|-------|--------|---------|
+| version >= 8 | 17  | v6    | v3 / v4 | v5 / v6 / v6.1 (depending on the module) |
 | version >= 7 | 17  | v6    | v3 / v4 | v5      |
 | version >= 6 | 11  | v5    | v3     | v5      |
 | version >= 5 | 11  | v5    | v2     | v4      |
@@ -56,6 +57,39 @@ These filters can be directly registered by hand, or instead, the following feat
 ## Usage
 
 ### 1) [Add the required dependencies](https://github.com/pac4j/jax-rs-pac4j/wiki/Dependencies)
+
+Starting with version 8, choose the integration matching your JAX-RS implementation:
+
+| Maven artifact (`org.pac4j`) | Implementation | Jakarta REST |
+|-----------------------------|----------------|--------------|
+| `jersey3-pac4j` | Jersey 3.1 | 3.1 |
+| `jersey4-pac4j` | Jersey 4.0 | 4.0 |
+| `resteasy6-pac4j` | RESTEasy 6.0 | 3.0 |
+| `resteasy7-pac4j` | RESTEasy 7.0 | 4.0 |
+
+The new modules share the existing `org.pac4j.jax-rs:core` and retain the integration's
+Java package names. Use only one Jersey integration, or one RESTEasy integration,
+on an application's classpath; do not combine both generations of the same integration.
+
+For example, to use Jersey 4:
+
+```xml
+<dependency>
+  <groupId>org.pac4j</groupId>
+  <artifactId>jersey4-pac4j</artifactId>
+  <version>8.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+For RESTEasy 7, use `resteasy7-pac4j` instead. The application or server supplies the
+matching Jersey or RESTEasy runtime. The Servlet integration tests use Servlet 6.1
+for Jersey 4 and Servlet 6.0 with Undertow 2.3 for RESTEasy 7.
+
+With RESTEasy 7 and CDI, register `Pac4JSecurityFeature.class` in
+`Application.getClasses()` so that CDI constructs the feature and injects its JAX-RS
+context. Keep the configured `Pac4JServletFeature` instance in `getSingletons()`;
+see the [RESTEasy 7 test application](resteasy7/src/test/java/org/pac4j/jax/rs/rules/RestEasyUndertowServletRule.java)
+for a complete example.
 
 ### 2) Define:
 

@@ -7,11 +7,11 @@
     <version>8.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.pac4j</groupId>
-  <artifactId>jersey3-pac4j</artifactId>
-  <name>pac4j implementation for Jersey 3</name>
+  <artifactId>jersey4-pac4j</artifactId>
+  <name>pac4j implementation for Jersey 4</name>
 
   <properties>
-    <jersey.version>3.1.12</jersey.version>
+    <jersey.version>4.0.2</jersey.version>
     <junit5.version>5.13.4</junit5.version>
     <!-- Do not silently accept a test engine that cannot discover our tests. -->
     <failIfNoTests>true</failIfNoTests>
