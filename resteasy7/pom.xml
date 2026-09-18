@@ -11,7 +11,7 @@
   <name>pac4j implementation for RESTEasy 7</name>
 
   <properties>
-    <resteasy.version>7.0.4.Final</resteasy.version>
+    <resteasy.version>7.0.5.Final</resteasy.version>
     <failIfNoTests>true</failIfNoTests>
 
     <cdi-api.version>4.1.0</cdi-api.version>

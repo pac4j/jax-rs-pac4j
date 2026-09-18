@@ -11,7 +11,7 @@
   <name>pac4j implementation for RESTEasy 6</name>
 
   <properties>
-    <resteasy.version>6.0.3.Final</resteasy.version>
+    <resteasy.version>6.2.19.Final</resteasy.version>
 
     <cdi-api.version>3.0.0</cdi-api.version>
     <servlet-api.version>5.0.0</servlet-api.version>
