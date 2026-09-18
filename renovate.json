@@ -2,5 +2,174 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "local>pac4j/renovate-config"
+    ],
+    "packageRules": [
+        {
+            "description": "Update the resteasy6 runtime and test dependencies together, independently of other modules.",
+            "matchFileNames": [
+                "resteasy6/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.jboss.resteasy:*",
+                "org.jboss.weld*:*",
+                "io.undertow:*",
+                "io.undertow.ee:*",
+                "jakarta.enterprise:*",
+                "jakarta.cdi:*",
+                "jakarta.servlet:*",
+                "org.glassfish.jersey*:*"
+            ],
+            "groupName": "resteasy6 dependencies",
+            "groupSlug": "resteasy6-dependencies"
+        },
+        {
+            "description": "Update the resteasy7 runtime and test dependencies together, independently of other modules.",
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.jboss.resteasy:*",
+                "org.jboss.weld*:*",
+                "io.undertow:*",
+                "io.undertow.ee:*",
+                "jakarta.enterprise:*",
+                "jakarta.cdi:*",
+                "jakarta.servlet:*",
+                "org.glassfish.jersey*:*"
+            ],
+            "groupName": "resteasy7 dependencies",
+            "groupSlug": "resteasy7-dependencies"
+        },
+        {
+            "matchFileNames": [
+                "resteasy6/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.jboss.resteasy:*"
+            ],
+            "allowedVersions": "/^6\\.2\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy6/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.jboss.weld*:*"
+            ],
+            "allowedVersions": "/^5\\.1\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy6/pom.xml"
+            ],
+            "matchPackageNames": [
+                "io.undertow:*"
+            ],
+            "allowedVersions": "/^2\\.3\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy6/pom.xml"
+            ],
+            "matchPackageNames": [
+                "jakarta.enterprise:*"
+            ],
+            "allowedVersions": "/^4\\.0\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy6/pom.xml"
+            ],
+            "matchPackageNames": [
+                "jakarta.servlet:jakarta.servlet-api"
+            ],
+            "allowedVersions": "/^6\\.0\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy6/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.glassfish.jersey*:*"
+            ],
+            "allowedVersions": "/^3\\.1\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.jboss.resteasy:*"
+            ],
+            "allowedVersions": "/^7\\.0\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.jboss.weld*:*"
+            ],
+            "allowedVersions": "/^6\\.0\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "io.undertow:*"
+            ],
+            "allowedVersions": "/^2\\.4\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "io.undertow.ee:*"
+            ],
+            "allowedVersions": "/^2\\.0\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "jakarta.enterprise:*"
+            ],
+            "allowedVersions": "/^4\\.1\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "jakarta.servlet:jakarta.servlet-api"
+            ],
+            "allowedVersions": "/^6\\.1\\./"
+        },
+        {
+            "matchFileNames": [
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "org.glassfish.jersey*:*"
+            ],
+            "allowedVersions": "/^4\\.0\\./"
+        },
+        {
+            "description": "CDI 5 uses new coordinates and requires a separate CDI implementation migration.",
+            "matchFileNames": [
+                "resteasy6/pom.xml",
+                "resteasy7/pom.xml"
+            ],
+            "matchPackageNames": [
+                "jakarta.enterprise:jakarta.enterprise.cdi-api"
+            ],
+            "matchUpdateTypes": [
+                "replacement"
+            ],
+            "enabled": false
+        }
     ]
 }

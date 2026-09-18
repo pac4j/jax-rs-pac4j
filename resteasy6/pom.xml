@@ -11,15 +11,16 @@
   <name>pac4j implementation for RESTEasy 6</name>
 
   <properties>
-    <resteasy.version>6.0.3.Final</resteasy.version>
+    <resteasy.version>6.2.19.Final</resteasy.version>
+    <failIfNoTests>true</failIfNoTests>
 
-    <cdi-api.version>3.0.0</cdi-api.version>
-    <servlet-api.version>5.0.0</servlet-api.version>
+    <cdi-api.version>4.0.1</cdi-api.version>
+    <servlet-api.version>6.0.0</servlet-api.version>
     <inject-api.version>2.0.1.MR</inject-api.version>
 
-    <jersey.version>3.0.17</jersey.version>
-    <weld.version>4.0.3.Final</weld.version>
-    <undertow.version>2.2.20.Final</undertow.version>
+    <jersey.version>3.1.12</jersey.version>
+    <weld.version>5.1.7.Final</weld.version>
+    <undertow.version>2.3.26.Final</undertow.version>
     <jboss-logging.version>3.6.3.Final</jboss-logging.version>
     <commons-codec.version>1.22.1</commons-codec.version>
     <wildfly-common.version>1.7.0.Final</wildfly-common.version>
@@ -39,11 +40,6 @@
       <dependency>
         <groupId>org.jboss.weld.servlet</groupId>
         <artifactId>weld-servlet-core</artifactId>
-        <version>${weld.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.weld.se</groupId>
-        <artifactId>weld-se-core</artifactId>
         <version>${weld.version}</version>
       </dependency>
       <dependency>
@@ -78,7 +74,7 @@
       </dependency>
       <dependency>
         <groupId>io.undertow</groupId>
-        <artifactId>undertow-servlet-jakarta</artifactId>
+        <artifactId>undertow-servlet</artifactId>
         <version>${undertow.version}</version>
       </dependency>
       <dependency>
@@ -131,7 +127,7 @@
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-cdi2-se</artifactId>
+      <artifactId>jersey-hk2</artifactId>
       <version>${jersey.version}</version>
       <scope>test</scope>
     </dependency>

@@ -20,7 +20,8 @@
 
     <jersey.version>4.0.2</jersey.version>
     <weld.version>6.0.4.Final</weld.version>
-    <undertow.version>2.3.26.Final</undertow.version>
+    <undertow.version>2.4.3.Final</undertow.version>
+    <undertow-ee.version>2.0.2.Final</undertow-ee.version>
     <jboss-logging.version>3.6.3.Final</jboss-logging.version>
     <commons-codec.version>1.22.1</commons-codec.version>
     <wildfly-common.version>1.7.0.Final</wildfly-common.version>
@@ -73,9 +74,9 @@
         <version>${wildfly-common.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.undertow</groupId>
+        <groupId>io.undertow.ee</groupId>
         <artifactId>undertow-servlet</artifactId>
-        <version>${undertow.version}</version>
+        <version>${undertow-ee.version}</version>
       </dependency>
       <dependency>
         <groupId>io.undertow</groupId>
@@ -112,6 +113,18 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-undertow</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <!-- Servlet 6.1 is provided by Undertow EE, not the legacy Servlet 6.0 artifact. -->
+        <exclusion>
+          <groupId>io.undertow</groupId>
+          <artifactId>undertow-servlet</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.undertow.ee</groupId>
+      <artifactId>undertow-servlet</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

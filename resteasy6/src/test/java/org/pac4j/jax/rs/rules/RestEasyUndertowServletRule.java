@@ -41,14 +41,14 @@ public class RestEasyUndertowServletRule extends ExternalResource implements Ses
         public Set<Class<?>> getClasses() {
             Set<Class<?>> classes = getResources();
             classes.add(Pac4JProfileInjectorFactory.class);
+            // Let CDI construct the feature and inject its JAX-RS context.
+            classes.add(Pac4JSecurityFeature.class);
             return classes;
         }
 
         @Override
         public Set<Object> getSingletons() {
-            return Sets.newLinkedHashSet(
-                    new Pac4JServletFeature(getConfig()),
-                    new Pac4JSecurityFeature());
+            return Sets.newLinkedHashSet(new Pac4JServletFeature(getConfig()));
         }
     }
 

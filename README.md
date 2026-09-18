@@ -64,7 +64,7 @@ Starting with version 8, choose the integration matching your JAX-RS implementat
 |-----------------------------|----------------|--------------|
 | `jersey3-pac4j` | Jersey 3.1 | 3.1 |
 | `jersey4-pac4j` | Jersey 4.0 | 4.0 |
-| `resteasy6-pac4j` | RESTEasy 6.0 | 3.0 |
+| `resteasy6-pac4j` | RESTEasy 6.2 | 3.1 |
 | `resteasy7-pac4j` | RESTEasy 7.0 | 4.0 |
 
 The new modules share the existing `org.pac4j.jax-rs:core` and retain the integration's
@@ -83,9 +83,21 @@ For example, to use Jersey 4:
 
 For RESTEasy 7, use `resteasy7-pac4j` instead. The application or server supplies the
 matching Jersey or RESTEasy runtime. The Servlet integration tests use Servlet 6.1
-for Jersey 4 and Servlet 6.0 with Undertow 2.3 for RESTEasy 7.
+for Jersey 4. The RESTEasy test runtimes are aligned separately:
 
-With RESTEasy 7 and CDI, register `Pac4JSecurityFeature.class` in
+| Module | RESTEasy | Servlet | CDI / Weld | Undertow |
+|--------|----------|---------|------------|----------|
+| `resteasy6-pac4j` | 6.2.19.Final | 6.0 | 4.0 / 5.1.7.Final | 2.3.26.Final |
+| `resteasy7-pac4j` | 7.0.5.Final | 6.1 | 4.1 / 6.0.4.Final | Core 2.4.3.Final + EE 2.0.2.Final |
+
+RESTEasy 7 tests use `io.undertow.ee:undertow-servlet` and exclude the legacy
+`io.undertow:undertow-servlet` dependency supplied by `resteasy-undertow`.
+Renovate groups these runtime updates per module and allows patch updates within
+the listed version families. Moving to another family requires updating the
+corresponding stack and its Renovate rules together; CDI 5 coordinate replacements
+are excluded until a compatible CDI implementation is adopted.
+
+With RESTEasy 6.2 or 7 and CDI, register `Pac4JSecurityFeature.class` in
 `Application.getClasses()` so that CDI constructs the feature and injects its JAX-RS
 context. Keep the configured `Pac4JServletFeature` instance in `getSingletons()`;
 see the [RESTEasy 7 test application](resteasy7/src/test/java/org/pac4j/jax/rs/rules/RestEasyUndertowServletRule.java)
