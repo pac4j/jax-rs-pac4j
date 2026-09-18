@@ -12,7 +12,7 @@
 
   <properties>
     <jersey.version>3.1.12</jersey.version>
-    <junit5.version>5.13.4</junit5.version>
+    <junit5.version>5.14.4</junit5.version>
     <!-- Do not silently accept a test engine that cannot discover our tests. -->
     <failIfNoTests>true</failIfNoTests>
 
