@@ -103,7 +103,7 @@
 
     <slf4j.version>2.0.20</slf4j.version>
 
-    <mockito.version>5.23.0</mockito.version>
+    <mockito.version>5.24.0</mockito.version>
     <junit.version>4.13.2</junit.version>
     <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
   </properties>
