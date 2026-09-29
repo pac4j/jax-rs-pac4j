@@ -20,7 +20,7 @@
     <activation-api.version>2.1.4</activation-api.version>
 
     <!-- same version as in org.glassfish.jersey:project -->
-    <grizzly-http-server.version>4.0.2</grizzly-http-server.version>
+    <grizzly-http-server.version>4.1.0</grizzly-http-server.version>
     <!-- Conflicts with jersey-hk2 -->
     <javassist.version>3.33.0-GA</javassist.version>
   </properties>
