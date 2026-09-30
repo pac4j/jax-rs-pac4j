@@ -2,6 +2,17 @@
   <img src="https://pac4j.github.io/pac4j/img/logo-jaxrs.png" width="300" />
 </p>
 
+<p align="center">
+  <a href="https://central.sonatype.com/artifact/org.pac4j/jersey3-pac4j"><img src="https://img.shields.io/maven-central/v/org.pac4j/jersey3-pac4j?label=Maven%20Central" alt="Maven Central" /></a>
+  <a href="https://github.com/pac4j/jax-rs-pac4j/actions/workflows/ci.yml"><img src="https://github.com/pac4j/jax-rs-pac4j/actions/workflows/ci.yml/badge.svg" alt="Build status" /></a>
+  <img src="https://img.shields.io/badge/Java-17%2B-blue" alt="Java 17+" />
+  <img src="https://img.shields.io/badge/Jakarta%20REST-3.x%20%7C%204.x-blue" alt="Jakarta REST 3.x | 4.x" />
+  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="Apache 2 license" /></a>
+</p>
+
+> `jax-rs-pac4j` is the JAX-RS (Jersey and RESTEasy) implementation of **[pac4j](https://github.com/pac4j/pac4j)**, the security engine for Java.
+> If it is useful to you, please ⭐ **[star pac4j on GitHub](https://github.com/pac4j/pac4j)**: it helps other developers discover it!
+
 **jax-rs-pac4j** secures Jakarta REST applications with authentication, authorization, login callbacks and logout. It uses the [pac4j security engine](https://github.com/pac4j/pac4j) and supports OpenID Connect, SAML, CAS, OAuth, JWT and other authentication mechanisms.
 
 Version **8.0.0** supports **Jersey 3 and 4** and **RESTEasy 6 and 7**, with **Java 17** and compatibility across the **pac4j 6.x** series. The project is available under the Apache 2 license.
