@@ -15,7 +15,7 @@
 
 **jax-rs-pac4j** secures Jakarta REST applications with authentication, authorization, login callbacks and logout. It uses the [pac4j security engine](https://github.com/pac4j/pac4j) and supports OpenID Connect, SAML, CAS, OAuth, JWT and other authentication mechanisms.
 
-Version **8.0.0** supports **Jersey 3 and 4** and **RESTEasy 6 and 7**, with **Java 17** and compatibility across the **pac4j 6.x** series. The project is available under the Apache 2 license.
+Version **8.1.0** supports **Jersey 3 and 4** and **RESTEasy 6 and 7**, with **Java 17** and compatibility across the **pac4j 6.x** series. The project is available under the Apache 2 license.
 
 | jax-rs-pac4j | JDK | pac4j | JAX-RS | Servlet |
 |--------------|-----|-------|--------|---------|
