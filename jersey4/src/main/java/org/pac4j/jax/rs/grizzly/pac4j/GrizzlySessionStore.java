@@ -28,65 +28,78 @@ public class GrizzlySessionStore implements SessionStore {
     }
 
     public Session getSession(final WebContext context) {
+        return getSession(context, true);
+    }
+
+    public Session getSession(final WebContext context, final boolean createSession) {
         assert context instanceof GrizzlyJaxRsContext;
-        return ((GrizzlyJaxRsContext) context).getRequest().getSession();
+        return ((GrizzlyJaxRsContext) context).getRequest().getSession(createSession);
+    }
+
+    protected Optional<Session> getNativeSession(final WebContext context, final boolean createSession) {
+        return Optional.ofNullable(getSession(context, createSession));
     }
 
     @Override
     public Optional<String> getSessionId(WebContext context, boolean createSession) {
-        Session session = getSession(context);
-        return (session != null) ? Optional.of(session.getIdInternal()) : Optional.empty();
+        return getNativeSession(context, createSession).map(Session::getIdInternal);
     }
 
     @Override
     public Optional<Object> get(WebContext context, String key) {
-        return Optional.ofNullable(getSession(context).getAttribute(key));
+        return getNativeSession(context, false).map(it -> it.getAttribute(key));
     }
 
     @Override
     public void set(WebContext context, String key, Object value) {
-        if (value == null) {
-            getSession(context).removeAttribute(key);
-        } else {
-            getSession(context).setAttribute(key, value);
-        }
+        getNativeSession(context, value != null)
+            .ifPresent(it -> {
+                if (value == null) {
+                    it.removeAttribute(key);
+                } else {
+                    it.setAttribute(key, value);
+                }
+            });
     }
 
     @Override
     public boolean destroySession(WebContext context) {
-        final Session session = getSession(context);
-
-        session.setValid(false);
-
-        return true;
+        return getNativeSession(context, false)
+            .map(it -> {
+                it.setValid(false);
+                return true;
+            })
+            .orElse(false);
     }
 
     @Override
     public Optional<Object> getTrackableSession(WebContext context) {
-        return Optional.ofNullable(getSession(context));
+        return getNativeSession(context, false).map(Object.class::cast);
     }
 
     @Override
     public boolean renewSession(WebContext context) {
-        final Session session = getSession(context);
-        final Map<String, Object> attributes = new HashMap<>();
-        attributes.putAll(session.attributes());
+        return getNativeSession(context, false)
+            .map(it -> {
+                final Map<String, Object> attributes = new HashMap<>(it.attributes());
 
-        session.setValid(false);
+                it.setValid(false);
 
-        // let's recreate the session from zero
-        // (Grizzly reuse the same object, but that could change in the future...)
-        final Session newSession = getSession(context);
-        attributes.forEach(newSession::setAttribute);
+                // let's recreate the session from zero
+                // (Grizzly reuse the same object, but that could change in the future...)
+                getNativeSession(context, true)
+                    .ifPresent(newSession -> attributes.forEach(newSession::setAttribute));
 
-        return true;
+                return true;
+            })
+            .orElse(false);
     }
 
     @Override
     public Optional<SessionStore> buildFromTrackableSession(WebContext context, Object trackableSession) {
         return Optional.of(new GrizzlySessionStore() {
             @Override
-            public Session getSession(WebContext context) {
+            public Session getSession(WebContext context, boolean createSession) {
                 return (Session) trackableSession;
             }
         });

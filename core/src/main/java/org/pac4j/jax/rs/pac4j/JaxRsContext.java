@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -185,10 +186,29 @@ public class JaxRsContext implements WebContext {
     @Override
     public void addResponseCookie(Cookie cookie) {
         CommonHelper.assertNotNull("cookie", cookie);
-        NewCookie c = new NewCookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), "",
-                cookie.getMaxAge(), cookie.isSecure());
+        NewCookie c = new NewCookie.Builder(cookie.getName())
+                .value(cookie.getValue())
+                .path(cookie.getPath())
+                .domain(cookie.getDomain())
+                .comment(cookie.getComment())
+                .maxAge(cookie.getMaxAge())
+                .secure(cookie.isSecure())
+                .httpOnly(cookie.isHttpOnly())
+                .sameSite(toSameSite(cookie.getSameSitePolicy()))
+                .build();
         getAbortBuilder().cookie(c);
         getResponseHolder().addResponseCookie(c);
+    }
+
+    private static NewCookie.SameSite toSameSite(String sameSitePolicy) {
+        if (sameSitePolicy == null || sameSitePolicy.isBlank()) {
+            return null;
+        }
+        try {
+            return NewCookie.SameSite.valueOf(sameSitePolicy.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     /**

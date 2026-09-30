@@ -42,7 +42,7 @@ public class LogoutFilter extends AbstractFilter {
     protected void filter(Config config, ContainerRequestContext requestContext) throws IOException {
         FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
         JaxRsFrameworkParameters frameworkParameters = new JaxRsFrameworkParameters(providers, requestContext);
-        buildLogic(config).perform(config, defaultUrl, getAbsolutePath(requestContext, logoutUrlPattern, false), localLogout, destroySession, centralLogout, frameworkParameters);
+        buildLogic(config).perform(config, getAbsolutePath(requestContext, defaultUrl, false), getAbsolutePath(requestContext, logoutUrlPattern, false), localLogout, destroySession, centralLogout, frameworkParameters);
     }
 
     protected LogoutLogic buildLogic(Config config) {

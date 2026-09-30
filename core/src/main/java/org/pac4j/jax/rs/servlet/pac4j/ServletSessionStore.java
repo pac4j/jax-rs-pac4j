@@ -59,7 +59,7 @@ public class ServletSessionStore implements SessionStore {
 
     @Override
     public Optional<Object> getTrackableSession(final WebContext context) {
-        return Optional.ofNullable(getNativeSession(context, false));
+        return getNativeSession(context, false).map(Object.class::cast);
     }
 
     @Override
