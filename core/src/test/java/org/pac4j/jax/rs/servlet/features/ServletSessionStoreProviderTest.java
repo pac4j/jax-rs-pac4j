@@ -6,8 +6,8 @@ import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.pac4j.NoOpSessionStoreFactory;
 import org.pac4j.jax.rs.servlet.pac4j.ServletSessionStore;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ServletSessionStoreProviderTest {
 
@@ -20,7 +20,7 @@ public class ServletSessionStoreProviderTest {
         SessionStore sessionStore = sessionStoreProvider.getContext(null);
 
         assertNotNull(sessionStore);
-        assertTrue(sessionStore instanceof NoOpSessionStoreFactory.NoOpSessionStore);
+        assertEquals(NoOpSessionStoreFactory.NoOpSessionStore.class, sessionStore.getClass());
     }
 
     @Test
@@ -31,6 +31,6 @@ public class ServletSessionStoreProviderTest {
         SessionStore sessionStore = sessionStoreProvider.getContext(null);
 
         assertNotNull(sessionStore);
-        assertTrue(sessionStore instanceof ServletSessionStore);
+        assertEquals(ServletSessionStore.class, sessionStore.getClass());
     }
 }

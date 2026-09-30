@@ -67,7 +67,16 @@ public class CallbackFilter extends AbstractFilter {
         this.defaultUrl = defaultUrl;
     }
 
+    /**
+     * @return the effective renewSession setting (pac4j renews the session by default)
+     * @deprecated use {@link #getRenewSession()}, which does not hide the default pac4j setting
+     */
+    @Deprecated
     public boolean isRenewSession() {
+        return renewSession == null || renewSession;
+    }
+
+    public Boolean getRenewSession() {
         return renewSession;
     }
 

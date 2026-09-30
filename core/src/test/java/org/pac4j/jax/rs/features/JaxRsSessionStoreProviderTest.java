@@ -6,8 +6,8 @@ import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.jax.rs.pac4j.NoOpSessionStoreFactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class JaxRsSessionStoreProviderTest {
 
@@ -20,7 +20,7 @@ public class JaxRsSessionStoreProviderTest {
         SessionStore sessionStore = jaxRsSessionStoreProvider.getContext(null);
 
         assertNotNull(sessionStore);
-        assertTrue(sessionStore instanceof NoOpSessionStoreFactory.NoOpSessionStore);
+        assertEquals(NoOpSessionStoreFactory.NoOpSessionStore.class, sessionStore.getClass());
     }
 
     @Test(expected = TechnicalException.class)

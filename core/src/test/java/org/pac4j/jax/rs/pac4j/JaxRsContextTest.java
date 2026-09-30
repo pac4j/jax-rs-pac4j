@@ -3,8 +3,10 @@ package org.pac4j.jax.rs.pac4j;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -12,32 +14,26 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.NewCookie;
-import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.pac4j.core.context.Cookie;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
 
 public class JaxRsContextTest {
 
+    private ContainerRequestContext requestContext;
+
     private JaxRsContext context;
 
     @Before
     public void setUp() {
-        // Response.ok() needs a JAX-RS runtime, which core does not have
-        RuntimeDelegate runtimeDelegate = mock(RuntimeDelegate.class);
-        when(runtimeDelegate.createResponseBuilder()).thenAnswer(i -> mock(ResponseBuilder.class, RETURNS_SELF));
-        RuntimeDelegate.setInstance(runtimeDelegate);
-
-        Map<String, Object> properties = new HashMap<>();
-        ContainerRequestContext requestContext = mock(ContainerRequestContext.class);
-        when(requestContext.getProperty(anyString())).thenAnswer(i -> properties.get(i.<String>getArgument(0)));
-        doAnswer(i -> properties.put(i.getArgument(0), i.getArgument(1))).when(requestContext)
-                .setProperty(anyString(), any());
-
+        MockJaxRs.installRuntimeDelegate();
+        requestContext = MockJaxRs.requestContext();
         context = new JaxRsContext(new RequestJaxRsContext(null, requestContext));
     }
 
@@ -84,14 +80,77 @@ public class JaxRsContextTest {
         assertNull(addAndGetResponseCookie(cookie).getSameSite());
     }
 
+    @Test
+    public void response_is_populated_only_once() {
+        context.addResponseCookie(new Cookie("name", "value"));
+
+        MultivaluedMap<String, Object> headers = populateResponse();
+        populateResponse(headers);
+
+        assertEquals(1, headers.get(HttpHeaders.SET_COOKIE).size());
+    }
+
+    @Test
+    public void server_port_is_the_explicit_port() {
+        mockRequestUri("http://example.com:8080/app");
+
+        assertEquals(8080, context.getServerPort());
+    }
+
+    @Test
+    public void server_port_defaults_to_80_for_http() {
+        mockRequestUri("http://example.com/app");
+
+        assertEquals(80, context.getServerPort());
+    }
+
+    @Test
+    public void server_port_defaults_to_443_for_https() {
+        mockRequestUri("https://example.com/app");
+
+        assertEquals(443, context.getServerPort());
+    }
+
+    @Test
+    public void request_content_without_media_type_keeps_newlines() {
+        when(requestContext.getMediaType()).thenReturn(null);
+        when(requestContext.getEntityStream())
+                .thenReturn(new ByteArrayInputStream("line1\nline2 é".getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals("line1\nline2 é", context.getRequestContent());
+    }
+
+    @Test
+    public void request_content_can_still_be_read_afterwards() throws Exception {
+        when(requestContext.getEntityStream())
+                .thenReturn(new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8)));
+
+        context.getRequestContent();
+
+        ArgumentCaptor<InputStream> stream = ArgumentCaptor.forClass(InputStream.class);
+        verify(requestContext).setEntityStream(stream.capture());
+        assertEquals("content", new String(stream.getValue().readAllBytes(), StandardCharsets.UTF_8));
+    }
+
+    private void mockRequestUri(String uri) {
+        UriInfo uriInfo = mock(UriInfo.class);
+        when(uriInfo.getRequestUri()).thenReturn(URI.create(uri));
+        when(requestContext.getUriInfo()).thenReturn(uriInfo);
+    }
+
     private NewCookie addAndGetResponseCookie(Cookie cookie) {
         context.addResponseCookie(cookie);
+        return (NewCookie) populateResponse().getFirst(HttpHeaders.SET_COOKIE);
+    }
 
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+    private MultivaluedMap<String, Object> populateResponse() {
+        return populateResponse(new MultivaluedHashMap<>());
+    }
+
+    private MultivaluedMap<String, Object> populateResponse(MultivaluedMap<String, Object> headers) {
         ContainerResponseContext responseContext = mock(ContainerResponseContext.class);
         when(responseContext.getHeaders()).thenReturn(headers);
         context.getResponseHolder().populateResponse(responseContext);
-
-        return (NewCookie) headers.getFirst(HttpHeaders.SET_COOKIE);
+        return headers;
     }
 }

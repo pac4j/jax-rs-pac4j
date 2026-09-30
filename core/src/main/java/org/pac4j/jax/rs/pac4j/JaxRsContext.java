@@ -1,14 +1,12 @@
 package org.pac4j.jax.rs.pac4j;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +31,7 @@ import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.ext.Providers;
 
 import org.pac4j.core.context.Cookie;
+import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.CommonHelper;
@@ -113,6 +112,8 @@ public class JaxRsContext implements WebContext {
 
         private final Set<NewCookie> responseCookies = new HashSet<>();
 
+        private boolean populated = false;
+
         public void writeResponseContent(String content) {
             responseContent = content;
             hasResponseContent = true;
@@ -146,6 +147,11 @@ public class JaxRsContext implements WebContext {
         }
 
         public void populateResponse(ContainerResponseContext responseContext) {
+            // several pac4j filters may be applied on the same request, only populate once
+            if (populated) {
+                return;
+            }
+            populated = true;
             if (hasResponseContent) {
                 responseContext.setEntity(responseContent);
             }
@@ -312,7 +318,13 @@ public class JaxRsContext implements WebContext {
 
     @Override
     public int getServerPort() {
-        return getRequestUri().getPort();
+        URI requestUri = getRequestUri();
+        int port = requestUri.getPort();
+        if (port == -1) {
+            return "https".equalsIgnoreCase(requestUri.getScheme()) ? HttpConstants.DEFAULT_HTTPS_PORT
+                    : HttpConstants.DEFAULT_HTTP_PORT;
+        }
+        return port;
     }
 
     @Override
@@ -348,31 +360,20 @@ public class JaxRsContext implements WebContext {
     @Override
     public String getRequestContent() {
         return readAndResetEntityStream(stream -> {
-            String charsetS = this.containerRequestContext.getMediaType().getParameters().get(MediaType.CHARSET_PARAMETER);
-            Charset charset;
-            if (charsetS != null) {
-                charset = Charset.forName(charsetS);
-            } else {
-                charset = Charset.defaultCharset();
+            MediaType mediaType = this.containerRequestContext.getMediaType();
+            String charsetS = mediaType == null ? null : mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);
+            Charset charset = charsetS == null ? StandardCharsets.UTF_8 : Charset.forName(charsetS);
+            try {
+                return new String(stream.readAllBytes(), charset);
+            } catch (IOException e) {
+                throw new TechnicalException(e);
             }
-
-            // TODO newlines?! this is copied from J2EContext
-            String content = new BufferedReader(new InputStreamReader(stream, charset)).lines().reduce("",
-                    (accumulator, actual) -> accumulator.concat(actual));
-            return content;
         });
     }
 
     private <T> T readAndResetEntityStream(Function<InputStream, T> f) {
         try (InputStream entityStream = this.containerRequestContext.getEntityStream()) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = entityStream.read(buffer)) > -1) {
-                baos.write(buffer, 0, len);
-            }
-            baos.flush();
-            ByteArrayInputStream stream = new ByteArrayInputStream(baos.toByteArray());
+            ByteArrayInputStream stream = new ByteArrayInputStream(entityStream.readAllBytes());
             try {
                 return f.apply(stream);
             } finally {

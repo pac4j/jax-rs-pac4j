@@ -30,7 +30,7 @@ public class RequestJaxRsContext {
     }
 
     public JaxRsContext contextOrNew() {
-        return context().orElse(providersContext.resolveNotNull(JaxRsContextFactory.class).provides(requestContext));
+        return context().orElseGet(() -> providersContext.resolveNotNull(JaxRsContextFactory.class).provides(requestContext));
     }
 
     public Providers getProviders() {

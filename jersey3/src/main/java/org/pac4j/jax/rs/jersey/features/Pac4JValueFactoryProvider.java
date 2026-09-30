@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Pac4JValueFactoryProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger(Pac4JValueFactoryProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Pac4JValueFactoryProvider.class);
 
     static class Pac4JProfileValueFactoryProvider extends AbstractValueParamProvider {
 
@@ -79,14 +79,15 @@ public class Pac4JValueFactoryProvider {
             }
 
             if (parameter.isAnnotationPresent(Pac4JProfile.class)) {
-                if (CommonProfile.class.isAssignableFrom(parameter.getRawType())) {
+                if (UserProfile.class.isAssignableFrom(parameter.getRawType())) {
                     return profile.get();
                 }
 
                 if (Optional.class.isAssignableFrom(parameter.getRawType())) {
-                    List<ClassTypePair> ctps = ReflectionHelper.getTypeArgumentAndClass(parameter.getRawType());
+                    List<ClassTypePair> ctps = ReflectionHelper.getTypeArgumentAndClass(parameter.getType());
                     ClassTypePair ctp = (ctps.size() == 1) ? ctps.get(0) : null;
-                    if (ctp == null || CommonProfile.class.isAssignableFrom(ctp.rawClass())) {
+                    if (ctp == null || UserProfile.class.isAssignableFrom(ctp.rawClass())
+                            || ctp.rawClass().isAssignableFrom(UserProfile.class)) {
                         return optProfile.get();
                     }
                 }
@@ -212,7 +213,6 @@ public class Pac4JValueFactoryProvider {
     }
 
     static class ProfileManagerValueFactory implements ProfileManagerFactory {
-        @Context
         private final Providers providers;
 
         ProfileManagerValueFactory(Providers providers) {

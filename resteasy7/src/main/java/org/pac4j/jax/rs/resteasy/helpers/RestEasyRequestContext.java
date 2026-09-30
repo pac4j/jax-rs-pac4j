@@ -27,6 +27,6 @@ public class RestEasyRequestContext extends RequestJaxRsContext {
                         // if we went through a pac4j security filter
                         .map(sc -> sc.getContext().getRequestContext())
                         // if not, we create a new ContainerRequestContext
-                        .orElse(new PreMatchContainerRequestContext(request, new ContainerRequestFilter[] {}, null)));
+                        .orElseGet(() -> new PreMatchContainerRequestContext(request, new ContainerRequestFilter[] {}, null)));
     }
 }

@@ -13,6 +13,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.util.FindAnnotation;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.helpers.RequestJaxRsContext;
@@ -20,7 +21,6 @@ import org.pac4j.jax.rs.helpers.RequestPac4JSecurityContext;
 import org.pac4j.jax.rs.helpers.RequestProfileManager;
 import org.pac4j.jax.rs.helpers.RequestUserProfile;
 import org.pac4j.jax.rs.resteasy.helpers.RestEasyRequestContext;
-import org.pac4j.jax.rs.servlet.pac4j.ServletSessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Pac4JProfileInjectorFactory extends InjectorFactoryImpl {
 
-    private static Logger LOG = LoggerFactory.getLogger(Pac4JProfileInjectorFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Pac4JProfileInjectorFactory.class);
 
     /**
      * {@inheritDoc}
@@ -73,7 +73,8 @@ public class Pac4JProfileInjectorFactory extends InjectorFactoryImpl {
             }
         } else if (FindAnnotation.findAnnotation(annotations, Pac4JProfileManager.class) != null) {
             return new Pac4JValueInjector(providerFactory,
-                    c -> new RequestProfileManager(c.contextOrNew(), ServletSessionStore.INSTANCE).profileManager());
+                    c -> new RequestProfileManager(c.contextOrNew(),
+                            c.getProvidersContext().resolveNotNull(SessionStore.class)).profileManager());
         } else {
             return null;
         }

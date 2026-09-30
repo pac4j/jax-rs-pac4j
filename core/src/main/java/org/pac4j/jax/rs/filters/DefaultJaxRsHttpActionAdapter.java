@@ -24,8 +24,11 @@ public class DefaultJaxRsHttpActionAdapter implements HttpActionAdapter {
 
     @Override
     public Object adapt(final HttpAction action, final WebContext context) {
-        if (action != null && context instanceof JaxRsContext jaxRsContext) {
-            if(isSkipResponse(jaxRsContext.getRequestContext())) {
+        if (action == null) {
+            throw new TechnicalException("No action provided");
+        }
+        if (context instanceof JaxRsContext jaxRsContext) {
+            if (isSkipResponse(jaxRsContext.getRequestContext())) {
                 return null;
             }
             final int code = action.getCode();
@@ -44,11 +47,10 @@ public class DefaultJaxRsHttpActionAdapter implements HttpActionAdapter {
             return null;
         }
 
-        throw new TechnicalException("No action provided");
+        throw new TechnicalException("Unsupported web context, expected a JaxRsContext: " + context);
     }
 
     private boolean isSkipResponse(ContainerRequestContext requestContext) {
-        Object skipResponse = requestContext.getProperty("skipResponse");
-        return skipResponse == null || !Boolean.parseBoolean(skipResponse.toString());
+        return Boolean.TRUE.equals(requestContext.getProperty(AbstractFilter.SKIP_RESPONSE_PROPERTY));
     }
 }

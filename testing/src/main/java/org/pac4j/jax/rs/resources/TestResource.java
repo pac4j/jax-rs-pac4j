@@ -16,6 +16,7 @@ import org.pac4j.core.matching.matcher.DefaultMatchers;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.Pac4JPrincipal;
 import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfileManager;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
@@ -109,6 +110,28 @@ public class TestResource {
     @Path("directInjectSkip")
     @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED, skipResponse = true)
     public String directInjectSkip(@Pac4JProfile Optional<CommonProfile> profile) {
+        if (profile.isPresent()) {
+            return "ok";
+        } else {
+            return "fail";
+        }
+    }
+
+    @POST
+    @Path("directInjectUserProfile")
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
+    public String directInjectUserProfile(@Pac4JProfile UserProfile profile) {
+        if (profile != null) {
+            return "ok";
+        } else {
+            return "error";
+        }
+    }
+
+    @POST
+    @Path("directInjectOptionalUserProfile")
+    @Pac4JSecurity(clients = "DirectFormClient", authorizers = DefaultAuthorizers.IS_AUTHENTICATED)
+    public String directInjectOptionalUserProfile(@Pac4JProfile Optional<UserProfile> profile) {
         if (profile.isPresent()) {
             return "ok";
         } else {

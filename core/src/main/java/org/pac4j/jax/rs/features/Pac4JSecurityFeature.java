@@ -139,6 +139,21 @@ public class Pac4JSecurityFeature implements DynamicFeature, Feature {
                         "skipResponse parameter in @Pac4JLogout is not expected to have more than one value");
             }
 
+            if (lAnn.localLogout().length > 1) {
+                throw new IllegalArgumentException(
+                        "localLogout parameter in @Pac4JLogout is not expected to have more than one value");
+            }
+
+            if (lAnn.destroySession().length > 1) {
+                throw new IllegalArgumentException(
+                        "destroySession parameter in @Pac4JLogout is not expected to have more than one value");
+            }
+
+            if (lAnn.centralLogout().length > 1) {
+                throw new IllegalArgumentException(
+                        "centralLogout parameter in @Pac4JLogout is not expected to have more than one value");
+            }
+
             final LogoutFilter filter = new LogoutFilter(providers);
 
             filter.setDefaultUrl(lAnn.defaultUrl().length == 0 ? null : lAnn.defaultUrl()[0]);

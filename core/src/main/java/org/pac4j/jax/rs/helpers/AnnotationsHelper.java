@@ -2,8 +2,6 @@ package org.pac4j.jax.rs.helpers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 /**
  * @author Victor Noel - Linagora
@@ -79,18 +77,11 @@ public class AnnotationsHelper {
     }
 
     private static Method findMethod(Method m, Class<?> c) {
-        // that's how they do it in Jersey, most certainly
-        // because getMethod can throw a SecurityException
-        return AccessController.doPrivileged(new PrivilegedAction<Method>() {
-            @Override
-            public Method run() {
-                try {
-                    return c.getMethod(m.getName(), m.getParameterTypes());
-                } catch (NoSuchMethodException e) {
-                    // TODO for now we support only exactly matching parameters!
-                    return null;
-                }
-            }
-        });
+        try {
+            return c.getMethod(m.getName(), m.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+            // TODO for now we support only exactly matching parameters!
+            return null;
+        }
     }
 }
